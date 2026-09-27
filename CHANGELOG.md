@@ -11,6 +11,8 @@
 - Endpoint-rule baseline in the checkpoint audit.
 - Optional CUDA device for the graph-disjoint runner; the CPU remains the
   default and the reference for committed results.
+- Dataset size is a generator parameter; a 20,000-instance graph-disjoint set
+  and its three-seed GPU run.
 
 ## 0.1.0 (2026-09-27)
 

@@ -39,7 +39,7 @@ pytest -q                   # full suite, including longer training checks
 |---|---|
 | `python -m reachability_gen.generate --all-splits --n-per-cell 4` | Base train / val / test / size-OOD splits in `data/` |
 | `python -m reachability_gen.gen_id_2k` | Fixed 2,000-instance in-distribution set, `data/id_2k.jsonl` |
-| `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` |
+| `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` (`--n-total` / `--n-val` scale it) |
 | `python -m reachability_gen.gen_ood_hops` | Extended-step evaluation set, `data/ood_hops.jsonl` |
 | `python -m reachability_gen.gen_covariate_matched_ood` | Length-matched extended-step set, `data/covariate_matched_ood.jsonl` |
 
@@ -96,6 +96,16 @@ python -m reachability_gen.run_disjoint_rematch --device cuda           # on a G
 `--device cuda` trains on the GPU from the same initial weights and data
 order as on the CPU; GPU numerics differ slightly, so the device is recorded
 in the result file.
+
+The 20,000-instance version (10,000 graphs, independent seed) and its run:
+
+```bash
+python -m reachability_gen.gen_id_disjoint --n-total 20000 --n-val 4000 --seed 170000 --out data/id_disjoint_20k.jsonl --report artifacts/id_disjoint_20k_generation_report.json
+python -m reachability_gen.run_disjoint_rematch --data data/id_disjoint_20k.jsonl --device cuda --out artifacts/id_disjoint_20k_rematch.json --ckpt-dir artifacts/id_disjoint_20k_rematch
+```
+
+Per-example telemetry is computed on the first 400 validation rows, so it is
+comparable across dataset sizes.
 
 Trains the three arms of the latest comparison protocol on
 `data/id_disjoint_2k.jsonl` for each seed. Inputs are sized so that nothing is

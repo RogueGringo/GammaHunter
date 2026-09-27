@@ -57,15 +57,18 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    its inputs, so most inputs lost their query and its per-step results are
    not interpretable.
 
-8. **No learning on the graph-disjoint set at this scale.** Trained on
-   `id_disjoint_2k` with the same arms and settings (three seeds, 30 epochs,
-   1,600 training instances), no arm exceeded chance on validation or fit its
-   own training set: best validation accuracy was 0.50–0.52 and training
-   accuracy never passed 0.52 (`artifacts/id_disjoint_rematch.json`). The
-   recurrent arm with cycle embeddings showed full token collapse from the
-   first epoch in every seed. Accuracy on `id_2k` should therefore not be read
-   as learned reachability; whether larger data, models or budgets change
-   this is untested.
+8. **No learning on the graph-disjoint sets.** Trained with the same arms and
+   settings (three seeds, 30 epochs) on `id_disjoint_2k` (1,600 training
+   instances, CPU) and on the ten-times-larger `id_disjoint_20k` (16,000
+   training instances, GPU), no arm exceeded chance on validation or fit its
+   own training set. Best validation accuracy was at most 0.5225 on the small
+   set and at most 0.5025 on the large one (4,000 validation instances), and
+   training accuracy never passed 0.52 (`artifacts/id_disjoint_rematch.json`,
+   `artifacts/id_disjoint_20k_rematch.json`). The recurrent arm with cycle
+   embeddings showed full token collapse from the first epoch in every seed.
+   Accuracy on `id_2k` should therefore not be read as learned reachability.
+   Whether a different readout, curriculum, architecture or much longer
+   training changes this is untested.
 
 9. **Measurement-only status.** No result in this repository is presented as
    an established finding.

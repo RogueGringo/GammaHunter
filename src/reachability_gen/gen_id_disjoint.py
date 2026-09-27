@@ -2,11 +2,12 @@
 # Proprietary and confidential. See LICENSE.
 # SPDX-License-Identifier: LicenseRef-Proprietary
 
-"""Generate a graph-disjoint, label-paired 2k ID set (MEASURE plumbing).
+"""Generate a graph-disjoint, label-paired ID set (MEASURE plumbing).
 
-Same task, encoding, hop strata, hard-negative rule and quotas as
-``gen_id_2k`` (1600 train / 400 val, 1000 / 1000 labels, 200 positives per
-hop K∈[2,6]); only the composition changes:
+Same task, encoding, hop strata and hard-negative rule as ``gen_id_2k``, and
+by default the same quotas (1600 train / 400 val, 1000 / 1000 labels, 200
+positives per hop K∈[2,6]; ``--n-total`` / ``--n-val`` scale them). Only the
+composition changes:
 
 - every graph contributes exactly one y=1 and one y=0 query, so graph
   identity and graph size carry no label information (a query-blind
@@ -26,6 +27,9 @@ Usage::
 
     python -m reachability_gen.gen_id_disjoint
     python -m reachability_gen.gen_id_disjoint --verify-only data/id_disjoint_2k.jsonl
+    python -m reachability_gen.gen_id_disjoint --n-total 20000 --n-val 4000 \\
+        --seed 170000 --out data/id_disjoint_20k.jsonl \\
+        --report artifacts/id_disjoint_20k_generation_report.json
 """
 
 from __future__ import annotations
@@ -61,12 +65,9 @@ from reachability_gen.tokenize import split_encoding_tokens
 
 ID_DISJOINT_SEED: int = 168_000
 
-N_TOTAL: int = 2000
-N_TRAIN: int = 1600
+N_TOTAL: int = 2000  # default size; one positive + one negative per graph
 N_VAL: int = 400
 ID_HOPS: tuple[int, ...] = tuple(range(ID_HOP_MIN, ID_HOP_MAX + 1))  # 2..6
-GRAPHS_PER_HOP: int = N_TOTAL // 2 // len(ID_HOPS)  # 200 (one positive each)
-GRAPHS_PER_HOP_VAL: int = N_VAL // 2 // len(ID_HOPS)  # 40
 
 # Shared size range for every hop; density targets mean out-degree n·p.
 N_SUPPORT: tuple[int, ...] = (10, 12, 14, 16, 18, 20)
@@ -122,10 +123,26 @@ def _pick_pair(
     return (p_pair, n_pair) if ok else None
 
 
+def _quotas(n_total: int, n_val: int) -> tuple[int, int]:
+    """Graphs per hop overall and in val (each graph gives one pos + one neg)."""
+    unit = 2 * len(ID_HOPS)
+    if n_total % unit or n_val % unit or not 0 < n_val < n_total:
+        raise ValueError(
+            f"n_total={n_total} and n_val={n_val} must be multiples of {unit}, "
+            "with 0 < n_val < n_total"
+        )
+    return n_total // unit, n_val // unit
+
+
 def generate_id_disjoint(
-    *, seed: int = ID_DISJOINT_SEED, max_graph_draws: int = 200_000
+    *,
+    seed: int = ID_DISJOINT_SEED,
+    max_graph_draws: int = 400_000,
+    n_total: int = N_TOTAL,
+    n_val: int = N_VAL,
 ) -> tuple[list[ReachabilityExample], dict[str, Any]]:
     """Generate the graph-disjoint paired set; return (examples, report)."""
+    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val)
     master = random.Random(seed)
     records: dict[int, list[tuple[int, float, list[tuple[int, int]], tuple[int, int], tuple[int, int]]]] = {
         k: [] for k in ID_HOPS
@@ -133,7 +150,7 @@ def generate_id_disjoint(
     seen_graphs: set[str] = set()
     rejects: Counter = Counter()
     draws = 0
-    while any(len(records[k]) < GRAPHS_PER_HOP for k in ID_HOPS):
+    while any(len(records[k]) < graphs_per_hop for k in ID_HOPS):
         if draws >= max_graph_draws:
             raise RuntimeError(
                 f"id_disjoint shortfall after {draws} draws: "
@@ -164,7 +181,7 @@ def generate_id_disjoint(
     for k in ID_HOPS:
         random.Random(derive_example_seed(seed, k * 1000)).shuffle(records[k])
         for i, (n, p, edges, (ps, pt), (ns, nt)) in enumerate(records[k]):
-            split = "val" if i < GRAPHS_PER_HOP_VAL else "train"
+            split = "val" if i < graphs_per_hop_val else "train"
             eh = compute_edge_hash(edges)
             for (s, t), y, hop in (((ps, pt), 1, k), ((ns, nt), 0, HOP_UNREACHABLE)):
                 examples.append(
@@ -264,8 +281,12 @@ def build_report(
 
 def verify_id_disjoint(
     examples: Sequence[ReachabilityExample] | Sequence[dict[str, Any]] | Path,
+    *,
+    n_total: int = N_TOTAL,
+    n_val: int = N_VAL,
 ) -> tuple[bool, list[str]]:
     """Verify quotas, pairing, graph-disjointness and the hard-negative rule."""
+    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val)
     if isinstance(examples, Path):
         with examples.open(encoding="utf-8") as f:
             rows = [json.loads(line) for line in f if line.strip()]
@@ -274,7 +295,7 @@ def verify_id_disjoint(
     issues: list[str] = []
     train = [r for r in rows if r.get("split") == "train"]
     val = [r for r in rows if r.get("split") == "val"]
-    if (len(rows), len(train), len(val)) != (N_TOTAL, N_TRAIN, N_VAL):
+    if (len(rows), len(train), len(val)) != (n_total, n_total - n_val, n_val):
         issues.append(f"sizes total/train/val={len(rows)}/{len(train)}/{len(val)}")
     per_graph: dict[str, list[dict[str, Any]]] = {}
     for r in rows:
@@ -286,8 +307,8 @@ def verify_id_disjoint(
         if len({r["split"] for r in rs}) != 1:
             issues.append(f"graph {eh[:10]} spans splits")
             break
-    for name, rs, per_hop in (("train", train, GRAPHS_PER_HOP - GRAPHS_PER_HOP_VAL),
-                              ("val", val, GRAPHS_PER_HOP_VAL)):
+    for name, rs, per_hop in (("train", train, graphs_per_hop - graphs_per_hop_val),
+                              ("val", val, graphs_per_hop_val)):
         for k in ID_HOPS:
             c = sum(1 for r in rs if int(r["y"]) == 1 and int(r["hop_distance"]) == k)
             if c != per_hop:
@@ -315,29 +336,33 @@ def verify_id_disjoint(
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=(
-            "Generate data/id_disjoint_2k.jsonl: graph-disjoint splits, one "
-            "positive and one hard negative per graph (MEASURE; no science OPEN)."
+            "Generate a graph-disjoint ID set (default data/id_disjoint_2k.jsonl): "
+            "one positive and one strong hard negative per graph, each graph in "
+            "one split (MEASURE; no science OPEN)."
         )
     )
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     p.add_argument("--seed", type=int, default=ID_DISJOINT_SEED)
-    p.add_argument("--max-graph-draws", type=int, default=200_000)
+    p.add_argument("--max-graph-draws", type=int, default=400_000)
+    p.add_argument("--n-total", type=int, default=N_TOTAL, help="instances (default 2000)")
+    p.add_argument("--n-val", type=int, default=N_VAL, help="validation instances (default 400)")
     p.add_argument("--verify-only", type=Path, default=None)
     return p
 
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
+    sizes = {"n_total": args.n_total, "n_val": args.n_val}
     if args.verify_only is not None:
-        ok, issues = verify_id_disjoint(args.verify_only)
+        ok, issues = verify_id_disjoint(args.verify_only, **sizes)
         print(json.dumps({"ok": ok, "issues": issues}, sort_keys=True))
         return 0 if ok else 1
     examples, report = generate_id_disjoint(
-        seed=args.seed, max_graph_draws=args.max_graph_draws
+        seed=args.seed, max_graph_draws=args.max_graph_draws, **sizes
     )
     n = write_jsonl(args.out, examples)
-    ok, issues = verify_id_disjoint(examples)
+    ok, issues = verify_id_disjoint(examples, **sizes)
     report["verify_ok"] = ok
     report["verify_issues"] = issues
     write_report(args.report, report)

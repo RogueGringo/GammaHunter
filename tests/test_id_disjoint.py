@@ -20,7 +20,10 @@ from reachability_gen.gen_id_disjoint import (
 from reachability_gen.hard_negatives import has_endpoint_cue
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACT = ROOT / "artifacts" / "id_disjoint_rematch.json"
+ARTIFACTS = [
+    ROOT / "artifacts" / "id_disjoint_rematch.json",
+    ROOT / "artifacts" / "id_disjoint_20k_rematch.json",
+]
 
 
 @pytest.fixture(scope="module")
@@ -58,6 +61,18 @@ def test_generation_is_deterministic(generated):
     assert [r["encoding"] for r in again] == [r["encoding"] for r in rows]
 
 
+def test_custom_sizes_scale_quotas():
+    examples, report = generate_id_disjoint(seed=7, n_total=200, n_val=40)
+    rows = [e.to_dict() for e in examples]
+    ok, issues = verify_id_disjoint(rows, n_total=200, n_val=40)
+    assert ok, issues
+    assert report["by_split"]["val"]["graphs"] == 20
+    assert report["by_split"]["train"]["hop_counts"]["6"] == 16  # (100-20)/5 graphs
+    assert not verify_id_disjoint(rows)[0]  # default 2k sizes must not match
+    with pytest.raises(ValueError, match="multiples"):
+        generate_id_disjoint(n_total=205, n_val=40)
+
+
 def test_verify_catches_split_leak_and_label_break(generated):
     rows, _ = generated
     leaked = copy.deepcopy(rows)
@@ -93,10 +108,11 @@ def test_runner_smoke_self_audit(generated, tmp_path):
     assert out["run_flags"]["science_open"] is False
 
 
-def test_disjoint_artifact_if_present():
-    if not ARTIFACT.exists():
-        pytest.skip("artifacts/id_disjoint_rematch.json not written yet")
-    data = json.loads(ARTIFACT.read_text())
+@pytest.mark.parametrize("artifact", ARTIFACTS, ids=lambda p: p.stem)
+def test_disjoint_artifact_if_present(artifact):
+    if not artifact.exists():
+        pytest.skip(f"{artifact.name} not written yet")
+    data = json.loads(artifact.read_text())
 
     def _walk(obj):
         if isinstance(obj, dict):

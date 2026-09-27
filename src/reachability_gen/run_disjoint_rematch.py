@@ -66,6 +66,7 @@ DEFAULT_SEEDS: tuple[int, ...] = (0, 1, 2)
 DEFAULT_OUT = Path("artifacts/id_disjoint_rematch.json")
 DEFAULT_CKPT_DIR = Path("artifacts/id_disjoint_rematch")
 EVAL_BATCH: int = 100
+TELEMETRY_ROWS: int = 400  # per-example CPU telemetry on the first N val rows
 DIAG_ROWS: int = 64  # fixed validation subset for per-epoch coherence
 
 
@@ -219,6 +220,7 @@ def train_arm(
     ckpt_dir: Path,
     telemetry: bool = True,
     device: str = "cpu",
+    telemetry_rows: int = TELEMETRY_ROWS,
 ) -> dict[str, Any]:
     """Train one arm for a fixed budget; save and self-audit best + final.
 
@@ -310,7 +312,8 @@ def train_arm(
         if telemetry:
             cpu_model, _ = build_arm(kind, vocab, max_len)
             cpu_model.load_state_dict(saved)
-            block["telemetry"] = _telemetry(cpu_model, kind, val, vocab)
+            block["telemetry"] = _telemetry(cpu_model, kind, val[:telemetry_rows], vocab)
+            block["telemetry"]["rows"] = min(telemetry_rows, len(val))
         out[which] = block
     out["run_flags"] = collapse_flags(
         train_history=history, best_val_acc=best_acc, last_epoch_val_acc=history[-1]["val_acc"]
@@ -402,7 +405,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         print("FAIL: --device cuda, but this torch build sees no CUDA device", file=sys.stderr)
         return 1
     rows = load_jsonl(args.data)
-    ok, issues = verify_id_disjoint(rows)
+    n_val = sum(1 for r in rows if r.get("split") == "val")
+    try:
+        ok, issues = verify_id_disjoint(rows, n_total=len(rows), n_val=n_val)
+    except ValueError as exc:
+        ok, issues = False, [str(exc)]
     if not ok:
         print(f"FAIL: {args.data} failed verify: {issues}", file=sys.stderr)
         return 1
@@ -456,6 +463,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "max_len": max_len,
             "torch_threads": args.threads,
             "device": args.device,
+            "telemetry_rows": TELEMETRY_ROWS,
             "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
             "torch_version": torch.__version__,
         },
