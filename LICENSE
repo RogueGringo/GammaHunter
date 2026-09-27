@@ -1,0 +1,30 @@
+GammaHunter — Proprietary License
+
+Copyright (c) 2026 B.Jones (B.Jones@jtech.ai). All rights reserved.
+
+This software, including its source code, documentation, configuration, data
+artifacts, model checkpoints and results (together, the "Software"), is
+proprietary and confidential. It is owned by the copyright holder named above
+and is protected by copyright and other intellectual-property laws and
+treaties.
+
+No license or other right is granted to any person, by implication, estoppel
+or otherwise, including under any patent, except under a separate written
+agreement signed by the copyright holder. Without such an agreement you may
+not use, copy, modify, merge, publish, distribute, sublicense, sell, reverse
+engineer or create derivative works of the Software, in whole or in part.
+
+Anyone who has received access to the Software without such an agreement must
+keep it confidential, must not use or disclose it, and must delete all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+Third-party packages used by the Software (for example PyTorch and pytest) are
+not included and remain under their own licenses.
+
+Licensing enquiries: B.Jones@jtech.ai

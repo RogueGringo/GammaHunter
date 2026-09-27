@@ -1,0 +1,981 @@
+{
+  "band_deviations": [],
+  "band_rejects": 0,
+  "construction": {
+    "er_search": {
+      "by_hop": {
+        "12": {
+          "cells_nonzero": [
+            {
+              "in_band": 1,
+              "n": 14,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 3,
+              "n": 14,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 13,
+              "n": 14,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 29,
+              "n": 14,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 50,
+              "n": 14,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 60,
+              "n": 14,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 47,
+              "n": 14,
+              "p": 0.12,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 2,
+              "n": 16,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 20,
+              "n": 16,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 32,
+              "n": 16,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 55,
+              "n": 16,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 55,
+              "n": 16,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 23,
+              "n": 16,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 4,
+              "n": 16,
+              "p": 0.12,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 2,
+              "n": 18,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 6,
+              "n": 18,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 34,
+              "n": 18,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 54,
+              "n": 18,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 53,
+              "n": 18,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 18,
+              "n": 18,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 3,
+              "n": 20,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 27,
+              "n": 20,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 56,
+              "n": 20,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 52,
+              "n": 20,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 27,
+              "n": 20,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 2,
+              "n": 20,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 8,
+              "n": 22,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 43,
+              "n": 22,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 56,
+              "n": 22,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 28,
+              "n": 22,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 7,
+              "n": 22,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 24,
+              "n": 24,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 54,
+              "n": 24,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 40,
+              "n": 24,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 9,
+              "n": 24,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 3,
+              "n": 24,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            }
+          ],
+          "note": "ER under band is scarce for long hops; path-backbone used.",
+          "total_graphs_with_hop_k_in_band": 0,
+          "total_in_band_graphs": 1000
+        },
+        "16": {
+          "cells_nonzero": [
+            {
+              "in_band": 14,
+              "n": 18,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 39,
+              "n": 18,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 56,
+              "n": 18,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 55,
+              "n": 18,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 20,
+              "n": 18,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 1,
+              "n": 18,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 3,
+              "n": 20,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 25,
+              "n": 20,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 59,
+              "n": 20,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 58,
+              "n": 20,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 29,
+              "n": 20,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 7,
+              "n": 20,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 6,
+              "n": 22,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 48,
+              "n": 22,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 53,
+              "n": 22,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 33,
+              "n": 22,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 12,
+              "n": 22,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 23,
+              "n": 24,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 58,
+              "n": 24,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 40,
+              "n": 24,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 9,
+              "n": 24,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            }
+          ],
+          "note": "Pure ER under [45,70] rarely yields K=16 (path needs \u226516 edges; band caps |E|\u226421).",
+          "total_graphs_with_hop_k_in_band": 0,
+          "total_in_band_graphs": 648
+        },
+        "8": {
+          "cells_nonzero": [
+            {
+              "in_band": 1,
+              "n": 12,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 5,
+              "n": 12,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 25,
+              "n": 12,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 48,
+              "n": 12,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 60,
+              "n": 12,
+              "p": 0.12,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 7,
+              "n": 14,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 11,
+              "n": 14,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 20,
+              "n": 14,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 61,
+              "n": 14,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 2
+            },
+            {
+              "in_band": 54,
+              "n": 14,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 2
+            },
+            {
+              "in_band": 39,
+              "n": 14,
+              "p": 0.12,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 1,
+              "n": 16,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 14,
+              "n": 16,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 34,
+              "n": 16,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 48,
+              "n": 16,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 5
+            },
+            {
+              "in_band": 53,
+              "n": 16,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 7
+            },
+            {
+              "in_band": 22,
+              "n": 16,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 3
+            },
+            {
+              "in_band": 6,
+              "n": 16,
+              "p": 0.12,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 1,
+              "n": 18,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 17,
+              "n": 18,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 37,
+              "n": 18,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 66,
+              "n": 18,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 4
+            },
+            {
+              "in_band": 56,
+              "n": 18,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 3
+            },
+            {
+              "in_band": 22,
+              "n": 18,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 3,
+              "n": 18,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 7,
+              "n": 20,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 26,
+              "n": 20,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 50,
+              "n": 20,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 3
+            },
+            {
+              "in_band": 57,
+              "n": 20,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 31,
+              "n": 20,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 5,
+              "n": 20,
+              "p": 0.08,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 1,
+              "n": 20,
+              "p": 0.1,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 13,
+              "n": 22,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 47,
+              "n": 22,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 54,
+              "n": 22,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 26,
+              "n": 22,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 2
+            },
+            {
+              "in_band": 4,
+              "n": 22,
+              "p": 0.06,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 25,
+              "n": 24,
+              "p": 0.02,
+              "trials": 80,
+              "with_hop_k": 0
+            },
+            {
+              "in_band": 63,
+              "n": 24,
+              "p": 0.03,
+              "trials": 80,
+              "with_hop_k": 1
+            },
+            {
+              "in_band": 34,
+              "n": 24,
+              "p": 0.04,
+              "trials": 80,
+              "with_hop_k": 2
+            },
+            {
+              "in_band": 8,
+              "n": 24,
+              "p": 0.05,
+              "trials": 80,
+              "with_hop_k": 1
+            }
+          ],
+          "note": "ER under band is scarce for long hops; path-backbone used.",
+          "total_graphs_with_hop_k_in_band": 43,
+          "total_in_band_graphs": 1162
+        }
+      },
+      "conclusion": "Primary sampler = path backbone + non-shortcut distractors; ER grid retained as documented search evidence only.",
+      "method": "erdos_renyi_grid",
+      "n_grid": [
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24
+      ],
+      "p_grid": [
+        0.02,
+        0.03,
+        0.04,
+        0.05,
+        0.06,
+        0.08,
+        0.1,
+        0.12
+      ],
+      "seq_len_band": [
+        45,
+        70
+      ],
+      "trials_per_cell": 80
+    },
+    "p_field": "empirical |E|/(n*(n-1))",
+    "primary": "path_backbone_plus_non_shortcut_distractors",
+    "seq_len_band": [
+      45,
+      70
+    ],
+    "seq_len_target_mean": 57.0,
+    "token_len_formula": "len(split_encoding_tokens(encode)) = 6 + 3*|E|"
+  },
+  "extra_edges_by_hop": {
+    "12": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "16": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "8": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "graph_draws": 261,
+  "hop_counts": {
+    "-1": 240,
+    "12": 80,
+    "16": 80,
+    "8": 80
+  },
+  "id_band_reference": {
+    "id_split_encoding": {
+      "max": 315,
+      "mean": 160.0875,
+      "min": 27,
+      "n": 2000
+    },
+    "id_split_encoding_mean_recomputed_note": "Recompute from data/id_2k.jsonl at report time if present; seal mixed whitespace(ID) vs split_encoding(OOD).",
+    "id_whitespace": {
+      "max": 109,
+      "mean": 57.3625,
+      "min": 13,
+      "n": 2000
+    },
+    "id_whitespace_mean_cited": 57.36,
+    "prior_ood_split_encoding_mean": 203.225
+  },
+  "n_is_ood_true": 240,
+  "n_support_by_hop": {
+    "12": [
+      14,
+      16,
+      18,
+      20,
+      22
+    ],
+    "16": [
+      17,
+      18,
+      19,
+      20,
+      22
+    ],
+    "8": [
+      10,
+      12,
+      14,
+      16,
+      18
+    ]
+  },
+  "n_support_neg": [
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22
+  ],
+  "n_total": 480,
+  "n_values_used": {
+    "10": 14,
+    "12": 14,
+    "14": 143,
+    "16": 32,
+    "17": 12,
+    "18": 180,
+    "19": 12,
+    "20": 35,
+    "22": 38
+  },
+  "p_values_used": {
+    "0.0281": 2,
+    "0.0303": 3,
+    "0.0342": 2,
+    "0.0346": 3,
+    "0.0368": 7,
+    "0.039": 5,
+    "0.0395": 4,
+    "0.0411": 6,
+    "0.0433": 6,
+    "0.0447": 5,
+    "0.0455": 7,
+    "0.0458": 5,
+    "0.0474": 8,
+    "0.0497": 3,
+    "0.05": 5,
+    "0.0523": 4,
+    "0.0526": 7,
+    "0.0542": 3,
+    "0.0553": 4,
+    "0.0556": 9,
+    "0.0583": 4,
+    "0.0585": 4,
+    "0.0588": 7,
+    "0.0614": 3,
+    "0.0621": 7,
+    "0.0625": 11,
+    "0.0654": 7,
+    "0.0662": 1,
+    "0.0667": 2,
+    "0.0686": 142,
+    "0.0699": 3,
+    "0.0708": 6,
+    "0.0714": 5,
+    "0.0735": 2,
+    "0.075": 1,
+    "0.0769": 3,
+    "0.0772": 3,
+    "0.0792": 1,
+    "0.0824": 5,
+    "0.0833": 3,
+    "0.0875": 4,
+    "0.0879": 5,
+    "0.0934": 52,
+    "0.0989": 1,
+    "0.1044": 5,
+    "0.1099": 64,
+    "0.1154": 3,
+    "0.1212": 3,
+    "0.1288": 2,
+    "0.1364": 3,
+    "0.1439": 1,
+    "0.1444": 5,
+    "0.1515": 1,
+    "0.1556": 2,
+    "0.1591": 4,
+    "0.1667": 1,
+    "0.1778": 1,
+    "0.1889": 1,
+    "0.2": 2,
+    "0.2111": 1,
+    "0.2333": 1
+  },
+  "quotas": {
+    "n_neg": 240,
+    "n_pos_total": 240,
+    "ood_hops": [
+      8,
+      12,
+      16
+    ],
+    "pos_per_hop": 80
+  },
+  "reject_reasons": {
+    "dup_pos": 20
+  },
+  "science_open": false,
+  "seed": 126000,
+  "token_len": {
+    "band": [
+      45,
+      70
+    ],
+    "bound30_max_len": 257,
+    "by_hop": {
+      "-1": {
+        "max": 69,
+        "mean": 65.9,
+        "min": 57,
+        "n": 240
+      },
+      "12": {
+        "max": 69,
+        "mean": 57.075,
+        "min": 45,
+        "n": 80
+      },
+      "16": {
+        "max": 69,
+        "mean": 63.3375,
+        "min": 54,
+        "n": 80
+      },
+      "8": {
+        "max": 69,
+        "mean": 56.7375,
+        "min": 45,
+        "n": 80
+      }
+    },
+    "max": 69,
+    "mean": 62.475,
+    "measure": "split_encoding_tokens",
+    "min": 45,
+    "out_of_band": 0,
+    "target_mean": 57.0
+  },
+  "verify_issues": [],
+  "verify_ok": true,
+  "whitespace_len": {
+    "max": 27,
+    "mean": 24.825,
+    "min": 19,
+    "note": "Whitespace token count (seal Gate2 cited ID mean~57 on this measure); model-visible length is token_len above."
+  },
+  "y_counts": {
+    "0": 240,
+    "1": 240
+  }
+}

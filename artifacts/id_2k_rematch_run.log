@@ -1,0 +1,76 @@
+/workspace/geo-recurrence-testbed/.venv/lib/python3.13/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+reusing data/id_2k.jsonl (2000 rows); train=1600 val=400
+[FF] reused from artifacts/id_2k_comparison.json param_count=121218
+[parity] FF baseline param_count=121218; ±5% window=[115157, 127279]
+[scale] Geo → d=64 mlp=10 n=121794 (dev=+576, ratio=1.0048)
+[scale] Loop → d=64 mlp=10 n=120770 (dev=-448, ratio=0.9963)
+[parity] PASS within_5pct geo=True loop=True
+[geo] real param_count=121794 (d=64 mlp=10 T=6 tau=True)
+[Geo] epoch 1/30: train_loss=0.7237 train_acc=0.5088
+[Geo] epoch 2/30: train_loss=0.5431 train_acc=0.7200
+[Geo] epoch 3/30: train_loss=0.5305 train_acc=0.7450
+[Geo] epoch 4/30: train_loss=0.4878 train_acc=0.7450
+[Geo] epoch 5/30: train_loss=0.5255 train_acc=0.7312
+[Geo] epoch 6/30: train_loss=0.5239 train_acc=0.7306
+[Geo] epoch 7/30: train_loss=0.5261 train_acc=0.7262
+[Geo] epoch 8/30: train_loss=0.4976 train_acc=0.7450
+[Geo] epoch 9/30: train_loss=0.5187 train_acc=0.7250
+[Geo] epoch 10/30: train_loss=0.5034 train_acc=0.7525
+[Geo] early stop at epoch 10 (train plateau patience=5)
+[loop] real param_count=120770 (d=64 mlp=10 T=6 tau=False)
+[Loop] epoch 1/30: train_loss=0.6628 train_acc=0.6381
+[Loop] epoch 2/30: train_loss=0.4671 train_acc=0.7544
+[Loop] epoch 3/30: train_loss=0.5139 train_acc=0.7394
+[Loop] epoch 4/30: train_loss=0.5154 train_acc=0.7456
+[Loop] epoch 5/30: train_loss=0.5124 train_acc=0.7350
+[Loop] epoch 6/30: train_loss=0.4688 train_acc=0.7525
+[Loop] epoch 7/30: train_loss=0.4568 train_acc=0.7488
+[Loop] epoch 8/30: train_loss=0.4632 train_acc=0.7419
+[Loop] epoch 9/30: train_loss=0.5454 train_acc=0.7175
+[Loop] epoch 10/30: train_loss=0.4799 train_acc=0.7488
+[Loop] epoch 11/30: train_loss=0.4843 train_acc=0.7438
+[Loop] epoch 12/30: train_loss=0.4466 train_acc=0.7675
+[Loop] epoch 13/30: train_loss=0.4374 train_acc=0.7625
+[Loop] epoch 14/30: train_loss=0.4629 train_acc=0.7544
+[Loop] epoch 15/30: train_loss=0.4410 train_acc=0.7612
+[Loop] epoch 16/30: train_loss=0.4270 train_acc=0.7656
+[Loop] epoch 17/30: train_loss=0.4224 train_acc=0.7700
+[Loop] epoch 18/30: train_loss=0.4383 train_acc=0.7544
+[Loop] epoch 19/30: train_loss=0.4264 train_acc=0.7662
+[Loop] epoch 20/30: train_loss=0.4444 train_acc=0.7756
+[Loop] epoch 21/30: train_loss=0.4507 train_acc=0.7819
+[Loop] epoch 22/30: train_loss=0.4411 train_acc=0.7575
+[Loop] early stop at epoch 22 (train plateau patience=5)
+
+=== FF val_by_hop ===
+ hop     n   acc_mean  loss_mean
+  -1   200     0.8900     0.2398
+   2    40     1.0000     0.0744
+   3    40     1.0000     0.0153
+   4    40     0.9250     0.1777
+   5    40     0.9750     0.0775
+   6    40     0.9500     0.0853
+
+=== Geo val_by_hop ===
+ hop     n   acc_mean  loss_mean   term_drift    perturb     regime
+  -1   200     0.4300     0.7957   101.277349   0.000077      damps
+   2    40     1.0000     0.0437   185.784662   0.000054      damps
+   3    40     1.0000     0.0489   206.840758   0.000056      damps
+   4    40     0.7500     0.4016   127.493631   0.000066      damps
+   5    40     0.8000     0.5279    79.035904   0.000062      damps
+   6    40     0.8500     0.4426    96.348172   0.000061      damps
+
+=== Loop val_by_hop ===
+ hop     n   acc_mean  loss_mean   term_drift    perturb     regime
+  -1   200     0.6700     0.6706    98.432401   0.000076      damps
+   2    40     1.0000     0.1698   161.040341   0.000054    expands
+   3    40     0.9750     0.0697   272.222749   0.000055    expands
+   4    40     0.5250     0.5886   168.564763   0.000065    expands
+   5    40     0.6750     0.5497    91.070527   0.000064      damps
+   6    40     0.8250     0.3901   105.238384   0.000061    expands
+
+=== param counts / deviations ===
+FF     121218  (baseline)
+Geo    121794  dev=+576  ratio=1.0048  within_5pct=True
+Loop   120770  dev=-448  ratio=0.9963  within_5pct=True

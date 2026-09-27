@@ -1,0 +1,136 @@
+/workspace/geo-recurrence-testbed/.venv/lib/python3.13/site-packages/torch/_subclasses/functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+reusing data/id_2k.jsonl (2000 rows); train=1600 val=400; epochs=30 LOCKED (no early stop); residual_alpha=0.5; ff_lr=0.003 rec_lr=0.0015 ff_clip=1.0 rec_clip=2.5 rmsnorm=True
+[FF] epoch 1/30: train_loss=0.5460 train_acc=0.6925 val_acc=0.7150 (best=0.7150@ep1)
+[FF] epoch 2/30: train_loss=0.4568 train_acc=0.7581 val_acc=0.7175 (best=0.7175@ep2)
+[FF] epoch 3/30: train_loss=0.4239 train_acc=0.7800 val_acc=0.8250 (best=0.8250@ep3)
+[FF] epoch 4/30: train_loss=0.3795 train_acc=0.8219 val_acc=0.8300 (best=0.8300@ep4)
+[FF] epoch 5/30: train_loss=0.3074 train_acc=0.8594 val_acc=0.8625 (best=0.8625@ep5)
+[FF] epoch 6/30: train_loss=0.2695 train_acc=0.8712 val_acc=0.8850 (best=0.8850@ep6)
+[FF] epoch 7/30: train_loss=0.2457 train_acc=0.8988 val_acc=0.8550 (best=0.8850@ep6)
+[FF] epoch 8/30: train_loss=0.2486 train_acc=0.8944 val_acc=0.8800 (best=0.8850@ep6)
+[FF] epoch 9/30: train_loss=0.2293 train_acc=0.9038 val_acc=0.8800 (best=0.8850@ep6)
+[FF] epoch 10/30: train_loss=0.2042 train_acc=0.9081 val_acc=0.9100 (best=0.9100@ep10)
+[FF] epoch 11/30: train_loss=0.2161 train_acc=0.8975 val_acc=0.9100 (best=0.9100@ep10)
+[FF] epoch 12/30: train_loss=0.2104 train_acc=0.9131 val_acc=0.9100 (best=0.9100@ep10)
+[FF] epoch 13/30: train_loss=0.1823 train_acc=0.9237 val_acc=0.9150 (best=0.9150@ep13)
+[FF] epoch 14/30: train_loss=0.1703 train_acc=0.9250 val_acc=0.9350 (best=0.9350@ep14)
+[FF] epoch 15/30: train_loss=0.1561 train_acc=0.9400 val_acc=0.9525 (best=0.9525@ep15)
+[FF] epoch 16/30: train_loss=0.1788 train_acc=0.9244 val_acc=0.9150 (best=0.9525@ep15)
+[FF] epoch 17/30: train_loss=0.1626 train_acc=0.9319 val_acc=0.9300 (best=0.9525@ep15)
+[FF] epoch 18/30: train_loss=0.1696 train_acc=0.9275 val_acc=0.9350 (best=0.9525@ep15)
+[FF] epoch 19/30: train_loss=0.1394 train_acc=0.9431 val_acc=0.9450 (best=0.9525@ep15)
+[FF] epoch 20/30: train_loss=0.1342 train_acc=0.9494 val_acc=0.9450 (best=0.9525@ep15)
+[FF] epoch 21/30: train_loss=0.1342 train_acc=0.9463 val_acc=0.9375 (best=0.9525@ep15)
+[FF] epoch 22/30: train_loss=0.1587 train_acc=0.9319 val_acc=0.9125 (best=0.9525@ep15)
+[FF] epoch 23/30: train_loss=0.1632 train_acc=0.9281 val_acc=0.9225 (best=0.9525@ep15)
+[FF] epoch 24/30: train_loss=0.1227 train_acc=0.9531 val_acc=0.9450 (best=0.9525@ep15)
+[FF] epoch 25/30: train_loss=0.1628 train_acc=0.9337 val_acc=0.9350 (best=0.9525@ep15)
+[FF] epoch 26/30: train_loss=0.1329 train_acc=0.9513 val_acc=0.9500 (best=0.9525@ep15)
+[FF] epoch 27/30: train_loss=0.1074 train_acc=0.9600 val_acc=0.9500 (best=0.9525@ep15)
+[FF] epoch 28/30: train_loss=0.1565 train_acc=0.9344 val_acc=0.9050 (best=0.9525@ep15)
+[FF] epoch 29/30: train_loss=0.1575 train_acc=0.9400 val_acc=0.9500 (best=0.9525@ep15)
+[FF] epoch 30/30: train_loss=0.1171 train_acc=0.9600 val_acc=0.9300 (best=0.9525@ep15)
+[parity] FF baseline param_count=121218; ±5% window=[115157, 127279]
+[scale] Geo → d=64 mlp=10 n=121858 (dev=+640, ratio=1.0053)
+[scale] Loop → d=64 mlp=10 n=120834 (dev=-384, ratio=0.9968)
+[parity] PASS within_5pct geo=True loop=True
+[geo] real param_count=121858 (d=64 mlp=10 T=6 tau=True alpha=0.5 rmsnorm=True clip=2.5)
+[Geo] epoch 1/30: train_loss=0.7072 train_acc=0.5206 val_acc=0.5000 (best=0.5000@ep1)
+[Geo] epoch 2/30: train_loss=0.5813 train_acc=0.6906 val_acc=0.7125 (best=0.7125@ep2)
+[Geo] epoch 3/30: train_loss=0.4666 train_acc=0.7594 val_acc=0.7650 (best=0.7650@ep3)
+[Geo] epoch 4/30: train_loss=0.4142 train_acc=0.7944 val_acc=0.8100 (best=0.8100@ep4)
+[Geo] epoch 5/30: train_loss=0.3537 train_acc=0.8450 val_acc=0.8125 (best=0.8125@ep5)
+[Geo] epoch 6/30: train_loss=0.3450 train_acc=0.8375 val_acc=0.8250 (best=0.8250@ep6)
+[Geo] epoch 7/30: train_loss=0.3273 train_acc=0.8519 val_acc=0.8100 (best=0.8250@ep6)
+[Geo] epoch 8/30: train_loss=0.3236 train_acc=0.8556 val_acc=0.7850 (best=0.8250@ep6)
+[Geo] epoch 9/30: train_loss=0.3214 train_acc=0.8575 val_acc=0.8300 (best=0.8300@ep9)
+[Geo] epoch 10/30: train_loss=0.3133 train_acc=0.8588 val_acc=0.8350 (best=0.8350@ep10)
+[Geo] epoch 11/30: train_loss=0.3078 train_acc=0.8644 val_acc=0.8475 (best=0.8475@ep11)
+[Geo] epoch 12/30: train_loss=0.3143 train_acc=0.8569 val_acc=0.8275 (best=0.8475@ep11)
+[Geo] epoch 13/30: train_loss=0.3913 train_acc=0.8269 val_acc=0.7175 (best=0.8475@ep11)
+[Geo] epoch 14/30: train_loss=0.4160 train_acc=0.8263 val_acc=0.8300 (best=0.8475@ep11)
+[Geo] epoch 15/30: train_loss=0.3988 train_acc=0.8525 val_acc=0.8350 (best=0.8475@ep11)
+[Geo] epoch 16/30: train_loss=0.3797 train_acc=0.8575 val_acc=0.8275 (best=0.8475@ep11)
+[Geo] epoch 17/30: train_loss=0.3383 train_acc=0.8544 val_acc=0.8350 (best=0.8475@ep11)
+[Geo] epoch 18/30: train_loss=0.3515 train_acc=0.8581 val_acc=0.8350 (best=0.8475@ep11)
+[Geo] epoch 19/30: train_loss=0.5764 train_acc=0.7100 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 20/30: train_loss=0.6254 train_acc=0.6094 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 21/30: train_loss=0.6043 train_acc=0.6188 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 22/30: train_loss=0.6096 train_acc=0.5994 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 23/30: train_loss=0.6055 train_acc=0.6225 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 24/30: train_loss=0.6120 train_acc=0.6144 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 25/30: train_loss=0.6084 train_acc=0.6312 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 26/30: train_loss=0.6039 train_acc=0.6312 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 27/30: train_loss=0.6089 train_acc=0.6200 val_acc=0.5000 (best=0.8475@ep11)
+[Geo] epoch 28/30: train_loss=0.6088 train_acc=0.6112 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 29/30: train_loss=0.6080 train_acc=0.6131 val_acc=0.6050 (best=0.8475@ep11)
+[Geo] epoch 30/30: train_loss=0.6063 train_acc=0.6312 val_acc=0.6050 (best=0.8475@ep11)
+[loop] real param_count=120834 (d=64 mlp=10 T=6 tau=False alpha=0.5 rmsnorm=True clip=2.5)
+[Loop] epoch 1/30: train_loss=0.5940 train_acc=0.6787 val_acc=0.6375 (best=0.6375@ep1)
+[Loop] epoch 2/30: train_loss=0.4796 train_acc=0.7475 val_acc=0.7150 (best=0.7150@ep2)
+[Loop] epoch 3/30: train_loss=0.4417 train_acc=0.7538 val_acc=0.7175 (best=0.7175@ep3)
+[Loop] epoch 4/30: train_loss=0.4232 train_acc=0.7719 val_acc=0.7625 (best=0.7625@ep4)
+[Loop] epoch 5/30: train_loss=0.4371 train_acc=0.7575 val_acc=0.6950 (best=0.7625@ep4)
+[Loop] epoch 6/30: train_loss=0.4301 train_acc=0.7837 val_acc=0.8250 (best=0.8250@ep6)
+[Loop] epoch 7/30: train_loss=0.4353 train_acc=0.7775 val_acc=0.7625 (best=0.8250@ep6)
+[Loop] epoch 8/30: train_loss=0.4978 train_acc=0.7656 val_acc=0.7250 (best=0.8250@ep6)
+[Loop] epoch 9/30: train_loss=0.4753 train_acc=0.7556 val_acc=0.6350 (best=0.8250@ep6)
+[Loop] epoch 10/30: train_loss=0.4783 train_acc=0.7400 val_acc=0.7275 (best=0.8250@ep6)
+[Loop] epoch 11/30: train_loss=0.4544 train_acc=0.7725 val_acc=0.7000 (best=0.8250@ep6)
+[Loop] epoch 12/30: train_loss=0.4871 train_acc=0.7594 val_acc=0.7025 (best=0.8250@ep6)
+[Loop] epoch 13/30: train_loss=0.4663 train_acc=0.7650 val_acc=0.7150 (best=0.8250@ep6)
+[Loop] epoch 14/30: train_loss=0.4732 train_acc=0.7638 val_acc=0.7150 (best=0.8250@ep6)
+[Loop] epoch 15/30: train_loss=0.4742 train_acc=0.7638 val_acc=0.7250 (best=0.8250@ep6)
+[Loop] epoch 16/30: train_loss=0.4622 train_acc=0.7638 val_acc=0.7150 (best=0.8250@ep6)
+[Loop] epoch 17/30: train_loss=0.4489 train_acc=0.7756 val_acc=0.7925 (best=0.8250@ep6)
+[Loop] epoch 18/30: train_loss=0.4590 train_acc=0.7731 val_acc=0.7850 (best=0.8250@ep6)
+[Loop] epoch 19/30: train_loss=0.4519 train_acc=0.7731 val_acc=0.7425 (best=0.8250@ep6)
+[Loop] epoch 20/30: train_loss=0.4858 train_acc=0.7588 val_acc=0.7350 (best=0.8250@ep6)
+[Loop] epoch 21/30: train_loss=0.4857 train_acc=0.7738 val_acc=0.7025 (best=0.8250@ep6)
+[Loop] epoch 22/30: train_loss=0.5396 train_acc=0.7481 val_acc=0.7275 (best=0.8250@ep6)
+[Loop] epoch 23/30: train_loss=0.4563 train_acc=0.7919 val_acc=0.7650 (best=0.8250@ep6)
+[Loop] epoch 24/30: train_loss=0.4637 train_acc=0.7894 val_acc=0.7275 (best=0.8250@ep6)
+[Loop] epoch 25/30: train_loss=0.4627 train_acc=0.7863 val_acc=0.7050 (best=0.8250@ep6)
+[Loop] epoch 26/30: train_loss=0.4523 train_acc=0.7894 val_acc=0.7975 (best=0.8250@ep6)
+[Loop] epoch 27/30: train_loss=0.4660 train_acc=0.7806 val_acc=0.7400 (best=0.8250@ep6)
+[Loop] epoch 28/30: train_loss=0.4744 train_acc=0.7900 val_acc=0.7875 (best=0.8250@ep6)
+[Loop] epoch 29/30: train_loss=0.4690 train_acc=0.7863 val_acc=0.7875 (best=0.8250@ep6)
+[Loop] epoch 30/30: train_loss=0.4556 train_acc=0.7844 val_acc=0.7525 (best=0.8250@ep6)
+
+=== FF val_by_hop (epoch 30) ===
+ hop     n   acc_mean  loss_mean
+  -1   200     0.8900     0.2398
+   2    40     1.0000     0.0744
+   3    40     1.0000     0.0153
+   4    40     0.9250     0.1777
+   5    40     0.9750     0.0775
+   6    40     0.9500     0.0853
+
+=== Geo val_by_hop (epoch 30) ===
+ hop     n   acc_mean  loss_mean   term_drift    term_ln   term_rms    perturb     regime
+  -1   200     0.2100     0.6983     1.861108   1.847503   1.850323   0.000054    expands
+   2    40     1.0000     0.5382     0.912945   0.874030   0.878119   0.000037      damps
+   3    40     1.0000     0.5382     0.912960   0.874044   0.878133   0.000039      damps
+   4    40     1.0000     0.5382     0.912773   0.873863   0.877954   0.000046      damps
+   5    40     1.0000     0.5382     0.912884   0.873974   0.878061   0.000044      damps
+   6    40     1.0000     0.5382     0.912928   0.874017   0.878103   0.000042      damps
+
+=== Loop val_by_hop (epoch 30) ===
+ hop     n   acc_mean  loss_mean   term_drift    term_ln   term_rms    perturb     regime
+  -1   200     0.7550     0.4373     0.002435   0.007221   0.007266   0.000052      damps
+   2    40     1.0000     0.1022     0.003716   0.010039   0.010064   0.000036      damps
+   3    40     0.9750     0.0639     0.005268   0.011928   0.011960   0.000038      damps
+   4    40     0.4750     0.8810     0.003542   0.009431   0.009460   0.000046      damps
+   5    40     0.5750     0.9278     0.002706   0.009232   0.009315   0.000044      damps
+   6    40     0.7250     0.7597     0.002651   0.009622   0.009714   0.000042      damps
+
+=== param counts / deviations ===
+FF     121218  (baseline)
+Geo    121858  dev=+640  ratio=1.0053  within_5pct=True
+Loop   120834  dev=-384  ratio=0.9968  within_5pct=True
+
+=== drift / grad diagnostics ===
+FF: epochs_run=30/30 early_stop=False best_val_acc=0.9525@ep15 grad_clip_sat_rate=0.0773 mean_z_norm_by_t=None
+Geo: epochs_run=30/30 early_stop=False best_val_acc=0.8475@ep11 grad_clip_sat_rate=0.0507 mean_z_norm_by_t=[2.0804761998852093, 7.9513678050041205, 8.287833508253097, 8.309626701672872, 8.306344929536184, 8.30416164835294, 8.299909470478694]
+Loop: epochs_run=30/30 early_stop=False best_val_acc=0.8250@ep6 grad_clip_sat_rate=0.0540 mean_z_norm_by_t=[1.9669410479068754, 2.6101879435777664, 2.7614063851038613, 2.7656510452429455, 2.764835290908813, 2.764920412202676, 2.7649387049674985]

@@ -1,0 +1,1 @@
+{"data": "data/id_2k.jsonl", "elapsed_s": 275.5898507180391, "ff_epochs_run": 30, "geo_epochs_run": 10, "loop_epochs_run": 22, "ok": true, "param_match": {"ff": 121218, "geo": 121794, "loop": 120770, "within_5pct": true}, "rematch_out": "artifacts/id_2k_rematch.json", "science_open": false}

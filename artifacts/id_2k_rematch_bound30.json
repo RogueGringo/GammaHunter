@@ -1,0 +1,1261 @@
+{
+  "dataset": "data/id_2k.jsonl",
+  "drift_audit": {
+    "apply_cycle_ln": false,
+    "apply_cycle_rmsnorm": true,
+    "deviation": "Preferred z\u2190LN(z+\u03b1\u00b7v) blocked learning (val stuck at chance); replaced with RMSNorm after \u03b1=0.5 residual mix (still learns); unit-sphere proj not needed",
+    "expected_norm_sqrt_d": 8.0,
+    "formula_ln": "\u03b4_t = mean_batch ||LN(z_{t+1})-LN(z_t)||_2 (feature LN reapplied for metric)",
+    "formula_raw": "\u03b4_t = mean_batch ||z_{t+1}-z_t||_2 (pooled)",
+    "formula_rms": "\u03b4_t = mean_batch ||RMSNorm(z_{t+1})-RMSNorm(z_t)||_2 (feature RMSNorm reapplied; near-identity when cycle RMSNorm on)",
+    "recurrent_update": "z_{t+1} = RMSNorm(z_t + \u03b1\u00b7(\u03a6(h_t)-z_t)) with \u03b1=0.5; outer stream LN disabled (blocked learning); RMSNorm is the learning-compatible state bound so ||z||~O(\u221ad); report raw + LN- + RMS-normalized \u03b4_t",
+    "residual_alpha": 0.5,
+    "science_open": false,
+    "state_bound": "rmsnorm"
+  },
+  "early_stopping": false,
+  "epochs": 30,
+  "epochs_choice": "LOCKED 30 epochs; NO early stopping; track/save best val-acc checkpoint but always finish 30; FF L=2 d=64 vs Geo T=6 tau d=64 mlp=10 vs Loop T=6 d=64 mlp=10; ff_lr=0.003 rec_lr=0.0015 batch=32 train_seed=0; ff_clip=1.0 rec_clip=2.5 AdamW; residual_alpha=0.5 apply_cycle_rmsnorm=True (LN stream blocked learning)",
+  "epochs_locked": true,
+  "ff": {
+    "L": 2,
+    "arm": "ff-L2-d64",
+    "best_epoch": 15,
+    "best_val_acc": 0.9525,
+    "checkpoint_path": "artifacts/id_2k_rematch_bound30_ff_best.pt",
+    "d": 64,
+    "early_stop": false,
+    "epochs": 30,
+    "epochs_run": 30,
+    "grad_clip": 1.0,
+    "grad_clip_sat_rate": 0.07733333333333334,
+    "lr": 0.003,
+    "mean_z_norm_by_t": null,
+    "metrics_path": "artifacts/id_2k_rematch_bound30_ff_metrics.jsonl",
+    "param_count": 121218,
+    "science_open": false,
+    "train_history": [
+      {
+        "epoch": 1,
+        "train_acc": 0.6925,
+        "train_loss": 0.5459506076574325
+      },
+      {
+        "epoch": 2,
+        "train_acc": 0.758125,
+        "train_loss": 0.4567527911067009
+      },
+      {
+        "epoch": 3,
+        "train_acc": 0.78,
+        "train_loss": 0.423877871632576
+      },
+      {
+        "epoch": 4,
+        "train_acc": 0.821875,
+        "train_loss": 0.37952258497476576
+      },
+      {
+        "epoch": 5,
+        "train_acc": 0.859375,
+        "train_loss": 0.3074446341395378
+      },
+      {
+        "epoch": 6,
+        "train_acc": 0.87125,
+        "train_loss": 0.269460708796978
+      },
+      {
+        "epoch": 7,
+        "train_acc": 0.89875,
+        "train_loss": 0.2456727935373783
+      },
+      {
+        "epoch": 8,
+        "train_acc": 0.894375,
+        "train_loss": 0.24863971292972564
+      },
+      {
+        "epoch": 9,
+        "train_acc": 0.90375,
+        "train_loss": 0.22926440998911857
+      },
+      {
+        "epoch": 10,
+        "train_acc": 0.908125,
+        "train_loss": 0.20420533165335655
+      },
+      {
+        "epoch": 11,
+        "train_acc": 0.8975,
+        "train_loss": 0.21606924131512642
+      },
+      {
+        "epoch": 12,
+        "train_acc": 0.913125,
+        "train_loss": 0.21038896687328815
+      },
+      {
+        "epoch": 13,
+        "train_acc": 0.92375,
+        "train_loss": 0.18226555310189724
+      },
+      {
+        "epoch": 14,
+        "train_acc": 0.925,
+        "train_loss": 0.17028556868433953
+      },
+      {
+        "epoch": 15,
+        "train_acc": 0.94,
+        "train_loss": 0.15614601358771324
+      },
+      {
+        "epoch": 16,
+        "train_acc": 0.924375,
+        "train_loss": 0.17880475781857968
+      },
+      {
+        "epoch": 17,
+        "train_acc": 0.931875,
+        "train_loss": 0.1625881127268076
+      },
+      {
+        "epoch": 18,
+        "train_acc": 0.9275,
+        "train_loss": 0.16960340216755868
+      },
+      {
+        "epoch": 19,
+        "train_acc": 0.943125,
+        "train_loss": 0.13939534608274698
+      },
+      {
+        "epoch": 20,
+        "train_acc": 0.949375,
+        "train_loss": 0.1341595646739006
+      },
+      {
+        "epoch": 21,
+        "train_acc": 0.94625,
+        "train_loss": 0.13415157426148652
+      },
+      {
+        "epoch": 22,
+        "train_acc": 0.931875,
+        "train_loss": 0.1586782182008028
+      },
+      {
+        "epoch": 23,
+        "train_acc": 0.928125,
+        "train_loss": 0.1632027719542384
+      },
+      {
+        "epoch": 24,
+        "train_acc": 0.953125,
+        "train_loss": 0.12274615205824375
+      },
+      {
+        "epoch": 25,
+        "train_acc": 0.93375,
+        "train_loss": 0.1627552204579115
+      },
+      {
+        "epoch": 26,
+        "train_acc": 0.95125,
+        "train_loss": 0.1329165731370449
+      },
+      {
+        "epoch": 27,
+        "train_acc": 0.96,
+        "train_loss": 0.10735277969390154
+      },
+      {
+        "epoch": 28,
+        "train_acc": 0.934375,
+        "train_loss": 0.15654260620474816
+      },
+      {
+        "epoch": 29,
+        "train_acc": 0.94,
+        "train_loss": 0.15752670969814062
+      },
+      {
+        "epoch": 30,
+        "train_acc": 0.96,
+        "train_loss": 0.11708774827420712
+      }
+    ],
+    "val_by_hop": {
+      "-1": {
+        "acc_mean": 0.89,
+        "loss_mean": 0.239799673028283,
+        "n": 200
+      },
+      "2": {
+        "acc_mean": 1.0,
+        "loss_mean": 0.07443338593511725,
+        "n": 40
+      },
+      "3": {
+        "acc_mean": 1.0,
+        "loss_mean": 0.015264590762853913,
+        "n": 40
+      },
+      "4": {
+        "acc_mean": 0.925,
+        "loss_mean": 0.17774883964430047,
+        "n": 40
+      },
+      "5": {
+        "acc_mean": 0.975,
+        "loss_mean": 0.07745169896461448,
+        "n": 40
+      },
+      "6": {
+        "acc_mean": 0.95,
+        "loss_mean": 0.08531241616583429,
+        "n": 40
+      }
+    }
+  },
+  "geo": {
+    "T": 6,
+    "apply_cycle_ln": false,
+    "apply_cycle_rmsnorm": true,
+    "arm": "geo-T6-d64-mlp10-tau",
+    "best_epoch": 11,
+    "best_val_acc": 0.8475,
+    "checkpoint_path": "artifacts/id_2k_rematch_bound30_geo_best.pt",
+    "d": 64,
+    "drift_summary": {
+      "apply_cycle_ln": false,
+      "apply_cycle_rmsnorm": true,
+      "by_hop_regime": {
+        "-1": "expands",
+        "2": "damps",
+        "3": "damps",
+        "4": "damps",
+        "5": "damps",
+        "6": "damps"
+      },
+      "diameter_check": {
+        "expected_norm_sqrt_d": 8.0,
+        "implied_max_pairwise_diameter": 16.619253403345745,
+        "max_mean_z_norm": 8.309626701672872,
+        "mean_z_norm_by_t": [
+          2.0804761998852093,
+          7.9513678050041205,
+          8.287833508253097,
+          8.309626701672872,
+          8.306344929536184,
+          8.30416164835294,
+          8.299909470478694
+        ],
+        "min_mean_z_norm": 2.0804761998852093,
+        "note": "post-RMSNorm ||z||\u2248\u221ad=\u221a64\u22488.000; max pairwise distance on bound manifold \u2272 2\u221ad\u224816.000"
+      },
+      "drift_formula": "\u03b4_t = mean_batch ||z_{t+1}-z_t||_2 on pooled latents; z_{t+1}=RMSNorm(z_t+\u03b1\u00b7(\u03a6(h_t)-z_t)) with \u03b1=0.5; also report LN- and RMS-reapplied drift",
+      "fraction_buckets_damping": 0.8333333333333334,
+      "note": "damps means mean \u03b4_T < \u03b4_{T-1} on the hop bucket; else expands or saturates; perturbation_delta uses eps_sigma=0.0001",
+      "residual_alpha": 0.5
+    },
+    "early_stop": false,
+    "epochs": 30,
+    "epochs_run": 30,
+    "grad_clip": 2.5,
+    "grad_clip_sat_rate": 0.050666666666666665,
+    "lr": 0.0015,
+    "mean_z_norm_by_t": [
+      2.0804761998852093,
+      7.9513678050041205,
+      8.287833508253097,
+      8.309626701672872,
+      8.306344929536184,
+      8.30416164835294,
+      8.299909470478694
+    ],
+    "metrics_path": "artifacts/id_2k_rematch_bound30_geo_metrics.jsonl",
+    "mlp_expansion": 10,
+    "param_count": 121858,
+    "residual_alpha": 0.5,
+    "science_open": false,
+    "train_history": [
+      {
+        "epoch": 1,
+        "train_acc": 0.520625,
+        "train_loss": 0.7071882331371308
+      },
+      {
+        "epoch": 2,
+        "train_acc": 0.690625,
+        "train_loss": 0.581338791847229
+      },
+      {
+        "epoch": 3,
+        "train_acc": 0.759375,
+        "train_loss": 0.46658440709114074
+      },
+      {
+        "epoch": 4,
+        "train_acc": 0.794375,
+        "train_loss": 0.41417280107736587
+      },
+      {
+        "epoch": 5,
+        "train_acc": 0.845,
+        "train_loss": 0.35368584901094435
+      },
+      {
+        "epoch": 6,
+        "train_acc": 0.8375,
+        "train_loss": 0.3449686361849308
+      },
+      {
+        "epoch": 7,
+        "train_acc": 0.851875,
+        "train_loss": 0.3272629302740097
+      },
+      {
+        "epoch": 8,
+        "train_acc": 0.855625,
+        "train_loss": 0.3236408670246601
+      },
+      {
+        "epoch": 9,
+        "train_acc": 0.8575,
+        "train_loss": 0.321413659453392
+      },
+      {
+        "epoch": 10,
+        "train_acc": 0.85875,
+        "train_loss": 0.31326737374067304
+      },
+      {
+        "epoch": 11,
+        "train_acc": 0.864375,
+        "train_loss": 0.30775422424077986
+      },
+      {
+        "epoch": 12,
+        "train_acc": 0.856875,
+        "train_loss": 0.3142970439791679
+      },
+      {
+        "epoch": 13,
+        "train_acc": 0.826875,
+        "train_loss": 0.391322603225708
+      },
+      {
+        "epoch": 14,
+        "train_acc": 0.82625,
+        "train_loss": 0.4159939193725586
+      },
+      {
+        "epoch": 15,
+        "train_acc": 0.8525,
+        "train_loss": 0.3987762463092804
+      },
+      {
+        "epoch": 16,
+        "train_acc": 0.8575,
+        "train_loss": 0.37970066010951997
+      },
+      {
+        "epoch": 17,
+        "train_acc": 0.854375,
+        "train_loss": 0.33826920539140704
+      },
+      {
+        "epoch": 18,
+        "train_acc": 0.858125,
+        "train_loss": 0.35149445801973345
+      },
+      {
+        "epoch": 19,
+        "train_acc": 0.71,
+        "train_loss": 0.5764189517498016
+      },
+      {
+        "epoch": 20,
+        "train_acc": 0.609375,
+        "train_loss": 0.6254139775037766
+      },
+      {
+        "epoch": 21,
+        "train_acc": 0.61875,
+        "train_loss": 0.6043323135375976
+      },
+      {
+        "epoch": 22,
+        "train_acc": 0.599375,
+        "train_loss": 0.6095768523216247
+      },
+      {
+        "epoch": 23,
+        "train_acc": 0.6225,
+        "train_loss": 0.6054744446277618
+      },
+      {
+        "epoch": 24,
+        "train_acc": 0.614375,
+        "train_loss": 0.6119798934459686
+      },
+      {
+        "epoch": 25,
+        "train_acc": 0.63125,
+        "train_loss": 0.6083918792009354
+      },
+      {
+        "epoch": 26,
+        "train_acc": 0.63125,
+        "train_loss": 0.6038638985157013
+      },
+      {
+        "epoch": 27,
+        "train_acc": 0.62,
+        "train_loss": 0.6088931596279145
+      },
+      {
+        "epoch": 28,
+        "train_acc": 0.61125,
+        "train_loss": 0.6087537288665772
+      },
+      {
+        "epoch": 29,
+        "train_acc": 0.613125,
+        "train_loss": 0.6080237185955047
+      },
+      {
+        "epoch": 30,
+        "train_acc": 0.63125,
+        "train_loss": 0.6062803173065185
+      }
+    ],
+    "use_tau": true,
+    "val_by_hop": {
+      "-1": {
+        "acc_mean": 0.21,
+        "damp_regime": "expands",
+        "loss_mean": 0.6982809682190418,
+        "mean_drift_trajectory": [
+          7.260820064544678,
+          2.756779255270958,
+          1.0347441470623016,
+          1.9075786590576171,
+          1.444209687113762,
+          1.8611083817481995
+        ],
+        "mean_drift_trajectory_ln": [
+          10.234637417793273,
+          2.7962173396348953,
+          1.0037020009756088,
+          1.886931726038456,
+          1.4249544781446457,
+          1.8475031068921088
+        ],
+        "mean_drift_trajectory_rms": [
+          10.167958178520202,
+          2.8008302837610244,
+          1.0041259840130805,
+          1.8851336708664894,
+          1.4254230824112892,
+          1.850323201417923
+        ],
+        "mean_perturbation_delta": 5.362780382711208e-05,
+        "mean_terminal_drift": 1.8611083817481995,
+        "mean_terminal_drift_ln": 1.8475031068921088,
+        "mean_terminal_drift_rms": 1.850323201417923,
+        "mean_z_norm_by_t": [
+          2.1039432603120805,
+          7.345521495342255,
+          8.176089026927947,
+          8.256527061462402,
+          8.230713386535644,
+          8.228957512378692,
+          8.223525607585907
+        ],
+        "n": 200,
+        "terminal_drift_damps": false,
+        "terminal_drift_regime": "expands"
+      },
+      "2": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.5381956100463867,
+        "mean_drift_trajectory": [
+          7.897189819812775,
+          1.8015804648399354,
+          0.880713477730751,
+          0.9568305030465126,
+          0.940466858446598,
+          0.9129446879029274
+        ],
+        "mean_drift_trajectory_ln": [
+          9.97594678401947,
+          1.7380887120962143,
+          0.8466812103986741,
+          0.9204041212797165,
+          0.9011194065213204,
+          0.8740299478173256
+        ],
+        "mean_drift_trajectory_rms": [
+          9.929892826080323,
+          1.7443000227212906,
+          0.8471989050507546,
+          0.9199244126677513,
+          0.9042542591691017,
+          0.8781187057495117
+        ],
+        "mean_perturbation_delta": 3.741191485460149e-05,
+        "mean_terminal_drift": 0.9129446879029274,
+        "mean_terminal_drift_ln": 0.8740299478173256,
+        "mean_terminal_drift_rms": 0.8781187057495117,
+        "mean_z_norm_by_t": [
+          2.08812735080719,
+          8.110705780982972,
+          8.311722445487977,
+          8.320393252372742,
+          8.321493148803711,
+          8.319207787513733,
+          8.315187215805054
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "3": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.5381947919726372,
+        "mean_drift_trajectory": [
+          7.77972309589386,
+          1.905520612001419,
+          0.8879252269864082,
+          0.9544772773981094,
+          0.9405865550041199,
+          0.9129597797989846
+        ],
+        "mean_drift_trajectory_ln": [
+          9.592658638954163,
+          1.8382461816072464,
+          0.8534962654113769,
+          0.9181408762931824,
+          0.9012402400374413,
+          0.874043844640255
+        ],
+        "mean_drift_trajectory_rms": [
+          9.549106025695801,
+          1.8459657728672028,
+          0.8541294038295746,
+          0.9176629215478898,
+          0.9043698996305466,
+          0.8781333774328232
+        ],
+        "mean_perturbation_delta": 3.906539614035864e-05,
+        "mean_terminal_drift": 0.9129597797989846,
+        "mean_terminal_drift_ln": 0.874043844640255,
+        "mean_terminal_drift_rms": 0.8781333774328232,
+        "mean_z_norm_by_t": [
+          2.0715878188610075,
+          8.113504946231842,
+          8.311894631385803,
+          8.320383095741272,
+          8.321485424041748,
+          8.319205451011658,
+          8.315186786651612
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "4": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.538195951282978,
+        "mean_drift_trajectory": [
+          7.8049662709236145,
+          1.983720663189888,
+          0.8646294727921486,
+          0.9611692637205124,
+          0.9404321253299713,
+          0.9127726927399635
+        ],
+        "mean_drift_trajectory_ln": [
+          9.938293266296387,
+          1.9154421120882035,
+          0.8311890244483948,
+          0.9246019497513771,
+          0.9010954916477203,
+          0.8738634213805199
+        ],
+        "mean_drift_trajectory_rms": [
+          9.890309286117553,
+          1.9222841948270797,
+          0.8318895608186722,
+          0.9241213858127594,
+          0.9042250022292138,
+          0.8779541492462158
+        ],
+        "mean_perturbation_delta": 4.5850205788156016e-05,
+        "mean_terminal_drift": 0.9127726927399635,
+        "mean_terminal_drift_ln": 0.8738634213805199,
+        "mean_terminal_drift_rms": 0.8779541492462158,
+        "mean_z_norm_by_t": [
+          2.0761203944683073,
+          8.019646906852723,
+          8.307623958587646,
+          8.319987773895264,
+          8.32143235206604,
+          8.319194102287293,
+          8.315184855461121
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "5": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.5381984800100327,
+        "mean_drift_trajectory": [
+          7.807811903953552,
+          1.931095865368843,
+          0.8819650322198868,
+          0.9559839978814125,
+          0.9405543312430382,
+          0.9128844305872917
+        ],
+        "mean_drift_trajectory_ln": [
+          9.870815896987915,
+          1.866332682967186,
+          0.8481181144714356,
+          0.9196008324623108,
+          0.901191708445549,
+          0.8739743143320083
+        ],
+        "mean_drift_trajectory_rms": [
+          9.832711911201477,
+          1.870513102412224,
+          0.8484918713569641,
+          0.9191223114728928,
+          0.9043399631977082,
+          0.8780610784888268
+        ],
+        "mean_perturbation_delta": 4.434729535205406e-05,
+        "mean_terminal_drift": 0.9128844305872917,
+        "mean_terminal_drift_ln": 0.8739743143320083,
+        "mean_terminal_drift_rms": 0.8780610784888268,
+        "mean_z_norm_by_t": [
+          2.0812833428382875,
+          8.046949779987335,
+          8.309310746192931,
+          8.320203924179078,
+          8.321469593048096,
+          8.319202184677124,
+          8.315186142921448
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "6": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.5381979659199715,
+        "mean_drift_trajectory": [
+          7.80904256105423,
+          1.911364072561264,
+          0.881827013194561,
+          0.9555309131741524,
+          0.94044339209795,
+          0.9129278719425201
+        ],
+        "mean_drift_trajectory_ln": [
+          9.808406782150268,
+          1.8482170760631562,
+          0.8480309307575226,
+          0.9191625341773033,
+          0.9010808691382408,
+          0.8740171045064926
+        ],
+        "mean_drift_trajectory_rms": [
+          9.773365545272828,
+          1.8521023035049438,
+          0.8483264982700348,
+          0.9186829432845116,
+          0.9042329385876655,
+          0.8781028464436531
+        ],
+        "mean_perturbation_delta": 4.242689810780575e-05,
+        "mean_terminal_drift": 0.9129278719425201,
+        "mean_terminal_drift_ln": 0.8740171045064926,
+        "mean_terminal_drift_rms": 0.8781028464436531,
+        "mean_z_norm_by_t": [
+          2.0617950320243836,
+          8.071877920627594,
+          8.31036024093628,
+          8.320265102386475,
+          8.321475672721864,
+          8.319202852249145,
+          8.31518621444702
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      }
+    }
+  },
+  "id_hop_range": [
+    2,
+    6
+  ],
+  "loop": {
+    "T": 6,
+    "apply_cycle_ln": false,
+    "apply_cycle_rmsnorm": true,
+    "arm": "loop-T6-d64-mlp10",
+    "best_epoch": 6,
+    "best_val_acc": 0.825,
+    "checkpoint_path": "artifacts/id_2k_rematch_bound30_loop_best.pt",
+    "d": 64,
+    "drift_summary": {
+      "apply_cycle_ln": false,
+      "apply_cycle_rmsnorm": true,
+      "by_hop_regime": {
+        "-1": "damps",
+        "2": "damps",
+        "3": "damps",
+        "4": "damps",
+        "5": "damps",
+        "6": "damps"
+      },
+      "diameter_check": {
+        "expected_norm_sqrt_d": 8.0,
+        "implied_max_pairwise_diameter": 5.531302090485891,
+        "max_mean_z_norm": 2.7656510452429455,
+        "mean_z_norm_by_t": [
+          1.9669410479068754,
+          2.6101879435777664,
+          2.7614063851038613,
+          2.7656510452429455,
+          2.764835290908813,
+          2.764920412202676,
+          2.7649387049674985
+        ],
+        "min_mean_z_norm": 1.9669410479068754,
+        "note": "post-RMSNorm ||z||\u2248\u221ad=\u221a64\u22488.000; max pairwise distance on bound manifold \u2272 2\u221ad\u224816.000"
+      },
+      "drift_formula": "\u03b4_t = mean_batch ||z_{t+1}-z_t||_2 on pooled latents; z_{t+1}=RMSNorm(z_t+\u03b1\u00b7(\u03a6(h_t)-z_t)) with \u03b1=0.5; also report LN- and RMS-reapplied drift",
+      "fraction_buckets_damping": 1.0,
+      "note": "damps means mean \u03b4_T < \u03b4_{T-1} on the hop bucket; else expands or saturates; perturbation_delta uses eps_sigma=0.0001",
+      "residual_alpha": 0.5
+    },
+    "early_stop": false,
+    "epochs": 30,
+    "epochs_run": 30,
+    "grad_clip": 2.5,
+    "grad_clip_sat_rate": 0.054,
+    "lr": 0.0015,
+    "mean_z_norm_by_t": [
+      1.9669410479068754,
+      2.6101879435777664,
+      2.7614063851038613,
+      2.7656510452429455,
+      2.764835290908813,
+      2.764920412202676,
+      2.7649387049674985
+    ],
+    "metrics_path": "artifacts/id_2k_rematch_bound30_loop_metrics.jsonl",
+    "mlp_expansion": 10,
+    "param_count": 120834,
+    "residual_alpha": 0.5,
+    "science_open": false,
+    "train_history": [
+      {
+        "epoch": 1,
+        "train_acc": 0.67875,
+        "train_loss": 0.5940459281206131
+      },
+      {
+        "epoch": 2,
+        "train_acc": 0.7475,
+        "train_loss": 0.4795978927612305
+      },
+      {
+        "epoch": 3,
+        "train_acc": 0.75375,
+        "train_loss": 0.4417275720834732
+      },
+      {
+        "epoch": 4,
+        "train_acc": 0.771875,
+        "train_loss": 0.4231602609157562
+      },
+      {
+        "epoch": 5,
+        "train_acc": 0.7575,
+        "train_loss": 0.43709314465522764
+      },
+      {
+        "epoch": 6,
+        "train_acc": 0.78375,
+        "train_loss": 0.4301481157541275
+      },
+      {
+        "epoch": 7,
+        "train_acc": 0.7775,
+        "train_loss": 0.43528049647808076
+      },
+      {
+        "epoch": 8,
+        "train_acc": 0.765625,
+        "train_loss": 0.4977807539701462
+      },
+      {
+        "epoch": 9,
+        "train_acc": 0.755625,
+        "train_loss": 0.47529935419559477
+      },
+      {
+        "epoch": 10,
+        "train_acc": 0.74,
+        "train_loss": 0.47831825017929075
+      },
+      {
+        "epoch": 11,
+        "train_acc": 0.7725,
+        "train_loss": 0.4543648183345795
+      },
+      {
+        "epoch": 12,
+        "train_acc": 0.759375,
+        "train_loss": 0.4870870852470398
+      },
+      {
+        "epoch": 13,
+        "train_acc": 0.765,
+        "train_loss": 0.4663418185710907
+      },
+      {
+        "epoch": 14,
+        "train_acc": 0.76375,
+        "train_loss": 0.47316193163394926
+      },
+      {
+        "epoch": 15,
+        "train_acc": 0.76375,
+        "train_loss": 0.474195282459259
+      },
+      {
+        "epoch": 16,
+        "train_acc": 0.76375,
+        "train_loss": 0.4622433567047119
+      },
+      {
+        "epoch": 17,
+        "train_acc": 0.775625,
+        "train_loss": 0.44888320803642273
+      },
+      {
+        "epoch": 18,
+        "train_acc": 0.773125,
+        "train_loss": 0.4590191501379013
+      },
+      {
+        "epoch": 19,
+        "train_acc": 0.773125,
+        "train_loss": 0.4519401344656944
+      },
+      {
+        "epoch": 20,
+        "train_acc": 0.75875,
+        "train_loss": 0.4858187359571457
+      },
+      {
+        "epoch": 21,
+        "train_acc": 0.77375,
+        "train_loss": 0.48574143469333647
+      },
+      {
+        "epoch": 22,
+        "train_acc": 0.748125,
+        "train_loss": 0.5395777499675751
+      },
+      {
+        "epoch": 23,
+        "train_acc": 0.791875,
+        "train_loss": 0.4563263672590256
+      },
+      {
+        "epoch": 24,
+        "train_acc": 0.789375,
+        "train_loss": 0.4637387692928314
+      },
+      {
+        "epoch": 25,
+        "train_acc": 0.78625,
+        "train_loss": 0.46274352312088013
+      },
+      {
+        "epoch": 26,
+        "train_acc": 0.789375,
+        "train_loss": 0.4522764539718628
+      },
+      {
+        "epoch": 27,
+        "train_acc": 0.780625,
+        "train_loss": 0.46597628176212313
+      },
+      {
+        "epoch": 28,
+        "train_acc": 0.79,
+        "train_loss": 0.4743622261285782
+      },
+      {
+        "epoch": 29,
+        "train_acc": 0.78625,
+        "train_loss": 0.46904139637947084
+      },
+      {
+        "epoch": 30,
+        "train_acc": 0.784375,
+        "train_loss": 0.45555285453796385
+      }
+    ],
+    "use_tau": false,
+    "val_by_hop": {
+      "-1": {
+        "acc_mean": 0.755,
+        "damp_regime": "damps",
+        "loss_mean": 0.43734733598306774,
+        "mean_drift_trajectory": [
+          2.96819983124733,
+          0.7359504151344299,
+          0.19229090861976147,
+          0.048393188323825595,
+          0.010620719650760294,
+          0.002434927552822046
+        ],
+        "mean_drift_trajectory_ln": [
+          10.539165258407593,
+          2.06070422410965,
+          0.5621511200070382,
+          0.141297191940248,
+          0.031210348261520266,
+          0.00722075211815536
+        ],
+        "mean_drift_trajectory_rms": [
+          10.499342856407166,
+          2.0840060323476792,
+          0.5627523836493492,
+          0.14170335311442614,
+          0.03137950714211911,
+          0.007266290807165205
+        ],
+        "mean_perturbation_delta": 5.2478738807621995e-05,
+        "mean_terminal_drift": 0.002434927552822046,
+        "mean_terminal_drift_ln": 0.00722075211815536,
+        "mean_terminal_drift_rms": 0.007266290807165205,
+        "mean_z_norm_by_t": [
+          1.9700524044036865,
+          2.4966904658079145,
+          2.8023077589273453,
+          2.8004220604896544,
+          2.8027514415979384,
+          2.8034597319364547,
+          2.803573446273804
+        ],
+        "n": 200,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "2": {
+        "acc_mean": 1.0,
+        "damp_regime": "damps",
+        "loss_mean": 0.10218846447532996,
+        "mean_drift_trajectory": [
+          3.4509013533592223,
+          0.6501595139503479,
+          0.18981687128543853,
+          0.05525127723813057,
+          0.016180505719967188,
+          0.0037157641840167344
+        ],
+        "mean_drift_trajectory_ln": [
+          11.43271553516388,
+          1.9622425884008408,
+          0.5774246752262115,
+          0.16038938723504542,
+          0.04337452505715191,
+          0.010038614738732576
+        ],
+        "mean_drift_trajectory_rms": [
+          11.322563982009887,
+          2.005771878361702,
+          0.5800921432673931,
+          0.16052061412483454,
+          0.043488946789875624,
+          0.01006448846310377
+        ],
+        "mean_perturbation_delta": 3.649998934633914e-05,
+        "mean_terminal_drift": 0.0037157641840167344,
+        "mean_terminal_drift_ln": 0.010038614738732576,
+        "mean_terminal_drift_rms": 0.01006448846310377,
+        "mean_z_norm_by_t": [
+          1.9862136960029602,
+          2.773818302154541,
+          2.7587001860141753,
+          2.738163563609123,
+          2.7413361459970473,
+          2.7417627036571504,
+          2.7418236523866653
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "3": {
+        "acc_mean": 0.975,
+        "damp_regime": "damps",
+        "loss_mean": 0.06393050709739327,
+        "mean_drift_trajectory": [
+          3.8886439323425295,
+          0.8543463543057441,
+          0.26090543903410435,
+          0.10238117203116417,
+          0.025678679184056818,
+          0.005267530563287437
+        ],
+        "mean_drift_trajectory_ln": [
+          10.772445011138917,
+          2.0050910890102385,
+          0.6271060675382614,
+          0.2375970145687461,
+          0.05800155033357442,
+          0.011928471946157515
+        ],
+        "mean_drift_trajectory_rms": [
+          10.723810720443726,
+          2.0206162840127946,
+          0.6308309756219387,
+          0.2378272656351328,
+          0.05812654225155711,
+          0.011960425204597414
+        ],
+        "mean_perturbation_delta": 3.782646999752615e-05,
+        "mean_terminal_drift": 0.005267530563287437,
+        "mean_terminal_drift_ln": 0.011928471946157515,
+        "mean_terminal_drift_rms": 0.011960425204597414,
+        "mean_z_norm_by_t": [
+          1.9653974622488022,
+          3.5354109197854995,
+          3.404087495803833,
+          3.4229429185390474,
+          3.4137986838817596,
+          3.41205381155014,
+          3.4118155509233477
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "4": {
+        "acc_mean": 0.475,
+        "damp_regime": "damps",
+        "loss_mean": 0.8809781139541883,
+        "mean_drift_trajectory": [
+          3.194115948677063,
+          0.8792440801858902,
+          0.24317096546292305,
+          0.07573878532275558,
+          0.016109421756118535,
+          0.0035417526960372925
+        ],
+        "mean_drift_trajectory_ln": [
+          10.418503642082214,
+          2.4406966626644135,
+          0.6733875021338462,
+          0.2009825861081481,
+          0.04261532509699464,
+          0.009430923871695996
+        ],
+        "mean_drift_trajectory_rms": [
+          10.386404609680175,
+          2.4570191711187364,
+          0.6747024416923523,
+          0.20120938085019588,
+          0.0427113423589617,
+          0.00946028670296073
+        ],
+        "mean_perturbation_delta": 4.558622486001695e-05,
+        "mean_terminal_drift": 0.0035417526960372925,
+        "mean_terminal_drift_ln": 0.009430923871695996,
+        "mean_terminal_drift_rms": 0.00946028670296073,
+        "mean_z_norm_by_t": [
+          1.9631325602531433,
+          2.7993180006742477,
+          2.9429018914699556,
+          2.95812064409256,
+          2.9559511840343475,
+          2.955989235639572,
+          2.9559862494468687
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "5": {
+        "acc_mean": 0.575,
+        "damp_regime": "damps",
+        "loss_mean": 0.9277639211853966,
+        "mean_drift_trajectory": [
+          2.7770399391651153,
+          0.7957931593060493,
+          0.20838692523539065,
+          0.05613070037215948,
+          0.0118612207705155,
+          0.0027062426146585495
+        ],
+        "mean_drift_trajectory_ln": [
+          10.831941032409668,
+          2.693403261899948,
+          0.7010218158364296,
+          0.18220787178725004,
+          0.039719352638348936,
+          0.009232376224827022
+        ],
+        "mean_drift_trajectory_rms": [
+          10.805559086799622,
+          2.7045622885227205,
+          0.7018423080444336,
+          0.18296965043991803,
+          0.0400191608350724,
+          0.00931465799221769
+        ],
+        "mean_perturbation_delta": 4.372184403109713e-05,
+        "mean_terminal_drift": 0.0027062426146585495,
+        "mean_terminal_drift_ln": 0.009232376224827022,
+        "mean_terminal_drift_rms": 0.00931465799221769,
+        "mean_z_norm_by_t": [
+          1.966394755244255,
+          2.1251339972019196,
+          2.415599152445793,
+          2.4232254803180693,
+          2.4211978286504747,
+          2.421409884095192,
+          2.421462544798851
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      },
+      "6": {
+        "acc_mean": 0.725,
+        "damp_regime": "damps",
+        "loss_mean": 0.7597449608147144,
+        "mean_drift_trajectory": [
+          2.6441169321537017,
+          0.8074318841099739,
+          0.19458326511085033,
+          0.04999459525570273,
+          0.011256156582385301,
+          0.002650751930195838
+        ],
+        "mean_drift_trajectory_ln": [
+          10.88179953098297,
+          2.945509007573128,
+          0.7028016015887261,
+          0.17870778907090426,
+          0.04052765485830605,
+          0.009621911880094558
+        ],
+        "mean_drift_trajectory_rms": [
+          10.845058012008668,
+          2.9584749072790144,
+          0.7036650016903877,
+          0.17954545971006156,
+          0.040868372609838846,
+          0.009714396228082478
+        ],
+        "mean_perturbation_delta": 4.1980098603744406e-05,
+        "mean_terminal_drift": 0.002650751930195838,
+        "mean_terminal_drift_ln": 0.009621911880094558,
+        "mean_terminal_drift_rms": 0.009714396228082478,
+        "mean_z_norm_by_t": [
+          1.9504554092884063,
+          1.930755975842476,
+          2.244841825962067,
+          2.251031604409218,
+          2.2539764612913133,
+          2.2548471063375475,
+          2.2549707859754564
+        ],
+        "n": 40,
+        "terminal_drift_damps": true,
+        "terminal_drift_regime": "damps"
+      }
+    }
+  },
+  "negative_hop": -1,
+  "param_match": {
+    "ff_param_count": 121218,
+    "geo_over_ff_ratio": 1.0052797439324193,
+    "geo_param_count": 121858,
+    "geo_within_5pct": true,
+    "loop_over_ff_ratio": 0.9968321536405484,
+    "loop_param_count": 120834,
+    "loop_within_5pct": true,
+    "note": "Hard-asserted before Geo/Loop train; real sum(p.numel()) vs FF L=2 with mlp=10. Never stamps science OPEN.",
+    "science_open": false,
+    "tolerance": 0.05,
+    "window": [
+      115157,
+      127279
+    ],
+    "within_5pct": true
+  },
+  "phase_a_clip_lr": {
+    "ff_grad_clip": 1.0,
+    "ff_lr": 0.003,
+    "ff_unchanged_control": true,
+    "rationale": "fixed30 shared clip=1.0 lr=3e-3 \u2192 FF sat\u22487.7% Geo\u224816% Loop\u224821%; RMSNorm + lr=3e-3 stuck Geo at chance; chose recurrent lr=0.0015 (=0.5\u00d7FF) and clip=2.5 (=2.5\u00d7FF) so sat\u2248FF while remaining learnable (5-epoch probe)",
+    "recurrent_grad_clip": 2.5,
+    "recurrent_lr": 0.0015,
+    "science_open": false
+  },
+  "scaling": {
+    "ff": {
+      "L": 2,
+      "d": 64,
+      "mlp_expansion": 4
+    },
+    "geo": {
+      "T": 6,
+      "apply_cycle_ln": false,
+      "apply_cycle_rmsnorm": true,
+      "d": 64,
+      "grad_clip": 2.5,
+      "lr": 0.0015,
+      "mlp_expansion": 10,
+      "param_count": 121858,
+      "residual_alpha": 0.5,
+      "use_tau": true
+    },
+    "loop": {
+      "T": 6,
+      "apply_cycle_ln": false,
+      "apply_cycle_rmsnorm": true,
+      "d": 64,
+      "grad_clip": 2.5,
+      "lr": 0.0015,
+      "mlp_expansion": 10,
+      "param_count": 120834,
+      "residual_alpha": 0.5,
+      "use_tau": false
+    },
+    "note": "Recurrent arms locked mlp_expansion=10 so real sum(p.numel()) falls in \u00b15% of FF L=2; hard-fail before train if outside window.",
+    "science_open": false
+  },
+  "science_open": false
+}

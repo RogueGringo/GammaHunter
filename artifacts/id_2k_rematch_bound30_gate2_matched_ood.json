@@ -1,0 +1,1428 @@
+{
+  "checkpoints": {
+    "ff": {
+      "arm": "ff-L2-d64",
+      "epoch": 15,
+      "path": "artifacts/id_2k_rematch_bound30_ff_best.pt",
+      "science_open": false,
+      "val_acc": 0.9525
+    },
+    "geo": {
+      "arm": "geo-T6-d64-mlp10-tau",
+      "epoch": 11,
+      "path": "artifacts/id_2k_rematch_bound30_geo_best.pt",
+      "science_open": false,
+      "val_acc": 0.8475
+    },
+    "loop": {
+      "arm": "loop-T6-d64-mlp10",
+      "epoch": 6,
+      "path": "artifacts/id_2k_rematch_bound30_loop_best.pt",
+      "science_open": false,
+      "val_acc": 0.825
+    }
+  },
+  "comparison_to_prior_gate2": {
+    "matched_seq_len_band": [
+      45,
+      70
+    ],
+    "matched_seq_len_mean": 62.475,
+    "note": "Hard-neg collapse still primary STOP rule; positives alone do not license OPEN. science_open=false.",
+    "prior_artifact": "artifacts/id_2k_rematch_bound30_gate2_ood.json",
+    "prior_seq_len_mean": 203.225,
+    "science_open": false
+  },
+  "cycle": "CYCLE_COVARIATE_MATCHED_OOD",
+  "dataset": {
+    "construction": {
+      "er_search": {
+        "by_hop": {
+          "12": {
+            "cells_nonzero": [
+              {
+                "in_band": 1,
+                "n": 14,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 3,
+                "n": 14,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 13,
+                "n": 14,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 29,
+                "n": 14,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 50,
+                "n": 14,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 60,
+                "n": 14,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 47,
+                "n": 14,
+                "p": 0.12,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 2,
+                "n": 16,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 20,
+                "n": 16,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 32,
+                "n": 16,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 55,
+                "n": 16,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 55,
+                "n": 16,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 23,
+                "n": 16,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 4,
+                "n": 16,
+                "p": 0.12,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 2,
+                "n": 18,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 6,
+                "n": 18,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 34,
+                "n": 18,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 54,
+                "n": 18,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 53,
+                "n": 18,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 18,
+                "n": 18,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 3,
+                "n": 20,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 27,
+                "n": 20,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 56,
+                "n": 20,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 52,
+                "n": 20,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 27,
+                "n": 20,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 2,
+                "n": 20,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 8,
+                "n": 22,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 43,
+                "n": 22,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 56,
+                "n": 22,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 28,
+                "n": 22,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 7,
+                "n": 22,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 24,
+                "n": 24,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 54,
+                "n": 24,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 40,
+                "n": 24,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 9,
+                "n": 24,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 3,
+                "n": 24,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              }
+            ],
+            "note": "ER under band is scarce for long hops; path-backbone used.",
+            "total_graphs_with_hop_k_in_band": 0,
+            "total_in_band_graphs": 1000
+          },
+          "16": {
+            "cells_nonzero": [
+              {
+                "in_band": 14,
+                "n": 18,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 39,
+                "n": 18,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 56,
+                "n": 18,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 55,
+                "n": 18,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 20,
+                "n": 18,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 1,
+                "n": 18,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 3,
+                "n": 20,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 25,
+                "n": 20,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 59,
+                "n": 20,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 58,
+                "n": 20,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 29,
+                "n": 20,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 7,
+                "n": 20,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 6,
+                "n": 22,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 48,
+                "n": 22,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 53,
+                "n": 22,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 33,
+                "n": 22,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 12,
+                "n": 22,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 23,
+                "n": 24,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 58,
+                "n": 24,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 40,
+                "n": 24,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 9,
+                "n": 24,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              }
+            ],
+            "note": "Pure ER under [45,70] rarely yields K=16 (path needs \u226516 edges; band caps |E|\u226421).",
+            "total_graphs_with_hop_k_in_band": 0,
+            "total_in_band_graphs": 648
+          },
+          "8": {
+            "cells_nonzero": [
+              {
+                "in_band": 1,
+                "n": 12,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 5,
+                "n": 12,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 25,
+                "n": 12,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 48,
+                "n": 12,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 60,
+                "n": 12,
+                "p": 0.12,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 7,
+                "n": 14,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 11,
+                "n": 14,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 20,
+                "n": 14,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 61,
+                "n": 14,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 2
+              },
+              {
+                "in_band": 54,
+                "n": 14,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 2
+              },
+              {
+                "in_band": 39,
+                "n": 14,
+                "p": 0.12,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 1,
+                "n": 16,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 14,
+                "n": 16,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 34,
+                "n": 16,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 48,
+                "n": 16,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 5
+              },
+              {
+                "in_band": 53,
+                "n": 16,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 7
+              },
+              {
+                "in_band": 22,
+                "n": 16,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 3
+              },
+              {
+                "in_band": 6,
+                "n": 16,
+                "p": 0.12,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 1,
+                "n": 18,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 17,
+                "n": 18,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 37,
+                "n": 18,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 66,
+                "n": 18,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 4
+              },
+              {
+                "in_band": 56,
+                "n": 18,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 3
+              },
+              {
+                "in_band": 22,
+                "n": 18,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 3,
+                "n": 18,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 7,
+                "n": 20,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 26,
+                "n": 20,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 50,
+                "n": 20,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 3
+              },
+              {
+                "in_band": 57,
+                "n": 20,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 31,
+                "n": 20,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 5,
+                "n": 20,
+                "p": 0.08,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 1,
+                "n": 20,
+                "p": 0.1,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 13,
+                "n": 22,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 47,
+                "n": 22,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 54,
+                "n": 22,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 26,
+                "n": 22,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 2
+              },
+              {
+                "in_band": 4,
+                "n": 22,
+                "p": 0.06,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 25,
+                "n": 24,
+                "p": 0.02,
+                "trials": 80,
+                "with_hop_k": 0
+              },
+              {
+                "in_band": 63,
+                "n": 24,
+                "p": 0.03,
+                "trials": 80,
+                "with_hop_k": 1
+              },
+              {
+                "in_band": 34,
+                "n": 24,
+                "p": 0.04,
+                "trials": 80,
+                "with_hop_k": 2
+              },
+              {
+                "in_band": 8,
+                "n": 24,
+                "p": 0.05,
+                "trials": 80,
+                "with_hop_k": 1
+              }
+            ],
+            "note": "ER under band is scarce for long hops; path-backbone used.",
+            "total_graphs_with_hop_k_in_band": 43,
+            "total_in_band_graphs": 1162
+          }
+        },
+        "conclusion": "Primary sampler = path backbone + non-shortcut distractors; ER grid retained as documented search evidence only.",
+        "method": "erdos_renyi_grid",
+        "n_grid": [
+          12,
+          14,
+          16,
+          18,
+          20,
+          22,
+          24
+        ],
+        "p_grid": [
+          0.02,
+          0.03,
+          0.04,
+          0.05,
+          0.06,
+          0.08,
+          0.1,
+          0.12
+        ],
+        "seq_len_band": [
+          45,
+          70
+        ],
+        "trials_per_cell": 80
+      },
+      "p_field": "empirical |E|/(n*(n-1))",
+      "primary": "path_backbone_plus_non_shortcut_distractors",
+      "seq_len_band": [
+        45,
+        70
+      ],
+      "seq_len_target_mean": 57.0,
+      "token_len_formula": "len(split_encoding_tokens(encode)) = 6 + 3*|E|"
+    },
+    "covariate_matched": true,
+    "extra_edges_by_hop": {
+      "12": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "16": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "8": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    "generation_report": "artifacts/covariate_matched_ood_generation_report.json",
+    "hop_counts": {
+      "-1": 240,
+      "12": 80,
+      "16": 80,
+      "8": 80
+    },
+    "id_band_reference": {
+      "id_split_encoding": {
+        "max": 315,
+        "mean": 160.0875,
+        "min": 27,
+        "n": 2000
+      },
+      "id_split_encoding_mean_recomputed_note": "Recompute from data/id_2k.jsonl at report time if present; seal mixed whitespace(ID) vs split_encoding(OOD).",
+      "id_whitespace": {
+        "max": 109,
+        "mean": 57.3625,
+        "min": 13,
+        "n": 2000
+      },
+      "id_whitespace_mean_cited": 57.36,
+      "prior_ood_split_encoding_mean": 203.225
+    },
+    "n_range": [
+      10,
+      22
+    ],
+    "n_support_by_hop": {
+      "12": [
+        14,
+        16,
+        18,
+        20,
+        22
+      ],
+      "16": [
+        17,
+        18,
+        19,
+        20,
+        22
+      ],
+      "8": [
+        10,
+        12,
+        14,
+        16,
+        18
+      ]
+    },
+    "n_total": 480,
+    "ood_hops": [
+      8,
+      12,
+      16
+    ],
+    "p_range": [
+      0.02813852813852814,
+      0.23333333333333334
+    ],
+    "path": "data/covariate_matched_ood.jsonl",
+    "quotas": {
+      "n_neg": 240,
+      "n_pos_total": 240,
+      "ood_hops": [
+        8,
+        12,
+        16
+      ],
+      "pos_per_hop": 80
+    },
+    "science_open": false,
+    "seed": 126000,
+    "seq_len_band": [
+      45,
+      70
+    ],
+    "token_len": {
+      "max": 69,
+      "mean": 62.475,
+      "measure": "split_encoding_tokens",
+      "min": 45,
+      "out_of_band": 0
+    },
+    "verify_ok": true,
+    "whitespace_len": {
+      "max": 27,
+      "mean": 24.825,
+      "min": 19
+    },
+    "y_counts": {
+      "0": 240,
+      "1": 240
+    }
+  },
+  "dynamic_unroll": {
+    "T_values": [
+      8,
+      12,
+      16
+    ],
+    "geo": {
+      "12": {
+        "arm": "geo-T12-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.44583333333333336,
+            "correct": 107,
+            "loss_mean": 0.9722954395537575,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.45,
+            "correct": 36,
+            "loss_mean": 0.934732969570905,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.3125,
+            "correct": 25,
+            "loss_mean": 1.1516429062001408,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.175,
+            "correct": 14,
+            "loss_mean": 1.2545332942157983,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 12,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.37916666666666665,
+        "overall_loss": 1.0429659147746861
+      },
+      "16": {
+        "arm": "geo-T16-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.44583333333333336,
+            "correct": 107,
+            "loss_mean": 0.9785419462869565,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.45,
+            "correct": 36,
+            "loss_mean": 0.9333674190100283,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.3125,
+            "correct": 25,
+            "loss_mean": 1.150843995437026,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.175,
+            "correct": 14,
+            "loss_mean": 1.253770493529737,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 16,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.37916666666666665,
+        "overall_loss": 1.0456012911396102
+      },
+      "8": {
+        "arm": "geo-T8-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.44583333333333336,
+            "correct": 107,
+            "loss_mean": 0.9985182146231334,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.5,
+            "correct": 40,
+            "loss_mean": 0.9111140637658537,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.3375,
+            "correct": 27,
+            "loss_mean": 1.1221924449317158,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.1875,
+            "correct": 15,
+            "loss_mean": 1.2209394432604312,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 8,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.39375,
+        "overall_loss": 1.0416334326379002
+      }
+    },
+    "hop_T_acc_matrix_geo": {
+      "-1": {
+        "12": 0.44583333333333336,
+        "16": 0.44583333333333336,
+        "8": 0.44583333333333336
+      },
+      "12": {
+        "12": 0.45,
+        "16": 0.45,
+        "8": 0.5
+      },
+      "16": {
+        "12": 0.3125,
+        "16": 0.3125,
+        "8": 0.3375
+      },
+      "8": {
+        "12": 0.175,
+        "16": 0.175,
+        "8": 0.1875
+      }
+    },
+    "hop_T_acc_matrix_loop": {
+      "-1": {
+        "12": 1.0,
+        "16": 1.0,
+        "8": 1.0
+      },
+      "12": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.0
+      },
+      "16": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.0
+      },
+      "8": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.05
+      }
+    },
+    "loop": {
+      "12": {
+        "arm": "loop-T12-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 1.0,
+            "correct": 240,
+            "loss_mean": 0.014129308444292594,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.315920400619507,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.426821506023407,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.229192331433296,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 12,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.5,
+        "overall_loss": 2.169053693901515
+      },
+      "16": {
+        "arm": "loop-T16-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 1.0,
+            "correct": 240,
+            "loss_mean": 0.012755555240437389,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.415826737880707,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.42717016339302,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.381805908679962,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 16,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.5,
+        "overall_loss": 2.2105115792791667
+      },
+      "8": {
+        "arm": "loop-T8-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 1.0,
+            "correct": 240,
+            "loss_mean": 0.10846995168055097,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 3.1554408952593804,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 3.247476910054684,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.05,
+            "correct": 4,
+            "loss_mean": 2.980731501430273,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 8,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.5083333333333333,
+        "overall_loss": 1.6181765269643316
+      }
+    },
+    "note": "Geo/Loop only; T in {8,12,16}; test extra test-time cycles"
+  },
+  "fixed_depth": {
+    "ff": {
+      "arm": "ff-L2-d64",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 0.75,
+          "correct": 180,
+          "loss_mean": 1.8981385471881367,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 0.15,
+          "correct": 12,
+          "loss_mean": 3.141561119189646,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 0.2125,
+          "correct": 17,
+          "loss_mean": 2.654668802945525,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 0.1375,
+          "correct": 11,
+          "loss_mean": 3.8354168107885926,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 2,
+      "mode": "fixed_L",
+      "n": 480,
+      "overall_acc": 0.4583333333333333,
+      "overall_loss": 2.554343729081362
+    },
+    "geo": {
+      "arm": "geo-T6-d64-mlp10-tau",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 0.44583333333333336,
+          "correct": 107,
+          "loss_mean": 1.0463604521627228,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 0.5125,
+          "correct": 41,
+          "loss_mean": 0.89958624150604,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 0.3375,
+          "correct": 27,
+          "loss_mean": 1.1162026886828245,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 0.1875,
+          "correct": 15,
+          "loss_mean": 1.2212653495371342,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 6,
+      "mode": "fixed_T",
+      "n": 480,
+      "overall_acc": 0.3958333333333333,
+      "overall_loss": 1.0626892727023611
+    },
+    "loop": {
+      "arm": "loop-T6-d64-mlp10",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 1.0,
+          "correct": 240,
+          "loss_mean": 0.21638704833264152,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 0.0,
+          "correct": 0,
+          "loss_mean": 2.38004851937294,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 0.0,
+          "correct": 0,
+          "loss_mean": 2.3953612014651298,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 0.05,
+          "correct": 4,
+          "loss_mean": 2.1514050867408514,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 6,
+      "mode": "fixed_T",
+      "n": 480,
+      "overall_acc": 0.5083333333333333,
+      "overall_loss": 1.2626626587628076
+    },
+    "note": "FF at trained L=2; Geo/Loop at trained T=6"
+  },
+  "gate": "gate2_covariate_matched_ood",
+  "hparams": {
+    "L": 2,
+    "T": 6,
+    "apply_cycle_ln": false,
+    "apply_cycle_rmsnorm": true,
+    "d": 64,
+    "ff_best_epoch": 15,
+    "geo_best_epoch": 11,
+    "geo_use_tau": true,
+    "loop_best_epoch": 6,
+    "loop_use_tau": false,
+    "max_T": 16,
+    "mlp_expansion": 10,
+    "note": "Exact bound30 arch: RMSNorm on, residual \u03b1=0.5, Geo \u03c4 on, Loop \u03c4 off; frozen best ckpts (no retrain).",
+    "residual_alpha": 0.5,
+    "source": "artifacts/id_2k_rematch_bound30.json"
+  },
+  "id_val_sanity": {
+    "science_open": false,
+    "skipped": true
+  },
+  "interpretation_stop": {
+    "fail_closed_one_liner": "STOP still: matched-seq_len OOD inverts Gate2 (hard-neg holds, long-hop positives collapse for FF/Loop; Geo weak) \u2014 length-gen not licensed; prior all-positive bias was seq_len-confounded; science_open=false",
+    "framing": "STOP_INVERTED_VS_PRIOR_GATE2",
+    "label": "evidence vs aspiration \u2014 MEASURE plumbing only",
+    "metrics_snapshot": {
+      "ff_hardneg_acc": 0.75,
+      "ff_ood_pos_acc_mean": 0.16666666666666666,
+      "ff_overall_acc": 0.4583333333333333,
+      "ff_per_hop": {
+        "12": 0.15,
+        "16": 0.2125,
+        "8": 0.1375
+      },
+      "geo_T6_hardneg_acc": 0.44583333333333336,
+      "geo_T6_ood_pos_acc_mean": 0.3458333333333334,
+      "geo_T6_overall_acc": 0.3958333333333333,
+      "geo_T6_per_hop": {
+        "12": 0.5125,
+        "16": 0.3375,
+        "8": 0.1875
+      },
+      "geo_TeqK_ood_pos_acc_mean": 0.31666666666666665,
+      "geo_TeqK_per_hop": {
+        "12": 0.45,
+        "16": 0.3125,
+        "8": 0.1875
+      },
+      "loop_T6_hardneg_acc": 1.0,
+      "loop_T6_ood_pos_acc_mean": 0.016666666666666666,
+      "loop_T6_overall_acc": 0.5083333333333333,
+      "loop_T6_per_hop": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.05
+      },
+      "loop_TeqK_ood_pos_acc_mean": 0.016666666666666666,
+      "loop_TeqK_per_hop": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.05
+      }
+    },
+    "prereg_rules": {
+      "all_arms_fail_similarly": "STOP for recurrence length generalization on this substrate",
+      "ff_collapses_geo_loop_TgeK_maintains": "structural advantage *candidate* (never auto-OPEN)",
+      "geo_T6_beats_geo_TK": "extra unroll not helping / harming",
+      "hardneg_collapse_overall_chance": "STOP \u2014 positives alone do not license OPEN"
+    },
+    "prior_gate2_stop": "Prior Gate2 STOP (ood_hops, seq_len mean~203) confounded hop with length; this run holds seq_len in ID band [45,70].",
+    "science_open": false,
+    "variant": "covariate_matched_ood",
+    "vs_prior_gate2": {
+      "fail_closed_one_liner_vs_prior": "STOP still: matched-seq_len OOD inverts Gate2 (hard-neg holds, long-hop positives collapse for FF/Loop; Geo weak) \u2014 length-gen not licensed; prior all-positive bias was seq_len-confounded; science_open=false",
+      "inverted_failure_mode": true,
+      "matched_pattern": "hard-neg FF=0.750/Geo=0.446/Loop=1.000; OOD-pos mean FF=0.167/Geo=0.346/Loop=0.017",
+      "prior_pattern": "hard-neg acc\u22480 all arms; OOD positives high (incl. FF); overall~chance \u2192 STOP (all-positive bias under long seq_len)",
+      "science_open": false
+    }
+  },
+  "max_len": 257,
+  "mode": "MEASURE",
+  "param_counts": {
+    "ff": 121218,
+    "geo": 121858,
+    "loop": 120834
+  },
+  "prereg": {
+    "fail_closed_one_liner": "STOP still: matched-seq_len OOD inverts Gate2 (hard-neg holds, long-hop positives collapse for FF/Loop; Geo weak) \u2014 length-gen not licensed; prior all-positive bias was seq_len-confounded; science_open=false",
+    "framing": "STOP_INVERTED_VS_PRIOR_GATE2",
+    "label": "evidence vs aspiration \u2014 MEASURE plumbing only",
+    "metrics_snapshot": {
+      "ff_hardneg_acc": 0.75,
+      "ff_ood_pos_acc_mean": 0.16666666666666666,
+      "ff_overall_acc": 0.4583333333333333,
+      "ff_per_hop": {
+        "12": 0.15,
+        "16": 0.2125,
+        "8": 0.1375
+      },
+      "geo_T6_hardneg_acc": 0.44583333333333336,
+      "geo_T6_ood_pos_acc_mean": 0.3458333333333334,
+      "geo_T6_overall_acc": 0.3958333333333333,
+      "geo_T6_per_hop": {
+        "12": 0.5125,
+        "16": 0.3375,
+        "8": 0.1875
+      },
+      "geo_TeqK_ood_pos_acc_mean": 0.31666666666666665,
+      "geo_TeqK_per_hop": {
+        "12": 0.45,
+        "16": 0.3125,
+        "8": 0.1875
+      },
+      "loop_T6_hardneg_acc": 1.0,
+      "loop_T6_ood_pos_acc_mean": 0.016666666666666666,
+      "loop_T6_overall_acc": 0.5083333333333333,
+      "loop_T6_per_hop": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.05
+      },
+      "loop_TeqK_ood_pos_acc_mean": 0.016666666666666666,
+      "loop_TeqK_per_hop": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.05
+      }
+    },
+    "prereg_rules": {
+      "all_arms_fail_similarly": "STOP for recurrence length generalization on this substrate",
+      "ff_collapses_geo_loop_TgeK_maintains": "structural advantage *candidate* (never auto-OPEN)",
+      "geo_T6_beats_geo_TK": "extra unroll not helping / harming",
+      "hardneg_collapse_overall_chance": "STOP \u2014 positives alone do not license OPEN"
+    },
+    "prior_gate2_stop": "Prior Gate2 STOP (ood_hops, seq_len mean~203) confounded hop with length; this run holds seq_len in ID band [45,70].",
+    "science_open": false,
+    "variant": "covariate_matched_ood",
+    "vs_prior_gate2": {
+      "fail_closed_one_liner_vs_prior": "STOP still: matched-seq_len OOD inverts Gate2 (hard-neg holds, long-hop positives collapse for FF/Loop; Geo weak) \u2014 length-gen not licensed; prior all-positive bias was seq_len-confounded; science_open=false",
+      "inverted_failure_mode": true,
+      "matched_pattern": "hard-neg FF=0.750/Geo=0.446/Loop=1.000; OOD-pos mean FF=0.167/Geo=0.346/Loop=0.017",
+      "prior_pattern": "hard-neg acc\u22480 all arms; OOD positives high (incl. FF); overall~chance \u2192 STOP (all-positive bias under long seq_len)",
+      "science_open": false
+    }
+  },
+  "residue_of": "SESSION-SEAL-GATE2 (ccedd28)",
+  "science_open": false
+}

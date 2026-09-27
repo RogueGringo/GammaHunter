@@ -1,0 +1,247 @@
+{
+  "science_open": false,
+  "mode": "MEASURE",
+  "gate": "best_at_peak_hop_breakdown",
+  "source_metrics": "artifacts/id_2k_rematch_bound30_geo_metrics.jsonl",
+  "source_summary": "artifacts/id_2k_rematch_bound30.json",
+  "note": "Non-destructive: aggregated from existing per-example val logs. val_by_hop in summary JSON is epoch-30 final, not best.",
+  "arms": {
+    "geo": {
+      "best_epoch": 11,
+      "best_val_acc_summary": 0.8475,
+      "checkpoint_path": "artifacts/id_2k_rematch_bound30_geo_best.pt",
+      "at_best_epoch": {
+        "overall_acc": 0.8475,
+        "correct": 339,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.91,
+            "correct": 182
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 0.95,
+            "correct": 38
+          },
+          "4": {
+            "n": 40,
+            "acc": 0.575,
+            "correct": 23
+          },
+          "5": {
+            "n": 40,
+            "acc": 0.65,
+            "correct": 26
+          },
+          "6": {
+            "n": 40,
+            "acc": 0.75,
+            "correct": 30
+          }
+        }
+      },
+      "at_epoch_30": {
+        "overall_acc": 0.605,
+        "correct": 242,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.21,
+            "correct": 42
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "4": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "5": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "6": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          }
+        }
+      }
+    },
+    "ff": {
+      "best_epoch": 15,
+      "best_val_acc_summary": 0.9525,
+      "checkpoint_path": "artifacts/id_2k_rematch_bound30_ff_best.pt",
+      "at_best_epoch": {
+        "overall_acc": 0.9525,
+        "correct": 381,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.92,
+            "correct": 184
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "4": {
+            "n": 40,
+            "acc": 0.95,
+            "correct": 38
+          },
+          "5": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "6": {
+            "n": 40,
+            "acc": 0.975,
+            "correct": 39
+          }
+        }
+      },
+      "at_epoch_30": {
+        "overall_acc": 0.93,
+        "correct": 372,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.89,
+            "correct": 178
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "4": {
+            "n": 40,
+            "acc": 0.925,
+            "correct": 37
+          },
+          "5": {
+            "n": 40,
+            "acc": 0.975,
+            "correct": 39
+          },
+          "6": {
+            "n": 40,
+            "acc": 0.95,
+            "correct": 38
+          }
+        }
+      }
+    },
+    "loop": {
+      "best_epoch": 6,
+      "best_val_acc_summary": 0.825,
+      "checkpoint_path": "artifacts/id_2k_rematch_bound30_loop_best.pt",
+      "at_best_epoch": {
+        "overall_acc": 0.825,
+        "correct": 330,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.935,
+            "correct": 187
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "4": {
+            "n": 40,
+            "acc": 0.5,
+            "correct": 20
+          },
+          "5": {
+            "n": 40,
+            "acc": 0.525,
+            "correct": 21
+          },
+          "6": {
+            "n": 40,
+            "acc": 0.55,
+            "correct": 22
+          }
+        }
+      },
+      "at_epoch_30": {
+        "overall_acc": 0.7525,
+        "correct": 301,
+        "n": 400,
+        "by_hop": {
+          "-1": {
+            "n": 200,
+            "acc": 0.755,
+            "correct": 151
+          },
+          "2": {
+            "n": 40,
+            "acc": 1.0,
+            "correct": 40
+          },
+          "3": {
+            "n": 40,
+            "acc": 0.975,
+            "correct": 39
+          },
+          "4": {
+            "n": 40,
+            "acc": 0.475,
+            "correct": 19
+          },
+          "5": {
+            "n": 40,
+            "acc": 0.575,
+            "correct": 23
+          },
+          "6": {
+            "n": 40,
+            "acc": 0.725,
+            "correct": 29
+          }
+        }
+      }
+    }
+  }
+}

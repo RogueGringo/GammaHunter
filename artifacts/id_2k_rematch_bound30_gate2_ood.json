@@ -1,0 +1,621 @@
+{
+  "checkpoints": {
+    "ff": {
+      "arm": "ff-L2-d64",
+      "epoch": 15,
+      "path": "artifacts/id_2k_rematch_bound30_ff_best.pt",
+      "science_open": false,
+      "val_acc": 0.9525
+    },
+    "geo": {
+      "arm": "geo-T6-d64-mlp10-tau",
+      "epoch": 11,
+      "path": "artifacts/id_2k_rematch_bound30_geo_best.pt",
+      "science_open": false,
+      "val_acc": 0.8475
+    },
+    "loop": {
+      "arm": "loop-T6-d64-mlp10",
+      "epoch": 6,
+      "path": "artifacts/id_2k_rematch_bound30_loop_best.pt",
+      "science_open": false,
+      "val_acc": 0.825
+    }
+  },
+  "dataset": {
+    "generation_report": "artifacts/ood_hops_generation_report.json",
+    "hop_counts": {
+      "-1": 240,
+      "12": 80,
+      "16": 80,
+      "8": 80
+    },
+    "n_range": [
+      32,
+      64
+    ],
+    "n_support_by_hop": {
+      "12": [
+        32,
+        40,
+        48,
+        56
+      ],
+      "16": [
+        40,
+        48,
+        56,
+        64
+      ],
+      "8": [
+        24,
+        28,
+        32,
+        40
+      ]
+    },
+    "n_total": 480,
+    "ood_hops": [
+      8,
+      12,
+      16
+    ],
+    "p_range": [
+      0.015,
+      0.06
+    ],
+    "p_support_by_hop": {
+      "12": [
+        0.025,
+        0.03,
+        0.04,
+        0.05
+      ],
+      "16": [
+        0.015,
+        0.018,
+        0.02,
+        0.025
+      ],
+      "8": [
+        0.05,
+        0.06,
+        0.08,
+        0.1
+      ]
+    },
+    "path": "data/ood_hops.jsonl",
+    "quotas": {
+      "n_neg": 240,
+      "n_pos_total": 240,
+      "ood_hops": [
+        8,
+        12,
+        16
+      ],
+      "pos_per_hop": 80
+    },
+    "seed": 84000,
+    "token_len": {
+      "bound30_max_len": 257,
+      "max": 246,
+      "max_tokens_accept": 250,
+      "mean": 203.225,
+      "min": 117
+    },
+    "verify_ok": true,
+    "y_counts": {
+      "0": 240,
+      "1": 240
+    }
+  },
+  "dynamic_unroll": {
+    "T_values": [
+      8,
+      12,
+      16
+    ],
+    "geo": {
+      "12": {
+        "arm": "geo-T12-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 2.4436395943164824,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.09268460255116225,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.925,
+            "correct": 74,
+            "loss_mean": 0.17597568015335127,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.11445431145839394,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 12,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.4875,
+        "overall_loss": 1.285672229518726
+      },
+      "16": {
+        "arm": "geo-T16-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 2.4688070207834243,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.09100677666720003,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.925,
+            "correct": 74,
+            "loss_mean": 0.1744566591340117,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.11205250276252628,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 16,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.4875,
+        "overall_loss": 1.2973228334856686
+      },
+      "8": {
+        "arm": "geo-T8-d64-mlp10-tau",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 2.4994593491156896,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.08759049646323547,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.925,
+            "correct": 74,
+            "loss_mean": 0.17041120723588393,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 1.0,
+            "correct": 80,
+            "loss_mean": 0.10811838014051318,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 8,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.4875,
+        "overall_loss": 1.310749688531117
+      }
+    },
+    "hop_T_acc_matrix_geo": {
+      "-1": {
+        "12": 0.0,
+        "16": 0.0,
+        "8": 0.0
+      },
+      "12": {
+        "12": 1.0,
+        "16": 1.0,
+        "8": 1.0
+      },
+      "16": {
+        "12": 0.925,
+        "16": 0.925,
+        "8": 0.925
+      },
+      "8": {
+        "12": 1.0,
+        "16": 1.0,
+        "8": 1.0
+      }
+    },
+    "hop_T_acc_matrix_loop": {
+      "-1": {
+        "12": 0.0,
+        "16": 0.025,
+        "8": 0.0
+      },
+      "12": {
+        "12": 0.575,
+        "16": 0.1625,
+        "8": 0.8375
+      },
+      "16": {
+        "12": 0.75,
+        "16": 0.65,
+        "8": 0.95
+      },
+      "8": {
+        "12": 0.325,
+        "16": 0.275,
+        "8": 0.9875
+      }
+    },
+    "loop": {
+      "12": {
+        "arm": "loop-T12-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.824163140853246,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.575,
+            "correct": 46,
+            "loss_mean": 1.4467957553686575,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.75,
+            "correct": 60,
+            "loss_mean": 0.8212621072889306,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.325,
+            "correct": 26,
+            "loss_mean": 1.5954911716631615,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 12,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.275,
+        "overall_loss": 3.0560064094800814
+      },
+      "16": {
+        "arm": "loop-T16-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.025,
+            "correct": 6,
+            "loss_mean": 3.3742395936201017,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.1625,
+            "correct": 13,
+            "loss_mean": 3.193951892259065,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.65,
+            "correct": 52,
+            "loss_mean": 1.4288694694114383,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.275,
+            "correct": 22,
+            "loss_mean": 3.1605268721468747,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 16,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.19375,
+        "overall_loss": 2.9843445024462807
+      },
+      "8": {
+        "arm": "loop-T8-d64-mlp10",
+        "by_hop": {
+          "-1": {
+            "acc_mean": 0.0,
+            "correct": 0,
+            "loss_mean": 4.4930063605308534,
+            "n": 240
+          },
+          "12": {
+            "acc_mean": 0.8375,
+            "correct": 67,
+            "loss_mean": 0.31239052619202995,
+            "n": 80
+          },
+          "16": {
+            "acc_mean": 0.95,
+            "correct": 76,
+            "loss_mean": 0.16002413020469247,
+            "n": 80
+          },
+          "8": {
+            "acc_mean": 0.9875,
+            "correct": 79,
+            "loss_mean": 0.2378954386455007,
+            "n": 80
+          }
+        },
+        "cycles_or_depth": 8,
+        "mode": "dynamic_T",
+        "n": 480,
+        "overall_acc": 0.4625,
+        "overall_loss": 2.364888196105797
+      }
+    },
+    "note": "Geo/Loop only; T in {8,12,16}; test extra test-time cycles"
+  },
+  "fixed_depth": {
+    "ff": {
+      "arm": "ff-L2-d64",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 0.0,
+          "correct": 0,
+          "loss_mean": 6.734955581029256,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 0.9625,
+          "correct": 77,
+          "loss_mean": 0.0718582184889783,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 0.875,
+          "correct": 70,
+          "loss_mean": 0.4857099753595321,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 0.725,
+          "correct": 58,
+          "loss_mean": 0.4620794052971178,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 2,
+      "mode": "fixed_L",
+      "n": 480,
+      "overall_acc": 0.4270833333333333,
+      "overall_loss": 3.5374190570388993
+    },
+    "geo": {
+      "arm": "geo-T6-d64-mlp10-tau",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 0.0,
+          "correct": 0,
+          "loss_mean": 2.6457637707392374,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 1.0,
+          "correct": 80,
+          "loss_mean": 0.07524465024471283,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 0.925,
+          "correct": 74,
+          "loss_mean": 0.16400545288342983,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 1.0,
+          "correct": 80,
+          "loss_mean": 0.0931830138200894,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 6,
+      "mode": "fixed_T",
+      "n": 480,
+      "overall_acc": 0.4875,
+      "overall_loss": 1.3782874048609908
+    },
+    "loop": {
+      "arm": "loop-T6-d64-mlp10",
+      "by_hop": {
+        "-1": {
+          "acc_mean": 0.0,
+          "correct": 0,
+          "loss_mean": 4.104882643620173,
+          "n": 240
+        },
+        "12": {
+          "acc_mean": 0.9875,
+          "correct": 79,
+          "loss_mean": 0.23561556820059196,
+          "n": 80
+        },
+        "16": {
+          "acc_mean": 1.0,
+          "correct": 80,
+          "loss_mean": 0.12314807355869561,
+          "n": 80
+        },
+        "8": {
+          "acc_mean": 0.9875,
+          "correct": 79,
+          "loss_mean": 0.2056224605999887,
+          "n": 80
+        }
+      },
+      "cycles_or_depth": 6,
+      "mode": "fixed_T",
+      "n": 480,
+      "overall_acc": 0.49583333333333335,
+      "overall_loss": 2.146505672203299
+    },
+    "note": "FF at trained L=2; Geo/Loop at trained T=6"
+  },
+  "gate": "gate2_ood_hop_stress",
+  "hparams": {
+    "L": 2,
+    "T": 6,
+    "apply_cycle_ln": false,
+    "apply_cycle_rmsnorm": true,
+    "d": 64,
+    "ff_best_epoch": 15,
+    "geo_best_epoch": 11,
+    "geo_use_tau": true,
+    "loop_best_epoch": 6,
+    "loop_use_tau": false,
+    "max_T": 16,
+    "mlp_expansion": 10,
+    "residual_alpha": 0.5,
+    "source": "artifacts/id_2k_rematch_bound30.json"
+  },
+  "id_val_sanity": {
+    "ff_overall_acc": 0.9525,
+    "geo_overall_acc": 0.8475,
+    "loop_overall_acc": 0.825,
+    "n_val": 400,
+    "note": "ID val at best ckpt; confirms load (not Gate-2 claim)",
+    "science_open": false
+  },
+  "interpretation_stop": {
+    "fail_closed_one_liner": "STOP: all arms near chance on OOD overall (hard-neg acc\u22480) \u2014 recurrence length generalization / discrimination on this substrate not supported; positives alone do not license OPEN",
+    "framing": "STOP",
+    "label": "evidence vs aspiration \u2014 MEASURE plumbing only",
+    "metrics_snapshot": {
+      "ff_hardneg_acc": 0.0,
+      "ff_ood_pos_acc_mean": 0.8541666666666666,
+      "ff_overall_acc": 0.4270833333333333,
+      "ff_per_hop": {
+        "12": 0.9625,
+        "16": 0.875,
+        "8": 0.725
+      },
+      "geo_T6_hardneg_acc": 0.0,
+      "geo_T6_ood_pos_acc_mean": 0.975,
+      "geo_T6_overall_acc": 0.4875,
+      "geo_T6_per_hop": {
+        "12": 1.0,
+        "16": 0.925,
+        "8": 1.0
+      },
+      "geo_TeqK_ood_pos_acc_mean": 0.975,
+      "geo_TeqK_per_hop": {
+        "12": 1.0,
+        "16": 0.925,
+        "8": 1.0
+      },
+      "loop_T6_hardneg_acc": 0.0,
+      "loop_T6_ood_pos_acc_mean": 0.9916666666666667,
+      "loop_T6_overall_acc": 0.49583333333333335,
+      "loop_T6_per_hop": {
+        "12": 0.9875,
+        "16": 1.0,
+        "8": 0.9875
+      },
+      "loop_TeqK_ood_pos_acc_mean": 0.7374999999999999,
+      "loop_TeqK_per_hop": {
+        "12": 0.575,
+        "16": 0.65,
+        "8": 0.9875
+      }
+    },
+    "prereg_rules": {
+      "all_arms_fail_similarly": "STOP for recurrence length generalization on this substrate",
+      "ff_collapses_geo_loop_TgeK_maintains": "structural advantage *candidate* (never auto-OPEN)",
+      "geo_T6_beats_geo_TK": "extra unroll not helping / harming",
+      "hardneg_collapse_overall_chance": "STOP \u2014 positives alone do not license OPEN"
+    },
+    "science_open": false,
+    "secondary_notes": [
+      "Positives remain high for all arms at fixed depth (FF 0.73\u20130.96, Geo/Loop \u22480.98\u20131.0); collapse is on hard negatives (acc=0).",
+      "Geo dynamic T\u2208{8,12,16} flat vs T=6 on positives; Loop@T=K worse than Loop@T=6 (extra unroll harms Loop).",
+      "ID val sanity matched bound30 best_val_acc (FF 0.9525 / Geo 0.8475 / Loop 0.825) \u2014 load confirmed."
+    ]
+  },
+  "max_len": 257,
+  "metrics_jsonl": null,
+  "mode": "MEASURE",
+  "param_counts": {
+    "ff": 121218,
+    "geo": 121858,
+    "loop": 120834
+  },
+  "prereg": {
+    "fail_closed_one_liner": "STOP: all arms near chance on OOD overall (hard-neg acc\u22480) \u2014 recurrence length generalization / discrimination on this substrate not supported; positives alone do not license OPEN",
+    "framing": "STOP",
+    "label": "evidence vs aspiration \u2014 MEASURE plumbing only",
+    "metrics_snapshot": {
+      "ff_hardneg_acc": 0.0,
+      "ff_ood_pos_acc_mean": 0.8541666666666666,
+      "ff_overall_acc": 0.4270833333333333,
+      "ff_per_hop": {
+        "12": 0.9625,
+        "16": 0.875,
+        "8": 0.725
+      },
+      "geo_T6_hardneg_acc": 0.0,
+      "geo_T6_ood_pos_acc_mean": 0.975,
+      "geo_T6_overall_acc": 0.4875,
+      "geo_T6_per_hop": {
+        "12": 1.0,
+        "16": 0.925,
+        "8": 1.0
+      },
+      "geo_TeqK_ood_pos_acc_mean": 0.975,
+      "geo_TeqK_per_hop": {
+        "12": 1.0,
+        "16": 0.925,
+        "8": 1.0
+      },
+      "loop_T6_hardneg_acc": 0.0,
+      "loop_T6_ood_pos_acc_mean": 0.9916666666666667,
+      "loop_T6_overall_acc": 0.49583333333333335,
+      "loop_T6_per_hop": {
+        "12": 0.9875,
+        "16": 1.0,
+        "8": 0.9875
+      },
+      "loop_TeqK_ood_pos_acc_mean": 0.7374999999999999,
+      "loop_TeqK_per_hop": {
+        "12": 0.575,
+        "16": 0.65,
+        "8": 0.9875
+      }
+    },
+    "prereg_rules": {
+      "all_arms_fail_similarly": "STOP for recurrence length generalization on this substrate",
+      "ff_collapses_geo_loop_TgeK_maintains": "structural advantage *candidate* (never auto-OPEN)",
+      "geo_T6_beats_geo_TK": "extra unroll not helping / harming",
+      "hardneg_collapse_overall_chance": "STOP \u2014 positives alone do not license OPEN"
+    },
+    "science_open": false,
+    "secondary_notes": [
+      "Positives remain high for all arms at fixed depth (FF 0.73\u20130.96, Geo/Loop \u22480.98\u20131.0); collapse is on hard negatives (acc=0).",
+      "Geo dynamic T\u2208{8,12,16} flat vs T=6 on positives; Loop@T=K worse than Loop@T=6 (extra unroll harms Loop).",
+      "ID val sanity matched bound30 best_val_acc (FF 0.9525 / Geo 0.8475 / Loop 0.825) \u2014 load confirmed."
+    ]
+  },
+  "science_open": false
+}

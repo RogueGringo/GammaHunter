@@ -1,0 +1,31 @@
+# Copyright (c) 2026 B.Jones. All rights reserved.
+# Proprietary and confidential. See LICENSE.
+# SPDX-License-Identifier: LicenseRef-Proprietary
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fast-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
+      - name: Test (fast suite; dataset-dependent tests skip without local data)
+        run: pytest -q -m "not slow"

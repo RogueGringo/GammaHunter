@@ -1,0 +1,4 @@
+# Normalize text to LF in the repository and on checkout; keep binaries untouched.
+* text=auto eol=lf
+*.pt binary
+*.bundle binary

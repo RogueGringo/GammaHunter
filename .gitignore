@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.egg-info/
+dist/
+build/
+data/*.jsonl
+!data/.gitkeep
+artifacts/*.jsonl
+!artifacts/.gitkeep
+.pytest_cache/
+
+# Provenance bundles are kept outside the repository
+*.bundle
+*.bundle.sha256
