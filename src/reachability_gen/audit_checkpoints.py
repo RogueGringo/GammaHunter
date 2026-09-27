@@ -22,8 +22,9 @@ reports, for that one model:
 * collapse flags (:func:`reachability_gen.diagnostics.collapse_flags`).
 
 It also reports how id_2k was built — distinct graphs, train/val graph
-overlap and a query-blind baseline (majority train label of the graph) —
-which is the floor every arm's accuracy should be read against, and, for each
+overlap, a query-blind baseline (majority train label of the graph) and an
+endpoint-rule baseline that needs no path search — the floors every arm's
+accuracy should be read against, and, for each
 extended-step set present in ``data/`` (:data:`EVAL_SETS`), how well it is
 covered by the training vocabulary and graph sizes (:func:`eval_set_review`).
 
@@ -55,6 +56,7 @@ from reachability_gen.diagnostics import (
     median_abs_deviation,
 )
 from reachability_gen.gen_id_2k import verify_id_2k
+from reachability_gen.hard_negatives import row_has_endpoint_cue
 from reachability_gen.models.geometric import DEFAULT_RESIDUAL_ALPHA
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_id_2k_rematch_bound30 import (
@@ -473,6 +475,35 @@ def dataset_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def endpoint_rule_report(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Val accuracy of a rule that needs no path search.
+
+    Predict unreachable iff the source has no outgoing edge or the target no
+    incoming edge (:func:`hard_negatives.has_endpoint_cue`); reachable
+    queries never carry that cue.
+    """
+    train, val = _split_train_val(rows)
+    hit: dict[int, list[float]] = {}
+    for r in val:
+        pred = 0 if row_has_endpoint_cue(r) else 1
+        hit.setdefault(int(r["hop_distance"]), []).append(float(pred == int(r["y"])))
+    return {
+        "rule": (
+            "predict unreachable iff the source has no outgoing edge or the "
+            "target no incoming edge"
+        ),
+        "val_acc": _mean([x for xs in hit.values() for x in xs]),
+        "acc_by_hop": {str(k): _mean(v) for k, v in sorted(hit.items())},
+        "negatives_with_endpoint_cue": {
+            name: {
+                "count": sum(1 for r in split if int(r["y"]) == 0 and row_has_endpoint_cue(r)),
+                "of": sum(1 for r in split if int(r["y"]) == 0),
+            }
+            for name, split in (("train", train), ("val", val))
+        },
+    }
+
+
 def eval_set_review(
     train_rows: list[dict[str, Any]], eval_rows: list[dict[str, Any]]
 ) -> dict[str, Any]:
@@ -599,11 +630,13 @@ def main(argv: Optional[list[str]] = None) -> int:
             f"y1 {pos['distinct_graphs']}, y0 {neg['distinct_graphs']}",
             file=sys.stderr,
         )
+    dataset["endpoint_rule_baseline"] = endpoint_rule_report(rows)
     print(
         f"[dataset] {dataset['distinct_graphs']} distinct graphs; "
         f"{dataset['val_graphs_seen_in_train']}/{dataset['val_graphs']} val graphs "
         "also in train; query-blind baseline val_acc="
-        f"{dataset['query_blind_baseline']['val_acc']:.4f}",
+        f"{dataset['query_blind_baseline']['val_acc']:.4f}; endpoint-rule val_acc="
+        f"{dataset['endpoint_rule_baseline']['val_acc']:.4f}",
         file=sys.stderr,
     )
     print(

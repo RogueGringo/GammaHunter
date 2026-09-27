@@ -65,6 +65,29 @@ def is_hard_negative(
     return True, "ok"
 
 
+def has_endpoint_cue(
+    n: int, edges: Sequence[tuple[int, int]], s: int, t: int
+) -> bool:
+    """True if ``(s, t)`` is decidable from one endpoint alone.
+
+    A source with no outgoing edge reaches nothing, and a target with no
+    incoming edge is reached by nothing, so such a query is unreachable
+    without any path search. Hard negatives by total degree can still carry
+    this cue (a node with only incoming edges has total degree ≥ 1);
+    reachable queries never do.
+    """
+    del n  # signature parity with the other helpers
+    has_out = any(u == s for u, _ in edges)
+    has_in = any(v == t for _, v in edges)
+    return not (has_out and has_in)
+
+
+def row_has_endpoint_cue(row: Mapping[str, Any]) -> bool:
+    """:func:`has_endpoint_cue` for a JSONL-like row (parses its encoding)."""
+    n, edges, s, t = parse_instance(str(row["encoding"]))
+    return has_endpoint_cue(n, edges, int(row.get("s", s)), int(row.get("t", t)))
+
+
 def classify_y0_row(row: Mapping[str, Any]) -> tuple[bool, str]:
     """Classify a JSONL-like row as hard-negative or reject with a reason code."""
     y = int(row.get("y", -1))
@@ -107,6 +130,8 @@ def filter_hard_negatives(
 __all__ = [
     "classify_y0_row",
     "filter_hard_negatives",
+    "has_endpoint_cue",
     "is_hard_negative",
+    "row_has_endpoint_cue",
     "total_degrees",
 ]

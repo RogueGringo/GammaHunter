@@ -271,6 +271,7 @@ def test_audit_artifact_if_present():
     assert trunc["required_max_len"] > trunc["max_len_used_by_runs"]
     ds = data["dataset"]
     assert 0.0 <= ds["query_blind_baseline"]["val_acc"] <= 1.0
+    assert 0.0 <= ds["endpoint_rule_baseline"]["val_acc"] <= 1.0
     for name, review in data["eval_set_reviews"].items():
         if review is None:  # set not generated when the audit ran
             continue

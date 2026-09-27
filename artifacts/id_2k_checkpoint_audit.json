@@ -2,6 +2,28 @@
   "data_path": "data/id_2k.jsonl",
   "dataset": {
     "distinct_graphs": 20,
+    "endpoint_rule_baseline": {
+      "acc_by_hop": {
+        "-1": 0.655,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0
+      },
+      "negatives_with_endpoint_cue": {
+        "train": {
+          "count": 442,
+          "of": 800
+        },
+        "val": {
+          "count": 131,
+          "of": 200
+        }
+      },
+      "rule": "predict unreachable iff the source has no outgoing edge or the target no incoming edge",
+      "val_acc": 0.8275
+    },
     "graph_draws": 22,
     "negative_graphs": 10,
     "note": "gen_id_2k harvests every qualifying (s,t) pair of each sampled graph and splits train/val per example, not per graph: val asks new queries on training graphs, so accuracy mixes reachability with per-graph memorisation. Compare arm accuracy to the query-blind baseline, not to 0.5.",

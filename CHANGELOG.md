@@ -4,6 +4,11 @@
 
 - Pull-request template recording evidence paths, test plan and
   `science_open` status for each change.
+- Graph-disjoint, label-paired in-distribution set whose negatives cannot be
+  decided from one endpoint.
+- Multi-seed fixed-budget runner with per-epoch diagnostics, best and final
+  checkpoints, and a self-audit of every saved checkpoint.
+- Endpoint-rule baseline in the checkpoint audit.
 
 ## 0.1.0 (2026-09-27)
 

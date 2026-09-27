@@ -1,8 +1,8 @@
 # Usage
 
 All commands run from the repository root. Instance files (`data/*.jsonl`)
-are not versioned. The generators are seeded; the three fixed-set generators
-also write a generation report to `artifacts/`.
+are not versioned. The generators are seeded; the fixed-set generators also
+write a generation report to `artifacts/`.
 
 ## Install
 
@@ -31,6 +31,7 @@ pytest -q                   # full suite, including longer training checks
 |---|---|
 | `python -m reachability_gen.generate --all-splits --n-per-cell 4` | Base train / val / test / size-OOD splits in `data/` |
 | `python -m reachability_gen.gen_id_2k` | Fixed 2,000-instance in-distribution set, `data/id_2k.jsonl` |
+| `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` |
 | `python -m reachability_gen.gen_ood_hops` | Extended-step evaluation set, `data/ood_hops.jsonl` |
 | `python -m reachability_gen.gen_covariate_matched_ood` | Length-matched extended-step set, `data/covariate_matched_ood.jsonl` |
 
@@ -75,6 +76,21 @@ context from the first rows of the dataset and warn once if any input is
 truncated (see [LIMITATIONS.md](LIMITATIONS.md)). New runners should size
 inputs with `reachability_gen.tokenize.required_max_len` and pass
 `on_overflow="error"`.
+
+## Multi-seed run on the graph-disjoint set
+
+```bash
+python -m reachability_gen.run_disjoint_rematch            # seeds 0 1 2, 30 epochs
+python -m reachability_gen.run_disjoint_rematch --seeds 0 --epochs 2   # smoke check
+```
+
+Trains the three arms of the latest comparison protocol on
+`data/id_disjoint_2k.jsonl` for each seed. Inputs are sized so that nothing is
+truncated, validation is logged every epoch with breakdown diagnostics, and
+both the best and the final checkpoint are saved to
+`artifacts/id_disjoint_rematch/` and re-scored before the result file
+`artifacts/id_disjoint_rematch.json` is written (exit status 1 if a re-score
+differs).
 
 ## Extended-step evaluation
 

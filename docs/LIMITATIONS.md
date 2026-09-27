@@ -3,16 +3,21 @@
 Current constraints on interpreting the results in `artifacts/`. Figures come
 from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
 
-1. **Single seed, small strata.** Each comparison run uses one training seed.
-   Validation strata hold 40 instances per step count, about ±13 points at 95%
-   confidence near 75% accuracy.
+1. **Single seed, small strata.** Each comparison run on `id_2k` uses one
+   training seed. Validation strata hold 40 instances per step count, about
+   ±13 points at 95% confidence near 75% accuracy.
 
-2. **The in-distribution set reuses graphs.** Its 2,000 instances are drawn
-   from 20 distinct graphs, and every validation graph also appears in
-   training. A baseline that ignores the query and predicts each graph's
-   majority training label scores 0.7275. Accuracy should be read against
-   that floor, and it measures generalization to new queries on known graphs,
-   not to new graphs.
+2. **The in-distribution set reuses graphs and carries a shortcut.** Its
+   2,000 instances are drawn from 20 distinct graphs, and every validation
+   graph also appears in training. A baseline that ignores the query and
+   predicts each graph's majority training label scores 0.7275. In addition,
+   131 of its 200 validation negatives can be decided from one endpoint (the
+   source has no outgoing edge or the target no incoming edge), and a rule
+   using only that cue scores 0.8275. Accuracy on this set therefore mixes
+   reachability with per-graph memorization and a one-step cue. The
+   graph-disjoint set (`id_disjoint_2k`) removes both: each graph appears once,
+   with one reachable and one unreachable query, and no negative carries the
+   endpoint cue, so both baselines score 0.5 by construction.
 
 3. **Input truncation in the comparison runs.** The comparison runners size
    their context from the first rows of the dataset. 50 of the 2,000
@@ -52,5 +57,15 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    its inputs, so most inputs lost their query and its per-step results are
    not interpretable.
 
-8. **Measurement-only status.** No result in this repository is presented as
+8. **No learning on the graph-disjoint set at this scale.** Trained on
+   `id_disjoint_2k` with the same arms and settings (three seeds, 30 epochs,
+   1,600 training instances), no arm exceeded chance on validation or fit its
+   own training set: best validation accuracy was 0.50–0.52 and training
+   accuracy never passed 0.52 (`artifacts/id_disjoint_rematch.json`). The
+   recurrent arm with cycle embeddings showed full token collapse from the
+   first epoch in every seed. Accuracy on `id_2k` should therefore not be read
+   as learned reachability; whether larger data, models or budgets change
+   this is untested.
+
+9. **Measurement-only status.** No result in this repository is presented as
    an established finding.

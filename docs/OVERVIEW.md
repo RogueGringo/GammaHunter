@@ -50,6 +50,7 @@ negatives (both endpoints connected to the graph, yet mutually unreachable).
 | Checkpoint re-score | Reported results that do not correspond to the saved model |
 | Input-length guard | Instances whose query would be cut off by the model's context size |
 | Dataset composition | Graph reuse across splits, measured against a query-blind baseline |
+| Endpoint-cue baseline | Negatives decidable from one endpoint without any path search |
 | Evaluation coverage | Tokens or graph sizes present in evaluation data but absent from training data |
 | Breakdown flags | Representation collapse, input-independent outputs, abrupt training regressions, and final-epoch results well below the best checkpoint |
 

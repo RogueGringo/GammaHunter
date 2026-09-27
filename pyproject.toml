@@ -38,6 +38,8 @@ reachability-ood-gate2 = "reachability_gen.run_ood_gate2:main"
 reachability-gen-covariate-matched-ood = "reachability_gen.gen_covariate_matched_ood:main"
 reachability-ood-covariate-matched = "reachability_gen.run_covariate_matched_ood:main"
 reachability-audit-checkpoints = "reachability_gen.audit_checkpoints:main"
+reachability-gen-id-disjoint = "reachability_gen.gen_id_disjoint:main"
+reachability-disjoint-rematch = "reachability_gen.run_disjoint_rematch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
