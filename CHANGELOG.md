@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Pull-request template recording evidence paths, test plan and
+  `science_open` status for each change.
+
 ## 0.1.0 (2026-09-27)
 
 Initial private release.

@@ -74,6 +74,12 @@ Full command reference: [docs/USAGE.md](docs/USAGE.md).
 - [ADR-001](docs/ADR-001-metrics-and-compute.md): frozen metrics and compute specification
 - [Changelog](CHANGELOG.md)
 
+## Contributing
+
+Changes land through pull requests using the repository's
+[pull-request template](.github/PULL_REQUEST_TEMPLATE.md), which records each
+change's evidence paths, test plan and `science_open` status.
+
 ## License
 
 Proprietary. No rights are granted without a separate signed written
