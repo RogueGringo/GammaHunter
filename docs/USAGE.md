@@ -14,7 +14,15 @@ pip install -e ".[dev]"
 ```
 
 Python 3.10 or later. A CPU build of PyTorch is sufficient for every command
-below. On Windows, run Python in UTF-8 mode (`python -X utf8 ...` or
+below and is the reference for the committed results. For an NVIDIA GPU,
+install a CUDA build instead, in a separate environment (the CUDA 13.0 build
+includes kernels for compute capability 7.5 through 12.0):
+
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cu130
+```
+
+On Windows, run Python in UTF-8 mode (`python -X utf8 ...` or
 `PYTHONUTF8=1`): some help and log text uses non-ASCII symbols that the
 default console code page cannot print.
 
@@ -82,7 +90,12 @@ inputs with `reachability_gen.tokenize.required_max_len` and pass
 ```bash
 python -m reachability_gen.run_disjoint_rematch            # seeds 0 1 2, 30 epochs
 python -m reachability_gen.run_disjoint_rematch --seeds 0 --epochs 2   # smoke check
+python -m reachability_gen.run_disjoint_rematch --device cuda           # on a GPU
 ```
+
+`--device cuda` trains on the GPU from the same initial weights and data
+order as on the CPU; GPU numerics differ slightly, so the device is recorded
+in the result file.
 
 Trains the three arms of the latest comparison protocol on
 `data/id_disjoint_2k.jsonl` for each seed. Inputs are sized so that nothing is

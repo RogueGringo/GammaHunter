@@ -32,7 +32,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import copy
 import json
 import statistics
 import sys
@@ -78,8 +77,16 @@ def _sd(xs: Sequence[float]) -> float:
     return statistics.stdev(xs) if len(xs) > 1 else 0.0
 
 
-def build_arm(kind: str, vocab: Vocab, max_len: int) -> tuple[Any, Any]:
-    """Model + trainer with the bound30 settings for ``kind``."""
+def build_arm(
+    kind: str, vocab: Vocab, max_len: int, device: str = "cpu"
+) -> tuple[Any, Any]:
+    """Model + trainer with the bound30 settings for ``kind``.
+
+    Parameters are initialised on the CPU (so a seed gives the same starting
+    weights on every device); the trainer then moves the model to ``device``.
+    """
+    import torch
+
     from reachability_gen.models.euclidean_loop import EuclideanLoop
     from reachability_gen.models.feedforward import FeedForward
     from reachability_gen.models.geometric import GeometricRecurrent
@@ -87,11 +94,12 @@ def build_arm(kind: str, vocab: Vocab, max_len: int) -> tuple[Any, Any]:
     from reachability_gen.train.geo_trainer import GeometricTrainer
     from reachability_gen.train.loop_trainer import LoopTrainer
 
+    dev = torch.device(device)
     common = {"n_heads": _n_heads(DEFAULT_FF_D), "max_len": max_len, "pad_id": vocab.pad_id}
     if kind == "ff":
         model = FeedForward(len(vocab), d=DEFAULT_FF_D, L=DEFAULT_L, **common)
         trainer = FeedForwardTrainer(
-            model, lr=DEFAULT_FF_LR, weight_decay=0.01, grad_clip=FF_GRAD_CLIP
+            model, lr=DEFAULT_FF_LR, weight_decay=0.01, grad_clip=FF_GRAD_CLIP, device=dev
         )
         return model, trainer
     rec = dict(
@@ -106,12 +114,12 @@ def build_arm(kind: str, vocab: Vocab, max_len: int) -> tuple[Any, Any]:
     if kind == "geo":
         model = GeometricRecurrent(len(vocab), use_tau=True, **rec)
         trainer = GeometricTrainer(
-            model, lr=DEFAULT_REC_LR, weight_decay=0.01, grad_clip=REC_GRAD_CLIP
+            model, lr=DEFAULT_REC_LR, weight_decay=0.01, grad_clip=REC_GRAD_CLIP, device=dev
         )
     elif kind == "loop":
         model = EuclideanLoop(len(vocab), **rec)
         trainer = LoopTrainer(
-            model, lr=DEFAULT_REC_LR, weight_decay=0.01, grad_clip=REC_GRAD_CLIP
+            model, lr=DEFAULT_REC_LR, weight_decay=0.01, grad_clip=REC_GRAD_CLIP, device=dev
         )
     else:
         raise ValueError(f"unknown arm {kind!r}")
@@ -134,6 +142,7 @@ def evaluate(
     from reachability_gen.train.ff_trainer import examples_to_batch
 
     model.eval()
+    device = next(model.parameters()).device
     correct: list[float] = []
     losses: list[float] = []
     margins: list[float] = []
@@ -141,13 +150,17 @@ def evaluate(
     with torch.no_grad():
         for i in range(0, len(rows), batch_size):
             chunk = list(rows[i : i + batch_size])
-            ids, mask, labels, _ = examples_to_batch(chunk, vocab, on_overflow="error")
+            ids, mask, labels, _ = examples_to_batch(
+                chunk, vocab, on_overflow="error", device=device
+            )
             logits, _ = model(ids, mask)
             losses += F.cross_entropy(logits, labels, reduction="none").tolist()
             correct += (logits.argmax(dim=-1) == labels).float().tolist()
             margins += logit_margins(logits).tolist()
             hops += [int(r["hop_distance"]) for r in chunk]
-        ids, mask, _, _ = examples_to_batch(list(rows[:diag_rows]), vocab, on_overflow="error")
+        ids, mask, _, _ = examples_to_batch(
+            list(rows[:diag_rows]), vocab, on_overflow="error", device=device
+        )
         cos_last = float(token_coherence(model.token_states(ids, mask)[-1], mask)[0].mean())
     by_hop = {}
     for k in sorted(set(hops)):
@@ -205,14 +218,22 @@ def train_arm(
     max_len: int,
     ckpt_dir: Path,
     telemetry: bool = True,
+    device: str = "cpu",
 ) -> dict[str, Any]:
-    """Train one arm for a fixed budget; save and self-audit best + final."""
+    """Train one arm for a fixed budget; save and self-audit best + final.
+
+    Checkpoints are stored as CPU tensors. The self-audit re-scores on the
+    training ``device``; telemetry runs on a CPU copy.
+    """
     import torch
 
     from reachability_gen.train.ff_trainer import examples_to_batch
 
+    def _cpu_state() -> dict[str, Any]:
+        return {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+
     torch.manual_seed(seed)
-    model, trainer = build_arm(kind, vocab, max_len)
+    model, trainer = build_arm(kind, vocab, max_len, device)
     history: list[dict[str, Any]] = []
     best_acc, best_epoch, best_state = -1.0, 0, None
     n_steps = n_sat = 0
@@ -223,7 +244,9 @@ def train_arm(
         accs: list[float] = []
         for start in range(0, len(train), DEFAULT_BATCH):
             batch = [train[i] for i in order[start : start + DEFAULT_BATCH]]
-            ids, mask, labels, _ = examples_to_batch(batch, vocab, on_overflow="error")
+            ids, mask, labels, _ = examples_to_batch(
+                batch, vocab, on_overflow="error", device=trainer.device
+            )
             loss, acc = trainer.train_step(ids, labels, mask)
             losses.append(loss)
             accs.append(acc)
@@ -242,7 +265,7 @@ def train_arm(
             }
         )
         if ev["acc"] > best_acc:
-            best_acc, best_epoch, best_state = ev["acc"], epoch, copy.deepcopy(model.state_dict())
+            best_acc, best_epoch, best_state = ev["acc"], epoch, _cpu_state()
         print(
             f"[seed{seed}/{kind}] epoch {epoch}/{epochs}: train_acc={_mean(accs):.4f} "
             f"val_acc={ev['acc']:.4f} (best {best_acc:.4f}@ep{best_epoch}) "
@@ -250,11 +273,12 @@ def train_arm(
             file=sys.stderr,
         )
     assert best_state is not None
-    states = {"best": (best_epoch, best_state), "final": (epochs, copy.deepcopy(model.state_dict()))}
+    states = {"best": (best_epoch, best_state), "final": (epochs, _cpu_state())}
     ckpt_dir.mkdir(parents=True, exist_ok=True)
     out: dict[str, Any] = {
         "arm": kind,
         "seed": seed,
+        "device": device,
         "epochs": epochs,
         "train_seconds": time.perf_counter() - t0,
         "grad_clip_sat_rate": n_sat / n_steps if n_steps else float("nan"),
@@ -267,8 +291,9 @@ def train_arm(
             {"epoch": epoch, "state_dict": state, "arm": kind, "seed": seed, "science_open": False},
             path,
         )
-        fresh, _ = build_arm(kind, vocab, max_len)
-        fresh.load_state_dict(torch.load(path, map_location="cpu", weights_only=True)["state_dict"])
+        saved = torch.load(path, map_location="cpu", weights_only=True)["state_dict"]
+        fresh, _ = build_arm(kind, vocab, max_len, device)
+        fresh.load_state_dict(saved)
         ev = evaluate(fresh, val, vocab)
         recorded = history[epoch - 1]["val_acc"]
         block = {
@@ -283,7 +308,9 @@ def train_arm(
             ),
         }
         if telemetry:
-            block["telemetry"] = _telemetry(fresh, kind, val, vocab)
+            cpu_model, _ = build_arm(kind, vocab, max_len)
+            cpu_model.load_state_dict(saved)
+            block["telemetry"] = _telemetry(cpu_model, kind, val, vocab)
         out[which] = block
     out["run_flags"] = collapse_flags(
         train_history=history, best_val_acc=best_acc, last_epoch_val_acc=history[-1]["val_acc"]
@@ -350,6 +377,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--threads", type=int, default=8, help="torch intra-op threads (recorded)"
     )
+    p.add_argument(
+        "--device", choices=("cpu", "cuda"), default="cpu",
+        help="training device (GPU numerics differ slightly from CPU; recorded)",
+    )
     return p
 
 
@@ -367,6 +398,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         )
         return 1
     torch.set_num_threads(args.threads)
+    if args.device == "cuda" and not torch.cuda.is_available():
+        print("FAIL: --device cuda, but this torch build sees no CUDA device", file=sys.stderr)
+        return 1
     rows = load_jsonl(args.data)
     ok, issues = verify_id_disjoint(rows)
     if not ok:
@@ -389,6 +423,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             kind: train_arm(
                 kind, train, val, vocab,
                 seed=seed, epochs=args.epochs, max_len=max_len, ckpt_dir=args.ckpt_dir,
+                device=args.device,
             )
             for kind in args.arms
         }
@@ -420,6 +455,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             },
             "max_len": max_len,
             "torch_threads": args.threads,
+            "device": args.device,
+            "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
             "torch_version": torch.__version__,
         },
         "baselines": {

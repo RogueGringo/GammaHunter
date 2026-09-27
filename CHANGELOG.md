@@ -9,6 +9,8 @@
 - Multi-seed fixed-budget runner with per-epoch diagnostics, best and final
   checkpoints, and a self-audit of every saved checkpoint.
 - Endpoint-rule baseline in the checkpoint audit.
+- Optional CUDA device for the graph-disjoint runner; the CPU remains the
+  default and the reference for committed results.
 
 ## 0.1.0 (2026-09-27)
 
