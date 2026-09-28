@@ -24,6 +24,7 @@ dependencies = []
 dev = ["pytest>=7.0"]
 torch = ["torch"]
 benchmarks = ["pyarrow"]
+llm = ["transformers", "accelerate"]
 
 [project.scripts]
 reachability-gen = "reachability_gen.generate:main"
@@ -48,6 +49,8 @@ reachability-reach-cues = "reachability_gen.reach_cues:main"
 reachability-untrained-control = "reachability_gen.untrained_control:main"
 reachability-stability = "reachability_gen.run_stability:main"
 reachability-takeoff = "reachability_gen.run_takeoff:main"
+reachability-llm-reference = "reachability_gen.run_llm_reference:main"
+reachability-llm-cot = "reachability_gen.run_llm_cot:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -44,6 +44,13 @@
   starts over 20 seeds, with Wilson intervals, Fisher exact tests (Holm
   adjusted, for take-off and for holding long-path answers) and the final
   checkpoints' reach up to 192 steps. Results recorded (limitations item 13).
+- LLM reference points: open models from the local cache, inference only, on
+  the crossed, long-path and paired sets with a withheld-graph control; an
+  immediate-answer protocol (logit scoring, AUROC) and a step-by-step protocol
+  (greedy decoding, every generation recorded). Optional `llm` extra.
+- Cue-conflict test: whether the LLMs' paired-split signal follows one-endpoint
+  reach cues, on every cue-conflicting paired graph and as many agreeing ones.
+- Related-work page mapping the measurements to published terms and papers.
 
 ## 0.1.0 (2026-09-27)
 

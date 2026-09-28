@@ -6,6 +6,8 @@ build/
 data/*.jsonl
 !data/.gitkeep
 artifacts/*.jsonl
+# ...except the step-by-step generations behind artifacts/llm_cot.json (kept for audit)
+!artifacts/llm_cot_generations.jsonl
 !artifacts/.gitkeep
 .pytest_cache/
 

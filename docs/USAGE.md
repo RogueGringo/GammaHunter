@@ -204,6 +204,27 @@ tests, and each final checkpoint is re-scored and evaluated on
 not versioned, and their SHA-256 hashes are recorded instead. Seeds can run
 in parts and be merged with `--merge`, as for the stability ring.
 
+## LLM reference points
+
+```bash
+pip install -e ".[llm]"                                  # adds transformers, accelerate
+python -m reachability_gen.run_llm_reference --device cuda
+python -m reachability_gen.run_llm_cot --device cuda
+```
+
+Both runners load open language models only from the local Hugging Face cache
+(`local_files_only`; nothing is downloaded) and run inference only. The
+direct protocol asks for an immediate answer after four solved examples and
+scores whichever of " Yes" and " No" the model rates higher at the first token
+where they differ (also giving a threshold-free AUROC), on seeded samples of
+the crossed validation and long-path sets, the paired validation split, and
+the crossed questions with the edge list withheld (a model that reads the
+graph cannot beat chance there). The step-by-step protocol puts each question
+to instruction-tuned models through their chat template, asks them to reason
+and end with "Answer: Yes" or "Answer: No", decodes greedily and records every
+generation in `artifacts/llm_cot_generations.jsonl`. They write
+`artifacts/llm_reference.json` and `artifacts/llm_cot.json`.
+
 ## External benchmarks
 
 ```bash

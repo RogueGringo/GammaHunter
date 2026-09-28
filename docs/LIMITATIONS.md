@@ -169,5 +169,35 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     therefore shows that this structure is learned reliably at this size, not
     that it emerges from token input.
 
-14. **Measurement-only status.** No result in this repository is presented as
+14. **LLM reference points.** Open language models from the local cache
+    (0.49 to 3.82 billion parameters; a 7-billion-parameter model did not fit
+    this machine's memory in 16-bit precision) answered the same questions,
+    inference only. Asked for an immediate answer after four solved examples
+    (`artifacts/llm_reference.json`, 1,000 questions per set), all eight
+    scored at chance on the crossed validation split (AUROC 0.48–0.50) and on
+    the long-path set (0.49–0.52), as on the same questions with the edge list
+    withheld (0.49–0.50). On the paired validation split, which carries
+    one-endpoint cues, AUROC was 0.51–0.61. Scored on every paired graph in
+    which the target-reach cue conflicts with the label and on as many in
+    which it agrees (`artifacts/llm_cue_conflict.json`, 548 of each), the
+    model with the clearest paired-split signal, Falcon3-3B-Instruct (AUROC
+    0.61), ranked the reachable question higher in 65% of agreeing graphs but
+    in 41% of conflicting ones (two-sided Fisher exact test on graphs without
+    ties, p ≈ 5×10⁻¹⁶): its signal follows the one-endpoint cue, not a path.
+    Qwen2.5-1.5B showed the same pattern more weakly (56% against 46%,
+    p = 0.003) and the two Qwen2.5-3B models the reverse (48% against 57%,
+    p ≤ 0.005), which a model that searches would not show either. Asked to
+    reason step by step (`artifacts/llm_cot.json`: five instruction-tuned
+    models, greedy decoding, 400 questions per set, every generation in
+    `artifacts/llm_cot_generations.jsonl`), they reached 0.45–0.55 among
+    parsed answers on the crossed validation split and 0.48–0.52 on the
+    long-path set. On the long-path set, 3–52% of the answers were cut off at
+    the 768-token budget before a final answer. Without the edges, one model
+    declined to answer 97% of the questions and the others stayed at chance.
+    These models read the edges as text, whereas the message-passing arms are
+    given the graph as structure, so the comparison is not like-for-like: the
+    reference points show where standard open models of this size stand on
+    the same questions, not that one architecture outperforms another.
+
+15. **Measurement-only status.** No result in this repository is presented as
     an established finding.

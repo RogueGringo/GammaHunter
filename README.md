@@ -75,6 +75,7 @@ Full command reference: [docs/USAGE.md](docs/USAGE.md).
 - [Usage](docs/USAGE.md): commands and outputs
 - [Limitations](docs/LIMITATIONS.md): current constraints on interpreting results
 - [Benchmark audits](docs/BENCHMARK_AUDITS.md): the integrity controls applied to public benchmarks
+- [Related work](docs/RELATED_WORK.md): how the measurements relate to published work
 - [ADR-001](docs/ADR-001-metrics-and-compute.md): frozen metrics and compute specification
 - [Changelog](CHANGELOG.md)
 
