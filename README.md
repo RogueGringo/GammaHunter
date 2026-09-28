@@ -17,7 +17,8 @@ requires is known exactly.
   separate in-distribution and extended-step strata.
 - **Matched model arms.** A fixed-depth transformer baseline and weight-tied
   recurrent variants behind a common interface, held to a parameter-parity
-  gate so that model size is matched.
+  gate so that model size is matched, plus message-passing arms that operate
+  on the graph itself and serve as a calibration reference.
 - **Compute accounting.** Per-arm inference cost under a frozen specification.
 - **Dynamics telemetry.** Per-step state measurements for recurrent arms:
   drift between steps, state norms, representation coherence and response to
@@ -40,8 +41,8 @@ requires entries in the runners and the audit.
 ## Status
 
 Research-stage measurement infrastructure (v0.1.0). Result files in
-`artifacts/` are single-seed engineering measurements, not claims of
-capability. Known constraints on interpreting them are listed in
+`artifacts/` are engineering measurements from one to three training seeds,
+not claims of capability. Known constraints on interpreting them are listed in
 [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Quick start

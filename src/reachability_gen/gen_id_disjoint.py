@@ -40,6 +40,7 @@ import random
 import statistics
 import sys
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
@@ -79,6 +80,33 @@ MEAN_DEGREE_BY_HOP: dict[int, tuple[float, ...]] = {
     6: (1.1, 1.3, 1.5),
 }
 MAX_TOKENS: int = 250
+
+
+@dataclass(frozen=True, eq=False)
+class SetSpec:
+    """What a generated set contains: hop strata, graph sizes, densities, length cap."""
+
+    hops: tuple[int, ...]
+    n_support: tuple[int, ...]
+    mean_degree_by_hop: dict[int, tuple[float, ...]]
+    max_tokens: int
+
+
+ID_SPEC = SetSpec(ID_HOPS, N_SUPPORT, MEAN_DEGREE_BY_HOP, MAX_TOKENS)
+# Longer paths on larger, near-critical graphs, for extrapolation tests.
+EXTENDED_SPEC = SetSpec(
+    hops=(8, 10, 12, 14, 16),
+    n_support=(24, 28, 32, 36, 40, 44, 48),
+    mean_degree_by_hop={
+        8: (1.3, 1.5, 1.7),
+        10: (1.2, 1.4, 1.6),
+        12: (1.15, 1.3, 1.5),
+        14: (1.1, 1.25, 1.4),
+        16: (1.05, 1.2, 1.35),
+    },
+    max_tokens=600,
+)
+SPECS: dict[str, SetSpec] = {"id": ID_SPEC, "extended": EXTENDED_SPEC}
 
 DEFAULT_OUT = Path("data/id_disjoint_2k.jsonl")
 DEFAULT_REPORT = Path("artifacts/id_disjoint_2k_generation_report.json")
@@ -123,13 +151,16 @@ def _pick_pair(
     return (p_pair, n_pair) if ok else None
 
 
-def _quotas(n_total: int, n_val: int) -> tuple[int, int]:
-    """Graphs per hop overall and in val (each graph gives one pos + one neg)."""
-    unit = 2 * len(ID_HOPS)
-    if n_total % unit or n_val % unit or not 0 < n_val < n_total:
+def _quotas(n_total: int, n_val: int, n_hops: int = len(ID_HOPS)) -> tuple[int, int]:
+    """Graphs per hop overall and in val (each graph gives one pos + one neg).
+
+    ``n_val == n_total`` puts every graph in val (an evaluation-only set).
+    """
+    unit = 2 * n_hops
+    if n_total % unit or n_val % unit or not 0 < n_val <= n_total:
         raise ValueError(
             f"n_total={n_total} and n_val={n_val} must be multiples of {unit}, "
-            "with 0 < n_val < n_total"
+            "with 0 < n_val <= n_total"
         )
     return n_total // unit, n_val // unit
 
@@ -140,26 +171,27 @@ def generate_id_disjoint(
     max_graph_draws: int = 400_000,
     n_total: int = N_TOTAL,
     n_val: int = N_VAL,
+    spec: SetSpec = ID_SPEC,
 ) -> tuple[list[ReachabilityExample], dict[str, Any]]:
     """Generate the graph-disjoint paired set; return (examples, report)."""
-    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val)
+    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val, len(spec.hops))
     master = random.Random(seed)
     records: dict[int, list[tuple[int, float, list[tuple[int, int]], tuple[int, int], tuple[int, int]]]] = {
-        k: [] for k in ID_HOPS
+        k: [] for k in spec.hops
     }
     seen_graphs: set[str] = set()
     rejects: Counter = Counter()
     draws = 0
-    while any(len(records[k]) < graphs_per_hop for k in ID_HOPS):
+    while any(len(records[k]) < graphs_per_hop for k in spec.hops):
         if draws >= max_graph_draws:
             raise RuntimeError(
                 f"id_disjoint shortfall after {draws} draws: "
                 f"{ {k: len(v) for k, v in records.items()} }"
             )
         draws += 1
-        hop = min(ID_HOPS, key=lambda k: (len(records[k]), k))  # fill evenly
-        n = master.choice(N_SUPPORT)
-        p = round(master.choice(MEAN_DEGREE_BY_HOP[hop]) / (n - 1), 4)
+        hop = min(spec.hops, key=lambda k: (len(records[k]), k))  # fill evenly
+        n = master.choice(spec.n_support)
+        p = round(master.choice(spec.mean_degree_by_hop[hop]) / (n - 1), 4)
         edges = er_digraph(n, p, master)
         eh = compute_edge_hash(edges)
         if eh in seen_graphs:
@@ -170,7 +202,7 @@ def generate_id_disjoint(
             rejects[f"no_pair_hop{hop}"] += 1
             continue
         (ps, pt), (ns, nt) = picked
-        if max(_encoding_len(n, edges, ps, pt), _encoding_len(n, edges, ns, nt)) > MAX_TOKENS:
+        if max(_encoding_len(n, edges, ps, pt), _encoding_len(n, edges, ns, nt)) > spec.max_tokens:
             rejects["overlong"] += 1
             continue
         seen_graphs.add(eh)
@@ -178,7 +210,7 @@ def generate_id_disjoint(
 
     examples: list[ReachabilityExample] = []
     index = 0
-    for k in ID_HOPS:
+    for k in spec.hops:
         random.Random(derive_example_seed(seed, k * 1000)).shuffle(records[k])
         for i, (n, p, edges, (ps, pt), (ns, nt)) in enumerate(records[k]):
             split = "val" if i < graphs_per_hop_val else "train"
@@ -206,7 +238,7 @@ def generate_id_disjoint(
     random.Random(derive_example_seed(seed, 1)).shuffle(train)
     random.Random(derive_example_seed(seed, 2)).shuffle(val)
     ordered = train + val
-    report = build_report(ordered, seed=seed, graph_draws=draws)
+    report = build_report(ordered, seed=seed, graph_draws=draws, spec=spec)
     report["reject_reasons"] = dict(sorted(rejects.items()))
     return ordered, report
 
@@ -222,6 +254,7 @@ def build_report(
     *,
     seed: int,
     graph_draws: int,
+    spec: SetSpec = ID_SPEC,
 ) -> dict[str, Any]:
     rows = [e.to_dict() if isinstance(e, ReachabilityExample) else dict(e) for e in examples]
     lens = [len(split_encoding_tokens(r["encoding"])) for r in rows]
@@ -239,7 +272,7 @@ def build_report(
     negs = [r for r in rows if int(r["y"]) == 0]
     train_graphs = {r["edge_hash"] for r in rows if r["split"] == "train"}
     val_graphs = {r["edge_hash"] for r in rows if r["split"] == "val"}
-    return {
+    report = {
         "seed": seed,
         "graph_draws": graph_draws,
         "n_total": len(rows),
@@ -259,13 +292,13 @@ def build_report(
                     Counter(int(r["n"]) for r in rows if int(r["hop_distance"]) == k).items()
                 )
             }
-            for k in ID_HOPS
+            for k in spec.hops
         },
         "token_len": {
             "min": min(lens),
             "max": max(lens),
             "mean": statistics.fmean(lens),
-            "cap": MAX_TOKENS,
+            "cap": spec.max_tokens,
         },
         "negatives_with_endpoint_cue": {
             "count": sum(1 for r in negs if row_has_endpoint_cue(r)),
@@ -274,9 +307,18 @@ def build_report(
         "endpoint_rule_accuracy": {
             split: endpoint_rule_accuracy([r for r in rows if r["split"] == split])
             for split in ("train", "val")
+            if any(r["split"] == split for r in rows)
         },
         "science_open": False,
     }
+    if spec is not ID_SPEC:
+        report["spec"] = {
+            "hops": list(spec.hops),
+            "n_support": list(spec.n_support),
+            "mean_degree_by_hop": {str(k): list(v) for k, v in spec.mean_degree_by_hop.items()},
+            "max_tokens": spec.max_tokens,
+        }
+    return report
 
 
 def verify_id_disjoint(
@@ -284,9 +326,10 @@ def verify_id_disjoint(
     *,
     n_total: int = N_TOTAL,
     n_val: int = N_VAL,
+    spec: SetSpec = ID_SPEC,
 ) -> tuple[bool, list[str]]:
     """Verify quotas, pairing, graph-disjointness and the hard-negative rule."""
-    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val)
+    graphs_per_hop, graphs_per_hop_val = _quotas(n_total, n_val, len(spec.hops))
     if isinstance(examples, Path):
         with examples.open(encoding="utf-8") as f:
             rows = [json.loads(line) for line in f if line.strip()]
@@ -309,7 +352,7 @@ def verify_id_disjoint(
             break
     for name, rs, per_hop in (("train", train, graphs_per_hop - graphs_per_hop_val),
                               ("val", val, graphs_per_hop_val)):
-        for k in ID_HOPS:
+        for k in spec.hops:
             c = sum(1 for r in rs if int(r["y"]) == 1 and int(r["hop_distance"]) == k)
             if c != per_hop:
                 issues.append(f"{name} hop={k} positives={c} want {per_hop}")
@@ -324,8 +367,8 @@ def verify_id_disjoint(
             if row_has_endpoint_cue(r):
                 issues.append(f"negative decidable from one endpoint, graph {r['edge_hash'][:10]}")
                 break
-        if len(split_encoding_tokens(r["encoding"])) > MAX_TOKENS:
-            issues.append(f"encoding longer than {MAX_TOKENS} tokens")
+        if len(split_encoding_tokens(r["encoding"])) > spec.max_tokens:
+            issues.append(f"encoding longer than {spec.max_tokens} tokens")
             break
         if r.get("science_open") is True:
             issues.append("row has science_open=True")
@@ -347,13 +390,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-graph-draws", type=int, default=400_000)
     p.add_argument("--n-total", type=int, default=N_TOTAL, help="instances (default 2000)")
     p.add_argument("--n-val", type=int, default=N_VAL, help="validation instances (default 400)")
+    p.add_argument(
+        "--spec", choices=sorted(SPECS), default="id",
+        help="id: hops 2-6 on 10-20 nodes (default); extended: hops 8-16 on 24-48 nodes",
+    )
     p.add_argument("--verify-only", type=Path, default=None)
     return p
 
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
-    sizes = {"n_total": args.n_total, "n_val": args.n_val}
+    sizes = {"n_total": args.n_total, "n_val": args.n_val, "spec": SPECS[args.spec]}
     if args.verify_only is not None:
         ok, issues = verify_id_disjoint(args.verify_only, **sizes)
         print(json.dumps({"ok": ok, "issues": issues}, sort_keys=True))

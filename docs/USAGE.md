@@ -39,7 +39,7 @@ pytest -q                   # full suite, including longer training checks
 |---|---|
 | `python -m reachability_gen.generate --all-splits --n-per-cell 4` | Base train / val / test / size-OOD splits in `data/` |
 | `python -m reachability_gen.gen_id_2k` | Fixed 2,000-instance in-distribution set, `data/id_2k.jsonl` |
-| `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` (`--n-total` / `--n-val` scale it) |
+| `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` (`--n-total` / `--n-val` scale it; `--spec extended` builds the long-path evaluation set) |
 | `python -m reachability_gen.gen_ood_hops` | Extended-step evaluation set, `data/ood_hops.jsonl` |
 | `python -m reachability_gen.gen_covariate_matched_ood` | Length-matched extended-step set, `data/covariate_matched_ood.jsonl` |
 
@@ -121,6 +121,25 @@ both the best and the final checkpoint are saved to
 `artifacts/id_disjoint_rematch/` and re-scored before the result file
 `artifacts/id_disjoint_rematch.json` is written (exit status 1 if a re-score
 differs).
+
+## Calibration: message passing, trained short, tested long
+
+```bash
+python -m reachability_gen.gen_id_disjoint --spec extended --n-total 2000 --n-val 2000 --seed 190000 --out data/extended_disjoint_2k.jsonl --report artifacts/extended_disjoint_2k_generation_report.json
+python -m reachability_gen.run_mp_calibration --device cuda
+```
+
+The first command builds an evaluation-only set with the same construction as
+the graph-disjoint sets but longer paths (8–16 hops) on larger graphs (24–48
+nodes). The second trains two parameter-matched message-passing arms on
+`data/id_disjoint_20k.jsonl` with 6 steps: an unlooped one with 6 distinct
+layers and a looped one that reuses a single step. It then evaluates both on
+the long-path set: the unlooped arm at its fixed depth, the looped arm at 6,
+16, 32 and 48 steps. It is the harness's positive control for a pattern
+reported in the literature (how its results vary by seed is described in
+[LIMITATIONS.md](LIMITATIONS.md), item 9), and it writes
+`artifacts/mp_calibration.json` with self-audited best and final checkpoints
+in `artifacts/mp_calibration/`.
 
 ## External benchmarks
 

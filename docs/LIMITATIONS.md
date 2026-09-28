@@ -74,5 +74,22 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    0.018); the recurrent arms stayed at chance. Other architectures and much
    longer training remain untested.
 
-9. **Measurement-only status.** No result in this repository is presented as
-   an established finding.
+9. **Calibration results depend on the seed.** In the message-passing
+   calibration (`artifacts/mp_calibration.json`, three seeds, GPU), the looped
+   arm reached 1.000 on the `id_disjoint_20k` validation split in every seed,
+   but running it for more steps than it was trained with reached the longer
+   paths only in some seeds. At the best checkpoint (epoch 1), two seeds
+   scored at least 0.997 on the long-path set with 16, 32 and 48 steps; the
+   third scored 0.500 at every step count above 6, on the validation split as
+   well. At the final checkpoint (epoch 30), one of the two also fell to 0.500
+   at 32 and 48 steps. With 6 steps, fewer than any path in the long-path set
+   needs, the looped arm scored 0.500 in every seed. The unlooped arm reached
+   1.000 in two seeds; in the third it peaked at 0.915 and ended at 0.720, and
+   it scored 0.7355 on the long-path set although every path there is longer
+   than its depth. These arms receive each graph as explicit structure,
+   whereas the sequence arms must recover it from tokens, so the calibration
+   is a reference point for the harness, not a like-for-like comparison with
+   the sequence arms.
+
+10. **Measurement-only status.** No result in this repository is presented as
+    an established finding.

@@ -18,6 +18,10 @@
   stratified by each graph's hop.
 - NLGraph connectivity adapter and integrity audit (external benchmark,
   downloaded on demand, never committed).
+- Evaluation-only long-path set (8–16 hops on 24–48-node graphs); the dataset
+  generator now takes a set specification.
+- Looped and unlooped message-passing arms, parameter-matched, and a
+  calibration runner that trains on short paths and tests on long ones.
 
 ## 0.1.0 (2026-09-27)
 

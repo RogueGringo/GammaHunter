@@ -42,6 +42,7 @@ reachability-audit-checkpoints = "reachability_gen.audit_checkpoints:main"
 reachability-gen-id-disjoint = "reachability_gen.gen_id_disjoint:main"
 reachability-disjoint-rematch = "reachability_gen.run_disjoint_rematch:main"
 reachability-nlgraph = "reachability_gen.benchmarks.nlgraph:main"
+reachability-mp-calibration = "reachability_gen.run_mp_calibration:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
