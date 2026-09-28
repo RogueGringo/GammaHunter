@@ -31,15 +31,18 @@ literature describes from both sides:
   size (limitations item 13). In our measurements it showed neither the
   overthinking nor the seed-to-seed fragility that the papers above describe
   for looped and length-generalizing transformers on their tasks.
-* **Reader.** The step no model here performs reliably is reading the graph:
-  sequence arms trained from scratch stayed at chance even on the paired
-  sets, and open LLMs of up to 3.8 billion parameters stayed at chance on the
-  crossed sets, in line with the search and heuristics findings above.
+* **Text.** Every model that reads the graph as text stayed at chance:
+  sequence arms trained from scratch even on the paired sets, and open LLMs
+  of up to 3.8 billion parameters on the crossed sets, in line with the
+  search and heuristics findings above. Whether they fail at reading the edge
+  list or at searching it has not been measured.
 
-The next measurement follows from that split: whether a model that sees the
-edge list only as tokens can learn to supply the processor's input, with the
-anchored processor behind it, trained end to end from question-answer pairs,
-and evaluated on the crossed sets with the same controls (untrained model,
-cue ceilings, several seeds, re-scored checkpoints). Its outcome would say
+Two measurements follow. A direct-edge probe (is u→v listed?) puts the
+one-step lookup to the same models and separates reading from search. And a
+reader placed in front of the anchored processor, which must emit an
+explicit, discrete graph (scored against the true edges) without seeing the
+question, so that it cannot write the answer into the graph, trained from
+question-answer pairs and evaluated with the same controls (untrained model,
+cue ceilings, several seeds, re-scored checkpoints). Together they would say
 whether depth- and size-robust search can be obtained from text, not only
 from given structure.
