@@ -238,3 +238,14 @@ def test_answers_only_variants_smoke(tmp_path, monkeypatch):
     art = json.loads(out.read_text())
     assert set(art["summary"]) == set(rr.VARIANTS) and art["self_audit_mismatches"] == []
     assert 0 < art["protocol"]["edge_density_prior"] < 1 and art["protocol"]["prior_weight"] == rr.PRIOR_WEIGHT
+
+
+def test_density_prior_acts_on_an_empty_graph():
+    """The prior must push an empty graph towards more edges (a clamp would give no gradient here)."""
+    from reachability_gen.run_reader import density_kl
+
+    graph = {"node_mask": torch.ones(1, 4, dtype=torch.bool)}
+    adj = torch.zeros(1, 4, 4, requires_grad=True)
+    density_kl(adj, graph, 0.25).backward()
+    off = ~torch.eye(4, dtype=torch.bool)
+    assert (adj.grad[0][off] < 0).all()  # descent raises every off-diagonal entry

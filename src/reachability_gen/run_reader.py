@@ -190,14 +190,16 @@ def density_kl(adj, graph: dict[str, Any], density: float):
     """KL(Bernoulli(density) || Bernoulli(mean of adj over ordered pairs of distinct nodes)).
 
     ``adj`` is the graph the solver receives in training (hard with a straight-through
-    gradient, or soft), so the prior acts on that graph's density.
+    gradient, or soft), so the prior acts on that graph's density. The mean is squeezed
+    into [1e-6, 1 - 1e-6], not clamped: a clamp has no gradient at an empty graph, the
+    state the prior must act on.
     """
     import torch
 
     mask = graph["node_mask"]
     valid = (mask[:, :, None] & mask[:, None, :]).to(adj.dtype)
     valid = valid * (1 - torch.eye(adj.shape[1], device=adj.device, dtype=adj.dtype))[None]
-    mean = ((adj * valid).sum() / valid.sum()).clamp(1e-6, 1 - 1e-6)
+    mean = (adj * valid).sum() / valid.sum() * (1 - 2e-6) + 1e-6
     return density * torch.log(density / mean) + (1 - density) * torch.log((1 - density) / (1 - mean))
 
 

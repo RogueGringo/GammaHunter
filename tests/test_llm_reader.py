@@ -80,3 +80,27 @@ def test_step_by_step_reference_requires_the_same_questions(tmp_path):
     assert step_by_step_reference([path], "other", "crossed_val", rows) is None
     with pytest.raises(ValueError):
         step_by_step_reference([path], "m", "crossed_val", rows[:2])
+
+
+def test_merge_combines_parts_with_one_protocol(tmp_path):
+    from reachability_gen.run_llm_reader import SETS, merge
+
+    def part(name, model, generations):
+        art = {"science_open": False, "purpose": "p", "sets": {"crossed_val": [{"edge_hash": "g"}]},
+               "protocol": {"decoding": "greedy", "generations_file": generations},
+               "models": {model: {"sets": {k: {} for k in SETS}}}, "complete": True, "elapsed_seconds": 1.0}
+        path = tmp_path / name
+        path.write_text(json.dumps(art))
+        return path
+
+    a, b = part("a.json", "m1", "ga.jsonl"), part("b.json", "m2", "gb.jsonl")
+    out = tmp_path / "merged.json"
+    assert merge([a, b], out) == 0
+    art = json.loads(out.read_text())
+    assert set(art["models"]) == {"m1", "m2"} and art["complete"] is True
+    assert art["protocol"]["generations_files"] == ["ga.jsonl", "gb.jsonl"] and "generations_file" not in art["protocol"]
+    assert merge([a, a], tmp_path / "dup.json") == 1
+    other = json.loads(b.read_text())
+    other["protocol"]["decoding"] = "sampled"
+    b.write_text(json.dumps(other))
+    assert merge([a, b], tmp_path / "bad.json") == 1

@@ -25,6 +25,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import random
 import sys
@@ -203,6 +204,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                   f"{ {k: round(v, 3) for k, v in entry['acc_by_kind'].items()} }", file=sys.stderr, flush=True)
         results[name] = res
         del model
+        gc.collect()  # a model can stay referenced in cycles until collected
         if args.device == "cuda":
             torch.cuda.empty_cache()
     artifact["elapsed_seconds"] = time.perf_counter() - t0

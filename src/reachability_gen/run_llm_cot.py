@@ -264,6 +264,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             results[name] = res
             write()  # after every model, so a later failure keeps what finished
             del model
+            gc.collect()  # a model can stay referenced in cycles until collected
             if args.device == "cuda":
                 torch.cuda.empty_cache()
     artifact["complete"] = True

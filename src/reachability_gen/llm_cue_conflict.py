@@ -21,6 +21,7 @@ paired data; writes ``artifacts/llm_cue_conflict.json``.
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import sys
 from pathlib import Path
@@ -144,6 +145,7 @@ def enriched(argv_models: Sequence[str], paired: Sequence[dict[str, Any]], cross
               f"(ties {a['ties']}/{c['ties']}; p={result['fisher_decided_agree_vs_conflict']:.2e})",
               file=sys.stderr, flush=True)
         del model
+        gc.collect()  # a model can stay referenced in cycles until collected
         if device == "cuda":
             torch.cuda.empty_cache()
     return out

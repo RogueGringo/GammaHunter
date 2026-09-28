@@ -9,7 +9,7 @@ artifacts/*.jsonl
 # ...except the step-by-step generations behind artifacts/llm_cot.json (kept for audit)
 !artifacts/llm_cot*generations.jsonl
 # ...and the replies behind artifacts/llm_reader.json
-!artifacts/llm_reader_generations.jsonl
+!artifacts/llm_reader*generations.jsonl
 !artifacts/.gitkeep
 .pytest_cache/
 

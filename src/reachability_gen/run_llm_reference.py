@@ -32,6 +32,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import math
 import random
@@ -270,6 +271,7 @@ def evaluate_model(name: str, sets: dict[str, list[dict[str, Any]]], shots: list
               f"({entry['seconds']:.0f}s)", file=sys.stderr, flush=True)
     out["seconds"] = time.perf_counter() - t0
     del model
+    gc.collect()  # a model can stay referenced in cycles until collected
     if device == "cuda":
         torch.cuda.empty_cache()
     return out

@@ -32,6 +32,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 import re
@@ -183,6 +184,41 @@ def step_by_step_reference(cot_paths: Sequence[Path], model: str, set_name: str,
     return None
 
 
+def merge(parts: Sequence[Path], out: Path) -> int:
+    """Combine result files of one protocol and sample (e.g. one per model) into one."""
+    loaded = [json.loads(Path(x).read_text(encoding="utf-8")) for x in parts]
+
+    def shared(art: dict[str, Any]) -> dict[str, Any]:
+        return {k: v for k, v in art["protocol"].items() if k != "generations_file"}
+
+    models: dict[str, Any] = {}
+    for path, art in zip(parts, loaded):
+        if shared(art) != shared(loaded[0]) or art["sets"] != loaded[0]["sets"] or art["science_open"] is not False:
+            print(f"FAIL: {path} was run with a different protocol or sample", file=sys.stderr)
+            return 1
+        for name, res in art["models"].items():
+            if name in models:
+                print(f"FAIL: {name} appears in more than one part", file=sys.stderr)
+                return 1
+            models[name] = res
+    artifact = {
+        "science_open": False,
+        "purpose": loaded[0]["purpose"],
+        "protocol": dict(shared(loaded[0]),
+                         generations_files=[art["protocol"]["generations_file"] for art in loaded]),
+        "sets": loaded[0]["sets"],
+        "models": models,
+        "complete": all(set(res["sets"]) == set(SETS) for res in models.values()),
+        "merged_from": [Path(x).as_posix() for x in parts],
+        "elapsed_seconds_by_part": [art.get("elapsed_seconds") for art in loaded],
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
+    print(json.dumps({"ok": True, "out": out.as_posix(), "models": list(models), "science_open": False},
+                     sort_keys=True))
+    return 0
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Language models as the graph reader for the anchored solver (MEASURE).")
     p.add_argument("--models", nargs="+", default=list(DEFAULT_MODELS))
@@ -199,7 +235,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     p.add_argument("--max-new-tokens", type=int, default=MAX_NEW_TOKENS)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--generations", type=Path, default=DEFAULT_GENERATIONS)
+    p.add_argument("--merge", type=Path, nargs="+", default=None, metavar="PART",
+                   help="combine result files of separate runs into --out (no model is loaded)")
     args = p.parse_args(argv)
+    if args.merge:
+        return merge(args.merge, args.out)
     try:
         import torch
         import transformers
@@ -295,6 +335,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             results[name] = res
             write()  # after every model, so a later failure keeps what finished
             del model
+            gc.collect()  # a model can stay referenced in cycles until collected
             if args.device == "cuda":
                 torch.cuda.empty_cache()
     artifact["complete"] = True
