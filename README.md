@@ -24,6 +24,11 @@ requires is known exactly.
 - **Dynamics telemetry.** Per-step state measurements for recurrent arms:
   drift between steps, state norms, representation coherence and response to
   small input perturbations.
+- **Reference points and pipelines.** Inference-only reference points from
+  open language models on the same questions (with 8-bit weight storage
+  admitted only through a fidelity check), and a pipeline in which a learned,
+  question-blind reader supplies the graph to a message-passing arm, scored
+  on the reader, the pipeline and the attribution of each error.
 - **Integrity controls.** Checkpoint re-scoring against recorded results,
   input-length guards, dataset-composition and coverage checks, ceilings for
   shortcut rules that need no path search, untrained-model controls, and
@@ -43,7 +48,7 @@ requires entries in the runners and the audit.
 ## Status
 
 Research-stage measurement infrastructure (v0.1.0). Result files in
-`artifacts/` are engineering measurements from one to three training seeds,
+`artifacts/` are engineering measurements from one to twenty training seeds,
 not claims of capability. Known constraints on interpreting them are listed in
 [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 

@@ -20,6 +20,8 @@ result files cited, and every GammaHunter result keeps the scope stated in
 | Trained from question-answer pairs only | Learning without intermediate supervision | 2306.13411 | All runners |
 | Sequence arms and open LLMs (to 7.6 billion parameters) at chance on cue-free sets | Transformers struggle to learn search, increasingly with graph size | 2412.04703; LLMs on graph problems in natural language (2305.10037) | Limitations items 8 and 14 |
 | The same LLMs read single edges of those graphs almost perfectly (AUROC up to 0.99, from 3 to 7.6 billion parameters alike) | Compositionality gap: sub-questions answered, their composition not; in the cited work the gap did not narrow as models grew | 2210.03350 | Limitations item 14 |
+| A question-blind reader trained on the edges supplies the graph from text; the anchored arm then keeps every answer up to 192 steps | Encode–process–decode around an algorithmic processor; here the encoder must emit the structure itself | Neural algorithmic reasoning (2105.02761); TransNAR (2406.09308) gives its processor the graph in structured form and lets a transformer read the text alongside it | Limitations item 15 |
+| Trained from the answers alone, the reader ends with an empty or a complete graph; no gradient reaches edges into nodes the source has not reached | Learning a discrete graph from a downstream objective | Interaction graphs inferred as the latent code of a variational autoencoder (1802.04687); graph structure and network learned by bilevel optimisation (1903.11960); straight-through estimation (1308.3432) | Limitations item 15 |
 
 ## Direction
 
@@ -41,10 +43,19 @@ literature describes from both sides:
   failure is in the search, and where their answers carry a signal, it
   follows a one-endpoint cue.
 
-The next measurement is a reader placed in front of the anchored processor,
-which must emit an explicit, discrete graph (scored against the true edges)
-without seeing the question, so that it cannot write the answer into the
-graph, trained from question-answer pairs and evaluated with the same
-controls (untrained model, cue ceilings, several seeds, re-scored
-checkpoints). It would say whether depth- and size-robust search can be
-obtained from text, not only from given structure.
+A reader placed in front of the anchored processor tests this division of
+labour directly (limitations item 15). It emits an explicit graph without
+seeing the question, so it cannot write the answer into the graph, and it
+embeds no node identities. Trained on the edges, it read every graph exactly,
+including edge lists longer than any in training, and the pipeline kept every
+answer up to 192 steps: on this task, depth- and size-robust search was
+obtained from text once the reading was supervised. Trained from the answers
+alone, the same pipeline stayed at chance. The exact zeros that keep the
+processor's answers stable at any depth also leave the answers loss with no
+gradient on edges into the part of the graph the source does not reach.
+
+Two questions follow. Can a training signal that does not rely on that
+gradient, such as a relaxation of the hard graph during training or a prior
+on edge density, teach the reader from answers alone? And is the language
+models' edge reading, close to exact but not exact, good enough to supply the
+processor's graph?

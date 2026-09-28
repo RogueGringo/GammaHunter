@@ -54,8 +54,10 @@
 - Edge-lookup probe: whether the reference LLMs read single edges (listed,
   reversed, absent) of the same graphs, separating reading from search.
 - 8-bit weight storage for the reference LLMs (one scale per output channel,
-  expanded at each call) and a fidelity gate comparing a model's 16-bit and
-  8-bit margins question by question against limits fixed in advance.
+  expanded in place at each call) and a fidelity gate comparing a model's
+  16-bit and 8-bit margins question by question against limits fixed in
+  advance; Qwen2.5-7B-Instruct added to every reference protocol through it.
+  Results recorded (limitations item 14).
 - Path audit of the step-by-step generations: whether each written path uses
   listed edges, follows a listed edge backwards or steps along a pair that is
   not listed, grouped by label and answer.
@@ -63,7 +65,9 @@
   edge list into an explicit 0/1 adjacency for the anchored arm; supervised
   and answers-only regimes over 10 seeds, scored on the reader (edges,
   topology loss, closure), the pipeline (accuracy and AUROC to 192 steps) and
-  the attribution of each error, with untrained and true-graph controls.
+  the attribution of each error, with untrained and true-graph controls and a
+  gradient probe. Edge evidence computed in log space. Results recorded
+  (limitations item 15).
 
 ## 0.1.0 (2026-09-27)
 

@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -174,3 +175,24 @@ def test_no_dead_zone_when_every_score_is_very_negative():
     (adj * gold).sum().backward()
     g = reader.pair_offset.weight.grad
     assert torch.isfinite(g).all() and g.abs().sum() > 0.1
+
+
+STUDY = Path(__file__).resolve().parents[1] / "artifacts" / "reader_pipeline.json"
+
+
+@pytest.mark.skipif(not STUDY.exists(), reason="reader-pipeline artifact not present")
+def test_reader_pipeline_artifact_contract():
+    from reachability_gen.run_reader import PASS
+
+    art = json.loads(STUDY.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["self_audit_mismatches"] == []
+    assert art["protocol"]["pass_criteria"] == PASS
+    for run in art["runs"]:
+        f = run["final"]
+        passes = (f["val"]["reader"]["exact_graphs"] >= PASS["exact_graphs"]
+                  and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_long"]
+                  and all(f[f"long_{s}"]["accuracy"] >= PASS["long_path_accuracy"] for s in art["protocol"]["long_steps"]))
+        assert run["passes"] == passes and run["rescore_matches_record"]
+        assert len(run["checkpoint_sha256"]) == 64 and len(run["history"]) == art["protocol"]["reader_epochs"]
+    for regime, s in art["summary"].items():
+        assert s["passes"] == sum(r["passes"] for r in art["runs"] if r["regime"] == regime)

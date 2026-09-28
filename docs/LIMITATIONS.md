@@ -233,5 +233,53 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     reference points show where standard open models of these sizes stand on
     the same questions, not that one architecture outperforms another.
 
-15. **Measurement-only status.** No result in this repository is presented as
+15. **Reader pipeline.** A reader that sees only the edge list, never the
+    question, and gives every node token the same embedding supplied the
+    anchored arm with an explicit 0/1 graph
+    (`artifacts/reader_pipeline.json`: three regimes, 10 seeds each, 5 epochs
+    on `id_crossed_20k`; pass criteria fixed in the runner).
+    - *Trained on the true edges*, with the solver trained first on true
+      graphs and then frozen, the reader passed in all 10 seeds, each from
+      its first epoch. It read every validation and long-path graph exactly,
+      although 788 of the 2,000 long-path edge lists are longer than any in
+      training (up to 116 edges, against at most 69), with a topology loss of
+      0.0016 per node pair on the validation split and 0.0011 on the
+      long-path set (0.29–0.85 for the untrained reader), and
+      the pipeline scored accuracy and AUROC 1.000 on the validation split at
+      6 steps and on the long-path set at 16, 48 and 192 steps.
+    - *Trained from the answers alone*, whether the solver was frozen or
+      trained together with the reader, the pipeline stayed at chance in
+      every seed (AUROC 0.50 at every step count). Each reader ended with an
+      empty graph (3 of 10 seeds with the frozen solver, 9 of 10 trained
+      together) or with nearly every pair connected (7 and 1; edge F1 at most
+      0.16). With the frozen solver, all 10,000 wrong long-path answers came
+      from the reader's graph. The gradient probe shows the mechanism. On an
+      empty graph the answers loss has exactly zero gradient on every edge:
+      an edge into a node the solver has not reached meets the solver's
+      bias-free update at an input of exactly zero, where its ReLU has zero
+      slope, so the loss cannot propose an edge into a part of the graph the
+      source does not yet reach. With the frozen solver, the first gradient
+      pushed almost uniformly towards removing or towards adding edges,
+      depending on how many edges the untrained reader emitted (0.3 to 208
+      per graph, against 32.5 true), and in 8 of the 9 seeds with any
+      gradient the reader reached, within the first epoch, the state that
+      push pointed to.
+    - *Disclosures.* The first full run was stopped during its second seed:
+      the supervised reader of seed 0 had fallen into a float32 underflow of its
+      edge evidence, where every gradient is exactly zero (logs kept as
+      `artifacts/reader_pipeline_underflow_*_run.log`); the evidence is now
+      computed in log space, and all runs above are from that version. The
+      reader's learning rate (1e-2, against the solver's 1e-3) and the
+      straight-through carrier of the answers-only regimes were set after
+      pilots on 2,000 rows. Reader runs on the GPU are not bit-reproducible,
+      because the edge evidence is summed with atomic operations; every final
+      checkpoint was re-scored and matched its record.
+
+    These results show that the anchored arm keeps its answers when the graph
+    is read from text by a reader trained on the edges, not that the graph can
+    be learned from the answers alone. Other readers, relaxations of the hard
+    graph, priors on edge density and solvers without an exactly-zero kink
+    remain untested.
+
+16. **Measurement-only status.** No result in this repository is presented as
     an established finding.
