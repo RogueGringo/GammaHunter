@@ -64,3 +64,11 @@ listing a node's edges: asked for every node's successors, they read at most
 their graphs scored at most 0.58 (their own step-by-step answers: 0.48–0.53). Among
 the routes measured, only the reader trained on edges supplied graphs exact
 enough for the processor's search.
+
+The exactness frontier (limitations item 17) says why the bar is so high and
+what answers cannot supply. Errors compound along a path: over paths of 8–16
+edges, missing 1–2% of the edges already costs 6–11 points of accuracy,
+exactly as a single-path model predicts, so a reader must be nearly exact.
+About a quarter of the listed edges are implied by other paths and cannot be
+revealed by any answer. And even with every answer given and the zero-gradient
+kink removed, answers alone did not teach the reader the closure here.

@@ -363,3 +363,43 @@ def test_density_study_smoke_with_closure_criteria(tmp_path, monkeypatch):
     for run in art["runs"]:
         assert run["oracle"]["val"]["reader"]["closure_exact_graphs"] == 1.0
         assert 0.0 <= run["final"]["val"]["reader"]["closure_exact_graphs"] <= 1.0
+
+
+def test_merge_accepts_dense_setting_absent_from_sparse_parts(tmp_path, monkeypatch):
+    from reachability_gen import run_reader as rr
+
+    monkeypatch.setattr(rr, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=15, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=16, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    common = ["--train-data", str(train_path), "--extended-data", str(ext_path), "--seeds", "0", "--criteria", "closure",
+              "--reader-epochs", "1", "--solver-epochs", "1", "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify"]
+    sparse, dense = tmp_path / "sparse.json", tmp_path / "dense.json"
+    assert rr.main(common + ["--regimes", "answers_frozen_prior", "--out", str(sparse)]) == 0
+    assert rr.main(common + ["--regimes", "answers_dense_prior", "--out", str(dense)]) == 0
+    assert "dense_graphs_per_batch" not in json.loads(sparse.read_text())["protocol"]
+    merged = tmp_path / "merged.json"
+    assert rr.main(["--merge", str(sparse), str(dense), "--out", str(merged)]) == 0
+    p = json.loads(merged.read_text())["protocol"]
+    assert p["dense_graphs_per_batch"] == rr.DENSE_GRAPHS_PER_BATCH and p["criteria"] == "closure"
+
+
+DENSITY_STUDY_ARTIFACT = Path(__file__).resolve().parents[1] / "artifacts" / "reader_answers_density.json"
+
+
+@pytest.mark.skipif(not DENSITY_STUDY_ARTIFACT.exists(), reason="answer-density artifact not present")
+def test_answer_density_artifact_contract():
+    from reachability_gen.run_reader import DENSITY_STUDY, LONG_STEPS, PASS_CLOSURE
+
+    art = json.loads(DENSITY_STUDY_ARTIFACT.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["self_audit_mismatches"] == []
+    assert art["protocol"]["criteria"] == "closure" and art["protocol"]["pass_criteria"] == PASS_CLOSURE
+    assert set(art["summary"]) == {"answers_frozen_prior", *DENSITY_STUDY}
+    for run in art["runs"]:
+        f = run["final"]
+        passes = (f["val"]["reader"]["closure_agreement_all_pairs"] >= PASS_CLOSURE["closure_agreement_val"]
+                  and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS_CLOSURE["closure_agreement_long"]
+                  and all(f[f"long_{s}"]["accuracy"] >= PASS_CLOSURE["long_path_accuracy"] for s in LONG_STEPS))
+        assert run["passes"] == passes

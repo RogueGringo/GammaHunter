@@ -595,17 +595,18 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
 def merge(parts: Sequence[Path], out: Path) -> int:
     """Combine result files of one protocol (e.g. one per regime) into one."""
     loaded = [json.loads(Path(p).read_text(encoding="utf-8")) for p in parts]
-    only_with_prior = ("edge_density_prior", "prior_weight")  # recorded only by runs of a prior regime
+    # Recorded only by parts that ran a prior regime or a dense regime; they must agree where present.
+    conditional = ("edge_density_prior", "prior_weight", "dense_graphs_per_batch")
 
     def shared(art: dict[str, Any]) -> dict[str, Any]:
-        return {k: v for k, v in art["protocol"].items() if k != "seeds" and k not in only_with_prior}
+        return {k: v for k, v in art["protocol"].items() if k != "seeds" and k not in conditional}
 
     prior: dict[str, Any] = {}
     for path, art in zip(parts, loaded):
         if shared(art) != shared(loaded[0]) or art["science_open"] is not False:
             print(f"FAIL: {path} was run with a different protocol", file=sys.stderr)
             return 1
-        for k in only_with_prior:
+        for k in conditional:
             if k in art["protocol"] and prior.setdefault(k, art["protocol"][k]) != art["protocol"][k]:
                 print(f"FAIL: {path} was run with a different {k}", file=sys.stderr)
                 return 1

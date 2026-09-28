@@ -253,7 +253,14 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       empty graph (3 of 10 seeds with the frozen solver, 9 of 10 trained
       together) or with nearly every pair connected (7 and 1; edge F1 at most
       0.16). With the frozen solver, all 10,000 wrong long-path answers came
-      from the reader's graph. The gradient probe shows the mechanism. On an
+      from the reader's graph. The exact-graph criterion could not have been
+      met by any reader trained from answers alone: 28% of the validation
+      graphs' listed edges are implied by other paths, so no answer depends
+      on them, and only 5 of the 1,000 validation graphs have none
+      (`artifacts/reader_identifiability.json`). These readers also missed the
+      target that answers can reveal, the true reachability closure
+      (agreement 0.41 and 0.71 on the long-path graphs). The gradient probe
+      shows the mechanism. On an
       empty graph the answers loss has exactly zero gradient on every edge:
       an edge into a node the solver has not reached meets the solver's
       bias-free update at an input of exactly zero, where its ReLU has zero
@@ -300,7 +307,8 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       stayed between 0.08 and 0.26 with no upward trend over the five epochs
       (a random graph of that size scores about 0.08), and accuracy between
       0.50 and 0.51. Removing the zero-gradient trap and holding the density
-      near the truth did not let the answers single out which edges exist.
+      near the truth did not let the answers single out which edges exist
+      (agreement with the true closure on the long-path graphs: 0.36–0.71).
       The first runs of the two prior variants clamped the density, which
       gave the prior no gradient at an empty graph; they were stopped and
       rerun with the fix (logs kept as
@@ -333,5 +341,56 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     no language model can read the graph exactly: other readers, training
     signals, prompts and larger models remain untested.
 
-17. **Measurement-only status.** No result in this repository is presented as
+17. **The exactness frontier.** Three measurements, fixed in code before they
+    ran, on how exact a reader's graph must be and why answers alone did not
+    teach it.
+    - *What answers can reveal* (`artifacts/reader_identifiability.json`): an
+      edge u→v is implied when v stays reachable from u without it, so no
+      reachability answer depends on it. Of the listed edges, 28–29% are
+      implied in the crossed training and validation graphs and 23% in the
+      long-path graphs; only 24 of 4,000 training, 5 of 1,000 validation and
+      1 of 500 long-path graphs have none. From answers alone the attainable
+      target is therefore the true reachability closure, not the edge list;
+      items 15 and 16 are read against it.
+    - *How exact the graph must be* (`artifacts/reader_noise.json`; the ten
+      frozen solvers of item 15, the full crossed validation split and
+      long-path set, five random corruptions per rate): on the true graphs
+      the pipeline scored 1.000. Deleting each edge with probability p
+      lowered accuracy exactly as the single-path structure predicts,
+      1/2 + 1/2 · mean (1 − p)^h: on the long-path set (paths of 8–16 edges)
+      0.971, 0.942, 0.895, 0.771 and 0.647 at p = 0.005, 0.01, 0.02, 0.05 and
+      0.1 (expected 0.971, 0.943, 0.893, 0.773 and 0.648). Reversed edges cost
+      more (0.943 at 0.5% of edges, 0.900 at 1%), and inserted edges cost more
+      at 48 and 192 steps than at 16, since more steps traverse longer false
+      paths (1% extra edges: 0.946 at 16 steps, 0.928 at 48 and 192). A reader
+      with edge F1 0.99 thus leaves 0.87–0.90 on the long paths and
+      0.95–0.96 on the crossed validation paths; one with F1 0.95 leaves
+      0.60–0.67 on the long paths. The language-model readers of item 16
+      (F1 0.53–0.77) sit where the curves are at or near chance. Random
+      readings with each model's recall, extra edges and share of reversals
+      scored within 0.03 of the model's own pipeline in four of six
+      model–set pairs; on the crossed questions Phi-3.5 and Falcon3 scored
+      0.05 and 0.03 above their matched noise, differences of the size of the
+      sampling error for 400 questions. Their reading errors cost about what
+      random errors at the same rates cost.
+    - *Why answers alone did not teach the reader*
+      (`artifacts/reader_answers_density.json`; frozen solver, hard graph,
+      density prior, 10 seeds per cell, scored on the true closure): the
+      reader learned from four answers per graph or from every source's
+      answer for every target, while the solver's message and update ReLUs
+      kept PyTorch's slope 0 at an input of exactly 0 or took slope 1 there,
+      which changes only the gradient. No seed of the 2×2 passed, and
+      accuracy stayed at 0.50–0.51 throughout. Dense answers raised edge F1
+      slightly (0.20 to 0.25) without moving accuracy, and closure agreement
+      on the long-path graphs stayed at 0.64–0.69. Slope 1 at zero let the
+      gradient reach edges into unreached nodes, as intended, but turned the
+      first gradient almost wholly towards adding edges (net push to add
+      0.999, against 0.62 with slope 0), and the readers over-connected: with
+      dense answers every seed ended with most pairs connected (recall 1.000;
+      262–316 edges per graph against 32.5). Neither the sparsity of the
+      answers nor the zero-gradient kink, alone or together, accounts for the
+      failure; what does (for example, learning a discrete graph through
+      straight-through gradients at all) these studies do not isolate.
+
+18. **Measurement-only status.** No result in this repository is presented as
     an established finding.

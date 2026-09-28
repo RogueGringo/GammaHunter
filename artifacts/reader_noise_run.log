@@ -1,0 +1,56 @@
+[crossed_val] delete  rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_val] delete  rate 0.005  accuracy 0.991 edge F1 0.997
+[crossed_val] delete  rate 0.01   accuracy 0.979 edge F1 0.995
+[crossed_val] delete  rate 0.02   accuracy 0.962 edge F1 0.990
+[crossed_val] delete  rate 0.05   accuracy 0.909 edge F1 0.975
+[crossed_val] delete  rate 0.1    accuracy 0.833 edge F1 0.947
+[crossed_val] delete  rate 0.2    accuracy 0.717 edge F1 0.889
+[crossed_val] delete  rate 0.5    accuracy 0.547 edge F1 0.665
+[crossed_val] reverse rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_val] reverse rate 0.005  accuracy 0.980 edge F1 0.995
+[crossed_val] reverse rate 0.01   accuracy 0.959 edge F1 0.990
+[crossed_val] reverse rate 0.02   accuracy 0.917 edge F1 0.980
+[crossed_val] reverse rate 0.05   accuracy 0.822 edge F1 0.950
+[crossed_val] reverse rate 0.1    accuracy 0.710 edge F1 0.902
+[crossed_val] reverse rate 0.2    accuracy 0.589 edge F1 0.804
+[crossed_val] reverse rate 0.5    accuracy 0.504 edge F1 0.507
+[crossed_val] insert  rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_val] insert  rate 0.005  accuracy 0.987 edge F1 0.998
+[crossed_val] insert  rate 0.01   accuracy 0.976 edge F1 0.995
+[crossed_val] insert  rate 0.02   accuracy 0.953 edge F1 0.990
+[crossed_val] insert  rate 0.05   accuracy 0.887 edge F1 0.976
+[crossed_val] insert  rate 0.1    accuracy 0.800 edge F1 0.952
+[crossed_val] insert  rate 0.2    accuracy 0.681 edge F1 0.909
+[crossed_val] insert  rate 0.5    accuracy 0.533 edge F1 0.800
+[crossed_val] insert  rate 1.0    accuracy 0.502 edge F1 0.667
+[crossed_long] delete  rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_long] delete  rate 0.005  accuracy 0.971 edge F1 0.997
+[crossed_long] delete  rate 0.01   accuracy 0.942 edge F1 0.995
+[crossed_long] delete  rate 0.02   accuracy 0.895 edge F1 0.990
+[crossed_long] delete  rate 0.05   accuracy 0.771 edge F1 0.974
+[crossed_long] delete  rate 0.1    accuracy 0.647 edge F1 0.947
+[crossed_long] delete  rate 0.2    accuracy 0.541 edge F1 0.889
+[crossed_long] delete  rate 0.5    accuracy 0.500 edge F1 0.667
+[crossed_long] reverse rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_long] reverse rate 0.005  accuracy 0.943 edge F1 0.995
+[crossed_long] reverse rate 0.01   accuracy 0.900 edge F1 0.990
+[crossed_long] reverse rate 0.02   accuracy 0.823 edge F1 0.980
+[crossed_long] reverse rate 0.05   accuracy 0.671 edge F1 0.951
+[crossed_long] reverse rate 0.1    accuracy 0.557 edge F1 0.900
+[crossed_long] reverse rate 0.2    accuracy 0.509 edge F1 0.802
+[crossed_long] reverse rate 0.5    accuracy 0.498 edge F1 0.503
+[crossed_long] insert  rate 0.0    accuracy 1.000 edge F1 1.000
+[crossed_long] insert  rate 0.005  accuracy 0.975 edge F1 0.998
+[crossed_long] insert  rate 0.01   accuracy 0.946 edge F1 0.995
+[crossed_long] insert  rate 0.02   accuracy 0.896 edge F1 0.990
+[crossed_long] insert  rate 0.05   accuracy 0.782 edge F1 0.976
+[crossed_long] insert  rate 0.1    accuracy 0.648 edge F1 0.952
+[crossed_long] insert  rate 0.2    accuracy 0.546 edge F1 0.909
+[crossed_long] insert  rate 0.5    accuracy 0.501 edge F1 0.800
+[crossed_long] insert  rate 1.0    accuracy 0.500 edge F1 0.667
+[matched] Qwen/Qwen2.5-3B-Instruct           crossed_long LLM acc 0.478 (F1 0.526) | matched noise acc 0.503 (F1 0.525)
+[matched] Qwen/Qwen2.5-3B-Instruct           crossed_val  LLM acc 0.505 (F1 0.549) | matched noise acc 0.516 (F1 0.550)
+[matched] microsoft/Phi-3.5-mini-instruct    crossed_long LLM acc 0.488 (F1 0.615) | matched noise acc 0.501 (F1 0.615)
+[matched] microsoft/Phi-3.5-mini-instruct    crossed_val  LLM acc 0.580 (F1 0.769) | matched noise acc 0.531 (F1 0.770)
+[matched] tiiuae/Falcon3-3B-Instruct         crossed_long LLM acc 0.507 (F1 0.674) | matched noise acc 0.498 (F1 0.672)
+[matched] tiiuae/Falcon3-3B-Instruct         crossed_val  LLM acc 0.550 (F1 0.714) | matched noise acc 0.524 (F1 0.711)

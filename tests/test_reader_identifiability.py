@@ -23,3 +23,19 @@ def test_audit_counts_graphs_once():
     out = audit(rows)
     assert (out["graphs"], out["edges"], out["implied_edges"], out["graphs_without_implied_edges"]) == (2, 5, 1, 1)
     assert out["exact_graph_rate_attainable_from_answers"] == 0.5
+
+
+def test_identifiability_artifact_contract():
+    import json
+    from pathlib import Path
+
+    import pytest
+
+    path = Path(__file__).resolve().parents[1] / "artifacts" / "reader_identifiability.json"
+    if not path.exists():
+        pytest.skip("identifiability artifact not present")
+    art = json.loads(path.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and set(art["sets"]) == {"crossed_train", "crossed_val", "crossed_long"}
+    for s in art["sets"].values():
+        assert 0 <= s["implied_edges"] <= s["edges"] and 0 <= s["graphs_without_implied_edges"] <= s["graphs"]
+        assert s["exact_graph_rate_attainable_from_answers"] == s["graphs_without_implied_edges"] / s["graphs"]

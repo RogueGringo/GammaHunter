@@ -45,3 +45,22 @@ def test_deletion_expectation_matches_simulation():
         kept = corrupt(3, [(0, 1), (1, 2)], "delete", p, rng)
         hits += ((0, 1) in kept and (1, 2) in kept) + 1  # the negative (2 -> 0) stays unreachable
     assert abs(hits / 8000 - deletion_accuracy(rows, p)) < 0.02
+
+
+def test_noise_artifact_contract():
+    import json
+    from pathlib import Path
+
+    import pytest
+
+    path = Path(__file__).resolve().parents[1] / "artifacts" / "reader_noise.json"
+    if not path.exists():
+        pytest.skip("noise artifact not present")
+    art = json.loads(path.read_text(encoding="utf-8"))
+    assert art["science_open"] is False
+    assert all(acc == 1.0 for steps in art["true_graph"].values() for acc in steps.values())
+    for set_name, curves in art["curves"].items():  # deletions follow the single-path expectation
+        for rate, cell in curves["delete"].items():
+            first = next(iter(cell["pipeline"].values()))["accuracy"]["mean"]
+            assert abs(first - art["deletion_expectation"][set_name][rate]) < 0.01
+    assert len(art["matched_noise"]) == 3

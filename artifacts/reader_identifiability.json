@@ -1,0 +1,31 @@
+{
+  "definition": "an edge u->v is implied when v stays reachable from u without it; no reachability answer depends on it",
+  "purpose": "how much of each graph reachability answers can reveal: implied edges and graphs without any",
+  "science_open": false,
+  "sets": {
+    "crossed_long": {
+      "edges": 33566,
+      "exact_graph_rate_attainable_from_answers": 0.002,
+      "graphs": 500,
+      "graphs_without_implied_edges": 1,
+      "implied_edges": 7783,
+      "implied_share": 0.23187153667401536
+    },
+    "crossed_train": {
+      "edges": 130520,
+      "exact_graph_rate_attainable_from_answers": 0.006,
+      "graphs": 4000,
+      "graphs_without_implied_edges": 24,
+      "implied_edges": 38119,
+      "implied_share": 0.2920548574931045
+    },
+    "crossed_val": {
+      "edges": 32454,
+      "exact_graph_rate_attainable_from_answers": 0.005,
+      "graphs": 1000,
+      "graphs_without_implied_edges": 5,
+      "implied_edges": 9120,
+      "implied_share": 0.28101312627102976
+    }
+  }
+}
