@@ -13,6 +13,11 @@
   default and the reference for committed results.
 - Dataset size is a generator parameter; a 20,000-instance graph-disjoint set
   and its three-seed GPU run.
+- Optional query readout (the final states at the query's two nodes) and a
+  hop curriculum for the graph-disjoint runner, with validation accuracy
+  stratified by each graph's hop.
+- NLGraph connectivity adapter and integrity audit (external benchmark,
+  downloaded on demand, never committed).
 
 ## 0.1.0 (2026-09-27)
 

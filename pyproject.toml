@@ -23,6 +23,7 @@ dependencies = []
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
 torch = ["torch"]
+benchmarks = ["pyarrow"]
 
 [project.scripts]
 reachability-gen = "reachability_gen.generate:main"
@@ -40,6 +41,7 @@ reachability-ood-covariate-matched = "reachability_gen.run_covariate_matched_ood
 reachability-audit-checkpoints = "reachability_gen.audit_checkpoints:main"
 reachability-gen-id-disjoint = "reachability_gen.gen_id_disjoint:main"
 reachability-disjoint-rematch = "reachability_gen.run_disjoint_rematch:main"
+reachability-nlgraph = "reachability_gen.benchmarks.nlgraph:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

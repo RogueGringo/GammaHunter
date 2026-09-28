@@ -12,3 +12,6 @@ artifacts/*.jsonl
 # Provenance bundles are kept outside the repository
 *.bundle
 *.bundle.sha256
+
+# Third-party benchmark downloads (kept out of the repository)
+data/benchmarks/

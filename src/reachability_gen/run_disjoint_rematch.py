@@ -39,9 +39,11 @@ import time
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+from reachability_gen.adr_invariants import ID_HOP_MAX, ID_HOP_MIN
 from reachability_gen.diagnostics import collapse_flags, median_abs_deviation
 from reachability_gen.gen_id_disjoint import DEFAULT_OUT as DEFAULT_DATA
 from reachability_gen.gen_id_disjoint import verify_id_disjoint
+from reachability_gen.models.feedforward import READOUTS
 from reachability_gen.models.geometric import DEFAULT_RESIDUAL_ALPHA
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_id_2k_rematch import assert_param_parity
@@ -74,17 +76,29 @@ def _mean(xs: Sequence[float]) -> float:
     return sum(xs) / len(xs) if xs else float("nan")
 
 
+def curriculum_hop_cap(epoch: int, epochs: int) -> int:
+    """Longest positive hop trained on in ``epoch`` (1-based).
+
+    The budget is split into equal stages, one per ID hop: hops ≤2 first, then
+    one more hop per stage, reaching the full range for the last stage.
+    """
+    levels = ID_HOP_MAX - ID_HOP_MIN + 1
+    stage = max(1, epochs // levels)
+    return min(ID_HOP_MAX, ID_HOP_MIN + (epoch - 1) // stage)
+
+
 def _sd(xs: Sequence[float]) -> float:
     return statistics.stdev(xs) if len(xs) > 1 else 0.0
 
 
 def build_arm(
-    kind: str, vocab: Vocab, max_len: int, device: str = "cpu"
+    kind: str, vocab: Vocab, max_len: int, device: str = "cpu", readout: str = "mean"
 ) -> tuple[Any, Any]:
     """Model + trainer with the bound30 settings for ``kind``.
 
     Parameters are initialised on the CPU (so a seed gives the same starting
     weights on every device); the trainer then moves the model to ``device``.
+    ``readout`` selects the classifier input (``"mean"`` or ``"query"``).
     """
     import torch
 
@@ -96,7 +110,12 @@ def build_arm(
     from reachability_gen.train.loop_trainer import LoopTrainer
 
     dev = torch.device(device)
-    common = {"n_heads": _n_heads(DEFAULT_FF_D), "max_len": max_len, "pad_id": vocab.pad_id}
+    common = {
+        "n_heads": _n_heads(DEFAULT_FF_D),
+        "max_len": max_len,
+        "pad_id": vocab.pad_id,
+        "readout": readout,
+    }
     if kind == "ff":
         model = FeedForward(len(vocab), d=DEFAULT_FF_D, L=DEFAULT_L, **common)
         trainer = FeedForwardTrainer(
@@ -171,12 +190,21 @@ def evaluate(
             "acc": _mean([correct[j] for j in idx]),
             "loss": _mean([losses[j] for j in idx]),
         }
+    # Paired sets: stratify both of a graph's rows by its positive's hop, so
+    # every stratum is balanced 50/50 and chance is exactly 0.5.
+    graph_hop = {r["edge_hash"]: int(r["hop_distance"]) for r in rows if int(r["y"]) == 1}
+    ghops = [graph_hop.get(r["edge_hash"]) for r in rows]
+    by_graph_hop = {
+        str(k): _mean([correct[j] for j, g in enumerate(ghops) if g == k])
+        for k in sorted({g for g in ghops if g is not None})
+    }
     sd = statistics.pstdev(margins) if len(margins) > 1 else 0.0
     return {
         "acc": _mean(correct),
         "n_correct": int(sum(correct)),
         "loss": _mean(losses),
         "by_hop": by_hop,
+        "by_graph_hop": by_graph_hop,
         "token_cos_last": cos_last,
         "output_concentration": median_abs_deviation(margins) / sd if sd > 0 else 0.0,
         "margins": margins,
@@ -221,11 +249,15 @@ def train_arm(
     telemetry: bool = True,
     device: str = "cpu",
     telemetry_rows: int = TELEMETRY_ROWS,
+    readout: str = "mean",
+    curriculum: bool = False,
 ) -> dict[str, Any]:
     """Train one arm for a fixed budget; save and self-audit best + final.
 
     Checkpoints are stored as CPU tensors. The self-audit re-scores on the
-    training ``device``; telemetry runs on a CPU copy.
+    training ``device``; telemetry runs on a CPU copy. With ``curriculum``,
+    epoch e trains only on graphs whose positive is at most
+    :func:`curriculum_hop_cap` hops long; validation always uses every hop.
     """
     import torch
 
@@ -234,18 +266,22 @@ def train_arm(
     def _cpu_state() -> dict[str, Any]:
         return {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
 
+    graph_hop = {r["edge_hash"]: int(r["hop_distance"]) for r in train if int(r["y"]) == 1}
     torch.manual_seed(seed)
-    model, trainer = build_arm(kind, vocab, max_len, device)
+    model, trainer = build_arm(kind, vocab, max_len, device, readout)
     history: list[dict[str, Any]] = []
     best_acc, best_epoch, best_state = -1.0, 0, None
     n_steps = n_sat = 0
     t0 = time.perf_counter()
     for epoch in range(1, epochs + 1):
-        order = torch.randperm(len(train)).tolist()
+        cap = curriculum_hop_cap(epoch, epochs) if curriculum else ID_HOP_MAX
+        # Rows whose graph has no positive here count as the longest hop.
+        pool = [r for r in train if graph_hop.get(r["edge_hash"], ID_HOP_MAX) <= cap]
+        order = torch.randperm(len(pool)).tolist()
         losses: list[float] = []
         accs: list[float] = []
-        for start in range(0, len(train), DEFAULT_BATCH):
-            batch = [train[i] for i in order[start : start + DEFAULT_BATCH]]
+        for start in range(0, len(pool), DEFAULT_BATCH):
+            batch = [pool[i] for i in order[start : start + DEFAULT_BATCH]]
             ids, mask, labels, _ = examples_to_batch(
                 batch, vocab, on_overflow="error", device=trainer.device
             )
@@ -258,19 +294,24 @@ def train_arm(
         history.append(
             {
                 "epoch": epoch,
+                "hop_cap": cap,
+                "train_rows": len(pool),
                 "train_loss": _mean(losses),
                 "train_acc": _mean(accs),
                 "val_acc": ev["acc"],
                 "val_loss": ev["loss"],
+                "val_acc_by_graph_hop": ev["by_graph_hop"],
                 "token_cos_last": ev["token_cos_last"],
                 "output_concentration": ev["output_concentration"],
             }
         )
         if ev["acc"] > best_acc:
             best_acc, best_epoch, best_state = ev["acc"], epoch, _cpu_state()
+        by_gh = " ".join(f"{k}:{v:.3f}" for k, v in ev["by_graph_hop"].items())
         print(
-            f"[seed{seed}/{kind}] epoch {epoch}/{epochs}: train_acc={_mean(accs):.4f} "
-            f"val_acc={ev['acc']:.4f} (best {best_acc:.4f}@ep{best_epoch}) "
+            f"[seed{seed}/{kind}] epoch {epoch}/{epochs} (hops<={cap}): "
+            f"train_acc={_mean(accs):.4f} val_acc={ev['acc']:.4f} "
+            f"(best {best_acc:.4f}@ep{best_epoch}) by_graph_hop {by_gh} "
             f"tok_cos={ev['token_cos_last']:.3f}",
             file=sys.stderr,
         )
@@ -281,6 +322,8 @@ def train_arm(
         "arm": kind,
         "seed": seed,
         "device": device,
+        "readout": readout,
+        "curriculum": curriculum,
         "epochs": epochs,
         "train_seconds": time.perf_counter() - t0,
         "grad_clip_sat_rate": n_sat / n_steps if n_steps else float("nan"),
@@ -294,7 +337,7 @@ def train_arm(
             path,
         )
         saved = torch.load(path, map_location="cpu", weights_only=True)["state_dict"]
-        fresh, _ = build_arm(kind, vocab, max_len, device)
+        fresh, _ = build_arm(kind, vocab, max_len, device, readout)
         fresh.load_state_dict(saved)
         ev = evaluate(fresh, val, vocab)
         recorded = history[epoch - 1]["val_acc"]
@@ -305,12 +348,13 @@ def train_arm(
             "rescore_matches_record": ev["acc"] == recorded,
             "acc_by_hop": {k: v["acc"] for k, v in ev["by_hop"].items()},
             "loss_by_hop": {k: v["loss"] for k, v in ev["by_hop"].items()},
+            "acc_by_graph_hop": ev["by_graph_hop"],
             "checkpoint_flags": collapse_flags(
                 final_token_cos=ev["token_cos_last"], margins=ev["margins"]
             ),
         }
         if telemetry:
-            cpu_model, _ = build_arm(kind, vocab, max_len)
+            cpu_model, _ = build_arm(kind, vocab, max_len, "cpu", readout)
             cpu_model.load_state_dict(saved)
             block["telemetry"] = _telemetry(cpu_model, kind, val[:telemetry_rows], vocab)
             block["telemetry"]["rows"] = min(telemetry_rows, len(val))
@@ -321,9 +365,9 @@ def train_arm(
     return out
 
 
-def parity_section(vocab: Vocab, max_len: int) -> dict[str, Any]:
+def parity_section(vocab: Vocab, max_len: int, readout: str = "mean") -> dict[str, Any]:
     """Non-embedding parity (ADR-001 §4); total counts recorded alongside."""
-    models = {kind: build_arm(kind, vocab, max_len)[0] for kind in ARMS}
+    models = {kind: build_arm(kind, vocab, max_len, "cpu", readout)[0] for kind in ARMS}
     non_emb = {k: int(m.non_embedding_param_count()) for k, m in models.items()}
     section = assert_param_parity(
         ff_count=non_emb["ff"], geo_count=non_emb["geo"], loop_count=non_emb["loop"]
@@ -355,6 +399,12 @@ def aggregate(runs: dict[str, dict[str, Any]]) -> dict[str, Any]:
                 "acc_by_hop_sd": {
                     h: _sd([b[which]["acc_by_hop"][h] for b in blocks]) for h in hops
                 },
+                "acc_by_graph_hop_mean": {
+                    h: _mean([b[which]["acc_by_graph_hop"][h] for b in blocks])
+                    for h in sorted(
+                        {h for b in blocks for h in b[which]["acc_by_graph_hop"]}, key=int
+                    )
+                },
                 "seeds_with_checkpoint_flags": sum(
                     1 for b in blocks if b[which]["checkpoint_flags"]["any"]
                 ),
@@ -383,6 +433,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--device", choices=("cpu", "cuda"), default="cpu",
         help="training device (GPU numerics differ slightly from CPU; recorded)",
+    )
+    p.add_argument(
+        "--readout", choices=READOUTS, default="mean",
+        help="classifier input: mean over tokens (default) or the query's s and t states",
+    )
+    p.add_argument(
+        "--curriculum", action="store_true",
+        help="train on graphs whose positive is <=2 hops first, adding one hop per stage",
     )
     return p
 
@@ -418,7 +476,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     max_len = required_max_len((r["encoding"] for r in rows), vocab)
     assert max_token_len((r["encoding"] for r in rows), vocab) <= max_len
     try:
-        parity = parity_section(vocab, max_len)
+        parity = parity_section(vocab, max_len, args.readout)
     except AssertionError as exc:
         print(f"FAIL parity (non-embedding): {exc}", file=sys.stderr)
         return 1
@@ -430,7 +488,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             kind: train_arm(
                 kind, train, val, vocab,
                 seed=seed, epochs=args.epochs, max_len=max_len, ckpt_dir=args.ckpt_dir,
-                device=args.device,
+                device=args.device, readout=args.readout, curriculum=args.curriculum,
             )
             for kind in args.arms
         }
@@ -463,6 +521,17 @@ def main(argv: Optional[list[str]] = None) -> int:
             "max_len": max_len,
             "torch_threads": args.threads,
             "device": args.device,
+            "readout": args.readout,
+            "curriculum": (
+                {
+                    "hop_cap_by_epoch": [
+                        curriculum_hop_cap(e, args.epochs) for e in range(1, args.epochs + 1)
+                    ],
+                    "note": "validation always uses every hop",
+                }
+                if args.curriculum
+                else None
+            ),
             "telemetry_rows": TELEMETRY_ROWS,
             "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
             "torch_version": torch.__version__,

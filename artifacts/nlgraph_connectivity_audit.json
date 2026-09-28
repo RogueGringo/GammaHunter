@@ -1,0 +1,110 @@
+{
+  "citation": "Wang et al. 2023, arXiv 2305.10037",
+  "density_cut_fit_on_train": 0.8824,
+  "rules": {
+    "density_rule": "answer yes iff edge density >= a cut fit on train; ignores s and t",
+    "direct_edge_rule": "answer yes iff s and t share an edge; one lookup, no path search",
+    "isolated_endpoint_rule": "answer no iff s or t has no edge; never searches a path"
+  },
+  "science_open": false,
+  "source": "https://huggingface.co/datasets/tasksource/nlgraph",
+  "task": "connectivity (undirected)",
+  "test": {
+    "density_rule_acc": 0.4636118598382749,
+    "direct_edge_rule_acc": 0.8328840970350404,
+    "distinct_graphs": 188,
+    "isolated_endpoint_rule_acc": 0.6415094339622641,
+    "majority_label_acc": 0.4582210242587601,
+    "n": 371,
+    "nodes": {
+      "max": 35,
+      "min": 4
+    },
+    "positive_hops": {
+      "1": 139,
+      "2": 49,
+      "3": 11,
+      "4": 2
+    },
+    "yes_share": 0.5417789757412399
+  },
+  "test_by_difficulty": {
+    "easy": {
+      "density_rule_acc": 0.42857142857142855,
+      "direct_edge_rule_acc": 0.9642857142857143,
+      "distinct_graphs": 29,
+      "isolated_endpoint_rule_acc": 0.8035714285714286,
+      "majority_label_acc": 0.39285714285714285,
+      "n": 56,
+      "nodes": {
+        "max": 10,
+        "min": 4
+      },
+      "positive_hops": {
+        "1": 32,
+        "2": 2
+      },
+      "yes_share": 0.6071428571428571
+    },
+    "hard": {
+      "density_rule_acc": 0.5294117647058824,
+      "direct_edge_rule_acc": 0.7563025210084033,
+      "distinct_graphs": 57,
+      "isolated_endpoint_rule_acc": 0.5378151260504201,
+      "majority_label_acc": 0.5294117647058824,
+      "n": 119,
+      "nodes": {
+        "max": 35,
+        "min": 26
+      },
+      "positive_hops": {
+        "1": 27,
+        "2": 26,
+        "3": 3
+      },
+      "yes_share": 0.47058823529411764
+    },
+    "medium": {
+      "density_rule_acc": 0.4336734693877551,
+      "direct_edge_rule_acc": 0.8418367346938775,
+      "distinct_graphs": 102,
+      "isolated_endpoint_rule_acc": 0.6581632653061225,
+      "majority_label_acc": 0.4336734693877551,
+      "n": 196,
+      "nodes": {
+        "max": 25,
+        "min": 10
+      },
+      "positive_hops": {
+        "1": 80,
+        "2": 21,
+        "3": 8,
+        "4": 2
+      },
+      "yes_share": 0.5663265306122449
+    }
+  },
+  "test_distinct_graphs_seen_in_train": 188,
+  "test_graphs_seen_in_train": 371,
+  "test_queries_seen_in_train": 0,
+  "train": {
+    "density_rule_acc": 0.5099408919935519,
+    "direct_edge_rule_acc": 0.8189145620634067,
+    "distinct_graphs": 224,
+    "isolated_endpoint_rule_acc": 0.5980655561526061,
+    "majority_label_acc": 0.5083288554540569,
+    "n": 1861,
+    "nodes": {
+      "max": 35,
+      "min": 4
+    },
+    "positive_hops": {
+      "1": 578,
+      "2": 285,
+      "3": 43,
+      "4": 7,
+      "5": 2
+    },
+    "yes_share": 0.491671144545943
+  }
+}

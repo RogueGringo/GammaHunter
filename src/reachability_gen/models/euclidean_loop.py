@@ -47,6 +47,7 @@ class EuclideanLoop(GeometricRecurrent):
         residual_alpha: float = DEFAULT_RESIDUAL_ALPHA,
         apply_cycle_ln: bool = False,
         apply_cycle_rmsnorm: bool = False,
+        readout: str = "mean",
     ) -> None:
         del use_tau  # Euclidean loop never uses τ
         super().__init__(
@@ -63,6 +64,7 @@ class EuclideanLoop(GeometricRecurrent):
             residual_alpha=residual_alpha,
             apply_cycle_ln=apply_cycle_ln,
             apply_cycle_rmsnorm=apply_cycle_rmsnorm,
+            readout=readout,
         )
 
 

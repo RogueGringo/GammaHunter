@@ -61,6 +61,28 @@ class TransformerBlock(nn.Module):
         return x
 
 
+READOUTS: tuple[str, ...] = ("mean", "query")
+
+
+def query_features(
+    x: torch.Tensor, attention_mask: Optional[torch.Tensor]
+) -> torch.Tensor:
+    """``[B, M, d]`` → ``[B, 2d]``: final states at the query's ``s`` and ``t``.
+
+    The locked encoding ends with ``QUERY s t``, so ``s`` and ``t`` are the
+    last two real tokens of every row.
+    """
+    bsz, mlen, _ = x.shape
+    if attention_mask is not None:
+        lengths = attention_mask.sum(dim=1).long()
+    else:
+        lengths = torch.full((bsz,), mlen, dtype=torch.long, device=x.device)
+    rows = torch.arange(bsz, device=x.device)
+    h_s = x[rows, (lengths - 2).clamp(min=0)]
+    h_t = x[rows, (lengths - 1).clamp(min=0)]
+    return torch.cat([h_s, h_t], dim=-1)
+
+
 class FeedForward(nn.Module):
     """L unshared transformer blocks → binary reachability logits ``[B, 2]``.
 
@@ -80,6 +102,9 @@ class FeedForward(nn.Module):
         MLP width multiplier (default 4, matches FLOP schematic).
     pad_id :
         Padding token id (excluded from mean-pool).
+    readout :
+        ``"mean"`` (default): masked mean over tokens. ``"query"``: the final
+        states at the query's ``s`` and ``t`` (see :func:`query_features`).
     """
 
     def __init__(
@@ -93,8 +118,11 @@ class FeedForward(nn.Module):
         mlp_expansion: int = 4,
         pad_id: int = 0,
         dropout: float = 0.0,
+        readout: str = "mean",
     ) -> None:
         super().__init__()
+        if readout not in READOUTS:
+            raise ValueError(f"readout must be one of {READOUTS}, got {readout!r}")
         if L < 1:
             raise ValueError(f"L must be >= 1, got {L}")
         if d < 1:
@@ -108,6 +136,7 @@ class FeedForward(nn.Module):
         self.max_len = int(max_len)
         self.pad_id = int(pad_id)
         self.mlp_expansion = int(mlp_expansion)
+        self.readout = readout
 
         self.tok_emb = nn.Embedding(vocab_size, d, padding_idx=pad_id)
         self.pos_emb = nn.Embedding(max_len, d)
@@ -120,7 +149,7 @@ class FeedForward(nn.Module):
             ]
         )
         self.ln_f = nn.LayerNorm(d)
-        self.head = nn.Linear(d, 2)
+        self.head = nn.Linear(d * (2 if readout == "query" else 1), 2)
 
     def forward(
         self,
@@ -155,7 +184,9 @@ class FeedForward(nn.Module):
         assert x is not None
         x = self.ln_f(x)
 
-        if attention_mask is not None:
+        if self.readout == "query":
+            pooled = query_features(x, attention_mask)
+        elif attention_mask is not None:
             mask = attention_mask.to(dtype=x.dtype).unsqueeze(-1)
             denom = mask.sum(dim=1).clamp(min=1.0)
             pooled = (x * mask).sum(dim=1) / denom
@@ -219,4 +250,4 @@ class FeedForward(nn.Module):
         return int(total)
 
 
-__all__ = ["FeedForward", "TransformerBlock"]
+__all__ = ["READOUTS", "FeedForward", "TransformerBlock", "query_features"]

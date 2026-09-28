@@ -67,8 +67,12 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    `artifacts/id_disjoint_20k_rematch.json`). The recurrent arm with cycle
    embeddings showed full token collapse from the first epoch in every seed.
    Accuracy on `id_2k` should therefore not be read as learned reachability.
-   Whether a different readout, curriculum, architecture or much longer
-   training changes this is untested.
+   A query readout with a hop curriculum (one seed,
+   `artifacts/id_disjoint_20k_learnability.json`) let the fixed-depth baseline
+   begin fitting its training set (training accuracy 0.59) with at most a
+   faint signal on 2-hop questions (0.51–0.54, where one standard error is
+   0.018); the recurrent arms stayed at chance. Other architectures and much
+   longer training remain untested.
 
 9. **Measurement-only status.** No result in this repository is presented as
    an established finding.

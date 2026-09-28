@@ -107,6 +107,13 @@ python -m reachability_gen.run_disjoint_rematch --data data/id_disjoint_20k.json
 Per-example telemetry is computed on the first 400 validation rows, so it is
 comparable across dataset sizes.
 
+Two options change how the arms learn, not what they are compared on:
+`--readout query` feeds the classifier the final states at the query's two
+nodes instead of the mean over all tokens, and `--curriculum` trains on graphs
+whose reachable pair is at most 2 hops first, adding one hop per stage.
+Validation always covers every hop and also reports accuracy grouped by each
+graph's hop, where chance is exactly 0.5.
+
 Trains the three arms of the latest comparison protocol on
 `data/id_disjoint_2k.jsonl` for each seed. Inputs are sized so that nothing is
 truncated, validation is logged every epoch with breakdown diagnostics, and
@@ -114,6 +121,22 @@ both the best and the final checkpoint are saved to
 `artifacts/id_disjoint_rematch/` and re-scored before the result file
 `artifacts/id_disjoint_rematch.json` is written (exit status 1 if a re-score
 differs).
+
+## External benchmarks
+
+```bash
+pip install -e ".[benchmarks]"                          # adds pyarrow
+python -m reachability_gen.benchmarks.nlgraph --download
+```
+
+Fetches the NLGraph dataset (`tasksource/nlgraph` on Hugging Face, about
+1.4 MB) into the git-ignored `data/benchmarks/`, converts its connectivity
+questions to the locked encoding (each undirected edge in both directions),
+checks every label against its graph, and writes
+`artifacts/nlgraph_connectivity_audit.json`: rules that need no path search
+(direct edge, isolated endpoint, graph density), the hop profile of reachable
+pairs, and graph reuse between its train and test splits. Benchmark files are
+never committed.
 
 ## Extended-step evaluation
 

@@ -41,7 +41,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from reachability_gen.models.feedforward import TransformerBlock
+from reachability_gen.models.feedforward import (
+    READOUTS,
+    TransformerBlock,
+    query_features,
+)
 
 # Fixed residual step size for outer recurrent update (not learned).
 DEFAULT_RESIDUAL_ALPHA: float = 0.5
@@ -79,6 +83,10 @@ class GeometricRecurrent(nn.Module):
         If True, apply outer RMSNorm after each α-mix (and on z_0). Preferred
         learning-compatible state bound so ||z|| stays ~O(√d). Default False
         for backward-compatible fixed30 plumbing; bound30 enables it.
+    readout :
+        ``"mean"`` (default): masked mean of the final states. ``"query"``:
+        the final states at the query's ``s`` and ``t``
+        (:func:`models.feedforward.query_features`).
     """
 
     def __init__(
@@ -97,8 +105,11 @@ class GeometricRecurrent(nn.Module):
         residual_alpha: float = DEFAULT_RESIDUAL_ALPHA,
         apply_cycle_ln: bool = False,
         apply_cycle_rmsnorm: bool = False,
+        readout: str = "mean",
     ) -> None:
         super().__init__()
+        if readout not in READOUTS:
+            raise ValueError(f"readout must be one of {READOUTS}, got {readout!r}")
         if T < 1:
             raise ValueError(f"T must be >= 1, got {T}")
         if d < 1:
@@ -117,6 +128,7 @@ class GeometricRecurrent(nn.Module):
         self.residual_alpha = float(residual_alpha)
         self.apply_cycle_ln = bool(apply_cycle_ln)
         self.apply_cycle_rmsnorm = bool(apply_cycle_rmsnorm)
+        self.readout = readout
         if self.apply_cycle_ln and self.apply_cycle_rmsnorm:
             raise ValueError(
                 "apply_cycle_ln and apply_cycle_rmsnorm are mutually exclusive; "
@@ -141,7 +153,7 @@ class GeometricRecurrent(nn.Module):
             nn.RMSNorm(d) if self.apply_cycle_rmsnorm else None
         )
         self.ln_f = nn.LayerNorm(d)
-        self.head = nn.Linear(d, 2)
+        self.head = nn.Linear(d * (2 if readout == "query" else 1), 2)
 
     def _pool(
         self,
@@ -267,7 +279,10 @@ class GeometricRecurrent(nn.Module):
         assert z_seq is not None
 
         x = self.ln_f(z_seq)
-        pooled = self._pool(x, attention_mask)
+        if self.readout == "query":
+            pooled = query_features(x, attention_mask)
+        else:
+            pooled = self._pool(x, attention_mask)
         logits = self.head(pooled)  # [B, 2]
         if return_trajectory:
             return logits, trajectory

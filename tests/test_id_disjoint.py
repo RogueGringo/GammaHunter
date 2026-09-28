@@ -108,6 +108,69 @@ def test_runner_smoke_self_audit(generated, tmp_path):
     assert out["run_flags"]["science_open"] is False
 
 
+def test_query_features_pick_s_and_t():
+    torch = pytest.importorskip("torch")
+    from reachability_gen.models.feedforward import query_features
+
+    x = torch.arange(2 * 5 * 3, dtype=torch.float32).reshape(2, 5, 3)
+    mask = torch.tensor([[1, 1, 1, 1, 1], [1, 1, 1, 0, 0]])  # row 1 has 3 real tokens
+    out = query_features(x, mask)
+    assert out.shape == (2, 6)
+    assert torch.equal(out[0], torch.cat([x[0, 3], x[0, 4]]))
+    assert torch.equal(out[1], torch.cat([x[1, 1], x[1, 2]]))
+
+
+def test_query_readout_models():
+    torch = pytest.importorskip("torch")
+    from reachability_gen.models.euclidean_loop import EuclideanLoop
+    from reachability_gen.models.feedforward import FeedForward
+    from reachability_gen.models.geometric import GeometricRecurrent
+
+    ids = torch.tensor([[2, 7, 3, 8, 9, 0], [2, 7, 4, 10, 0, 0]])
+    mask = (ids != 0).long()
+    for model in (
+        FeedForward(71, d=32, L=2, n_heads=4, max_len=16, readout="query"),
+        GeometricRecurrent(71, d=32, T=3, n_heads=4, max_len=16, readout="query"),
+        EuclideanLoop(71, d=32, T=3, n_heads=4, max_len=16, readout="query"),
+    ):
+        assert model.head.in_features == 64
+        assert model(ids, mask)[0].shape == (2, 2)
+    with pytest.raises(ValueError, match="readout"):
+        FeedForward(71, d=32, L=1, n_heads=4, max_len=16, readout="cls")
+
+
+def test_curriculum_schedule():
+    from reachability_gen.run_disjoint_rematch import curriculum_hop_cap
+
+    assert [curriculum_hop_cap(e, 30) for e in range(1, 31)] == (
+        [2] * 6 + [3] * 6 + [4] * 6 + [5] * 6 + [6] * 6
+    )
+    assert [curriculum_hop_cap(e, 3) for e in (1, 2, 3)] == [2, 3, 4]
+
+
+def test_runner_smoke_query_curriculum(generated, tmp_path):
+    pytest.importorskip("torch")
+    from reachability_gen.run_disjoint_rematch import train_arm
+    from reachability_gen.tokenize import build_vocab, required_max_len
+
+    rows, _ = generated
+    train = [r for r in rows if r["split"] == "train"][:200]
+    val = [r for r in rows if r["split"] == "val"][:40]
+    vocab = build_vocab()
+    max_len = required_max_len((r["encoding"] for r in rows), vocab)
+    out = train_arm(
+        "ff", train, val, vocab, seed=0, epochs=5, max_len=max_len,
+        ckpt_dir=tmp_path, telemetry=False, readout="query", curriculum=True,
+    )
+    caps = [h["hop_cap"] for h in out["history"]]
+    sizes = [h["train_rows"] for h in out["history"]]
+    assert caps == [2, 3, 4, 5, 6]
+    assert sizes == sorted(sizes) and sizes[-1] == len(train)
+    assert set(out["history"][0]["val_acc_by_graph_hop"]) <= {"2", "3", "4", "5", "6"}
+    for which in ("best", "final"):
+        assert out[which]["rescore_matches_record"] is True
+
+
 @pytest.mark.parametrize("artifact", ARTIFACTS, ids=lambda p: p.stem)
 def test_disjoint_artifact_if_present(artifact):
     if not artifact.exists():
