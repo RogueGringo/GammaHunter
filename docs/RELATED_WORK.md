@@ -18,7 +18,8 @@ result files cited, and every GammaHunter result keeps the scope stated in
 | Answers degrade as the step count grows far past training | Overthinking in recurrent-depth models | Extra recurrence unlocks deeper reasoning but excessive recurrence degrades it (2604.07822); recall of the input limits overthinking in recurrent networks (2202.05826) | Limitations items 12–13 |
 | Anchored variant: source re-injected every step, unreached nodes exactly zero, no node identities | Input recall; algorithmic alignment of message passing with breadth-first search | 2202.05826; 1905.13211; neural execution of graph algorithms (1910.10593) | Limitations item 13 |
 | Trained from question-answer pairs only | Learning without intermediate supervision | 2306.13411 | All runners |
-| Sequence arms and open LLMs at chance on cue-free sets | Transformers struggle to learn search, increasingly with graph size | 2412.04703; LLMs on graph problems in natural language (2305.10037) | Limitations items 8 and 14 |
+| Sequence arms and open LLMs (to 7.6 billion parameters) at chance on cue-free sets | Transformers struggle to learn search, increasingly with graph size | 2412.04703; LLMs on graph problems in natural language (2305.10037) | Limitations items 8 and 14 |
+| The same LLMs read single edges of those graphs almost perfectly (AUROC up to 0.99, from 3 to 7.6 billion parameters alike) | Compositionality gap: sub-questions answered, their composition not; in the cited work the gap did not narrow as models grew | 2210.03350 | Limitations item 14 |
 
 ## Direction
 
@@ -33,11 +34,12 @@ literature describes from both sides:
   for looped and length-generalizing transformers on their tasks.
 * **Text.** Every model that reads the graph as text stayed at chance:
   sequence arms trained from scratch even on the paired sets, and open LLMs
-  of up to 3.8 billion parameters on the crossed sets, in line with the
+  of up to 7.6 billion parameters on the crossed sets, in line with the
   search and heuristics findings above. An edge-lookup probe separates
-  reading from search: the LLMs of 3 to 3.8 billion parameters read single
+  reading from search: the LLMs of 3 to 7.6 billion parameters read single
   edges of the same graphs almost perfectly (AUROC 0.89–0.99), so their
-  failure is in the search.
+  failure is in the search, and where their answers carry a signal, it
+  follows a one-endpoint cue.
 
 The next measurement is a reader placed in front of the anchored processor,
 which must emit an explicit, discrete graph (scored against the true edges)

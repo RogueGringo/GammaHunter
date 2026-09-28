@@ -1,0 +1,12 @@
+Qwen/Qwen2.5-3B-Instruct               crossed_val  cited {'listed': 4441, 'reversed': 122, 'absent': 152} | Yes on unreachable: 47 written paths, 1 all listed, 27 with a reversed step
+Qwen/Qwen2.5-3B-Instruct               crossed_long cited {'listed': 11046, 'reversed': 115, 'absent': 404} | Yes on unreachable: 28 written paths, 0 all listed, 12 with a reversed step
+microsoft/Phi-3.5-mini-instruct        crossed_val  cited {'listed': 1452, 'reversed': 193, 'absent': 180} | Yes on unreachable: 135 written paths, 2 all listed, 90 with a reversed step
+microsoft/Phi-3.5-mini-instruct        crossed_long cited {'listed': 966, 'reversed': 100, 'absent': 280} | Yes on unreachable: 117 written paths, 2 all listed, 51 with a reversed step
+tiiuae/Falcon3-3B-Instruct             crossed_val  cited {'listed': 1504, 'reversed': 254, 'absent': 156} | Yes on unreachable: 83 written paths, 0 all listed, 53 with a reversed step
+tiiuae/Falcon3-3B-Instruct             crossed_long cited {'listed': 2116, 'reversed': 335, 'absent': 336} | Yes on unreachable: 57 written paths, 0 all listed, 35 with a reversed step
+HuggingFaceTB/SmolLM2-1.7B-Instruct    crossed_val  cited {'listed': 1094, 'reversed': 128, 'absent': 1416} | Yes on unreachable: 5 written paths, 0 all listed, 3 with a reversed step
+HuggingFaceTB/SmolLM2-1.7B-Instruct    crossed_long cited {'listed': 2986, 'reversed': 35, 'absent': 1250} | Yes on unreachable: 8 written paths, 0 all listed, 2 with a reversed step
+allenai/OLMo-2-0425-1B-Instruct        crossed_val  cited {'listed': 10828, 'reversed': 298, 'absent': 2678} | Yes on unreachable: 121 written paths, 0 all listed, 53 with a reversed step
+allenai/OLMo-2-0425-1B-Instruct        crossed_long cited {'listed': 12979, 'reversed': 169, 'absent': 4144} | Yes on unreachable: 76 written paths, 0 all listed, 28 with a reversed step
+Qwen/Qwen2.5-7B-Instruct               crossed_val  cited {'listed': 1861, 'reversed': 251, 'absent': 103} | Yes on unreachable: 88 written paths, 0 all listed, 48 with a reversed step
+Qwen/Qwen2.5-7B-Instruct               crossed_long cited {'listed': 1534, 'reversed': 204, 'absent': 225} | Yes on unreachable: 63 written paths, 1 all listed, 39 with a reversed step

@@ -170,41 +170,67 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     that it emerges from token input.
 
 14. **LLM reference points.** Open language models from the local cache
-    (0.49 to 3.82 billion parameters; a 7-billion-parameter model did not fit
-    this machine's memory in 16-bit precision) answered the same questions,
-    inference only. Asked for an immediate answer after four solved examples
-    (`artifacts/llm_reference.json`, 1,000 questions per set), all eight
-    scored at chance on the crossed validation split (AUROC 0.48–0.50) and on
-    the long-path set (0.49–0.52), as on the same questions with the edge list
-    withheld (0.49–0.50). On the paired validation split, which carries
-    one-endpoint cues, AUROC was 0.51–0.61. Scored on every paired graph in
-    which the target-reach cue conflicts with the label and on as many in
-    which it agrees (`artifacts/llm_cue_conflict.json`, 548 of each), the
-    model with the clearest paired-split signal, Falcon3-3B-Instruct (AUROC
-    0.61), ranked the reachable question higher in 65% of agreeing graphs but
-    in 41% of conflicting ones (two-sided Fisher exact test on graphs without
-    ties, p ≈ 5×10⁻¹⁶): its signal follows the one-endpoint cue, not a path.
-    Qwen2.5-1.5B showed the same pattern more weakly (56% against 46%,
-    p = 0.003) and the two Qwen2.5-3B models the reverse (48% against 57%,
-    p ≤ 0.005), which a model that searches would not show either. Asked
-    only whether single edges are listed (`artifacts/llm_edge_probe.json`,
-    1,000 questions per set: two listed edges, one reversed edge and one
-    absent pair per graph), the models of 3 to 3.8 billion parameters scored
-    AUROC 0.89–0.99 on both sets and rejected reversed edges in 67–87% of
-    cases, while scoring at chance on reachability over the same graphs:
-    they read the edge list but do not search it. Models of 1.7 billion
-    parameters or fewer scored 0.62–0.81, with strong biases towards one
-    answer. Asked to
-    reason step by step (`artifacts/llm_cot.json`: five instruction-tuned
-    models, greedy decoding, 400 questions per set, every generation in
-    `artifacts/llm_cot_generations.jsonl`), they reached 0.45–0.55 among
-    parsed answers on the crossed validation split and 0.48–0.52 on the
-    long-path set. On the long-path set, 3–52% of the answers were cut off at
-    the 768-token budget before a final answer. Without the edges, one model
-    declined to answer 97% of the questions and the others stayed at chance.
+    answered the same questions, inference only: eight models of 0.49 to 3.82
+    billion parameters in 16-bit precision, and Qwen2.5-7B-Instruct (7.6
+    billion) with its linear-layer weights stored in 8 bits, because it does
+    not fit this machine's GPU memory in 16 bits. The 8-bit weights were used
+    only after a check with limits fixed in advance: Qwen2.5-3B-Instruct,
+    scored both ways on the same questions, gave margins correlated at
+    r ≥ 0.995, the same answer on at least 95.8% of the questions and AUROC
+    within 0.004 on every set (`artifacts/llm_int8_fidelity.json`).
+    - *Immediate answer* after four solved examples
+      (`artifacts/llm_reference.json`, `artifacts/llm_reference_7b.json`,
+      1,000 questions per set): all nine models scored at chance on the
+      crossed validation split (AUROC 0.48–0.50) and on the long-path set
+      (0.49–0.52), as on the same questions with the edge list withheld
+      (0.49–0.50). On the paired validation split, which carries one-endpoint
+      cues, AUROC was 0.51–0.62, highest for the 7B model (0.62) and
+      Falcon3-3B-Instruct (0.61).
+    - *Cue conflict.* Scored on every paired graph in which the target-reach
+      cue conflicts with the label and on as many in which it agrees (548 of
+      each; `artifacts/llm_cue_conflict.json`,
+      `artifacts/llm_cue_conflict_7b.json`), these two models ranked the
+      reachable question higher in 65% and 62% of agreeing graphs but in 41%
+      and 50% of conflicting ones (two-sided Fisher exact tests on graphs
+      without ties, p ≈ 5×10⁻¹⁶ and p ≈ 9×10⁻⁵): their signal follows the
+      one-endpoint cue, not a path. Qwen2.5-1.5B showed the same pattern more
+      weakly (56% against 46%, p = 0.003) and the two Qwen2.5-3B models the
+      reverse (48% against 57%, p ≤ 0.005), which a model that searches would
+      not show either.
+    - *Edge lookup.* Asked only whether single edges are listed
+      (`artifacts/llm_edge_probe.json`, `artifacts/llm_edge_probe_7b.json`,
+      1,000 questions per set: two listed edges, one reversed edge and one
+      absent pair per graph), the models of 3 to 7.6 billion parameters
+      scored AUROC 0.89–0.99 on both sets (the 7B model 0.99 on both) and
+      rejected reversed edges in 67–87% of cases, while scoring at chance on
+      reachability over the same graphs: they read the edge list but do not
+      search it. Models of 1.7 billion parameters or fewer scored 0.62–0.81,
+      with strong biases towards one answer.
+    - *Step by step* (`artifacts/llm_cot.json`, `artifacts/llm_cot_7b.json`:
+      six instruction-tuned models including the 7B model, greedy decoding,
+      400 questions per set with edges and 100 without, every generation
+      recorded in the matching `*_generations.jsonl`): they reached 0.45–0.55
+      among parsed answers on the crossed validation split (the 7B model
+      0.54) and 0.48–0.52 on the long-path set (0.52). On the long-path set,
+      3–52% of the answers were cut off at the 768-token budget before a
+      final answer (18% for the 7B model). Without the edges, one model
+      declined to answer 97% of the questions and the others stayed at
+      chance. The written paths locate the errors
+      (`artifacts/llm_cot_path_audit.json`; a written path is the last chain
+      of three or more nodes joined by arrows in a generation). Of the Yes
+      answers on unreachable pairs, 828 of 1,537 contain a written path; 688
+      of these claim to run from the source to the target, which the listed
+      edges do not allow: 441 include a listed edge followed backwards and
+      656 a pair that is not listed at all (a path can do both). The 7B
+      model, which rejected reversed edges in 82–85% of single-edge
+      questions, followed an edge backwards in 87 of the 151 paths behind its
+      wrong Yes answers. Behind correct Yes answers, only 148 of 828 written
+      paths use listed edges alone, so most correct answers are not backed
+      by a valid path either.
+
     These models read the edges as text, whereas the message-passing arms are
     given the graph as structure, so the comparison is not like-for-like: the
-    reference points show where standard open models of this size stand on
+    reference points show where standard open models of these sizes stand on
     the same questions, not that one architecture outperforms another.
 
 15. **Measurement-only status.** No result in this repository is presented as

@@ -1,0 +1,66 @@
+{
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "passes": true,
+  "science_open": false,
+  "sets": {
+    "llm_edge_probe/crossed_long": {
+      "auroc_16bit": 0.978422,
+      "auroc_8bit": 0.975558,
+      "auroc_shift": -0.0028639999999999777,
+      "margin_correlation": 0.9982450351822411,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.99
+    },
+    "llm_edge_probe/crossed_val": {
+      "auroc_16bit": 0.991488,
+      "auroc_8bit": 0.989976,
+      "auroc_shift": -0.0015120000000000688,
+      "margin_correlation": 0.9986204551789454,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.984
+    },
+    "llm_reference/crossed_long": {
+      "auroc_16bit": 0.507322,
+      "auroc_8bit": 0.509126,
+      "auroc_shift": 0.0018039999999999168,
+      "margin_correlation": 0.9955439148820674,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.983
+    },
+    "llm_reference/crossed_val": {
+      "auroc_16bit": 0.495354,
+      "auroc_8bit": 0.494712,
+      "auroc_shift": -0.0006420000000000314,
+      "margin_correlation": 0.996251924011709,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.976
+    },
+    "llm_reference/no_graph": {
+      "auroc_16bit": 0.498356,
+      "auroc_8bit": 0.499318,
+      "auroc_shift": 0.0009619999999999629,
+      "margin_correlation": 0.9965649155983426,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.976
+    },
+    "llm_reference/paired_val": {
+      "auroc_16bit": 0.533158,
+      "auroc_8bit": 0.529744,
+      "auroc_shift": -0.003414000000000028,
+      "margin_correlation": 0.9959726751210548,
+      "n": 1000,
+      "passes": true,
+      "prediction_agreement": 0.958
+    }
+  },
+  "thresholds": {
+    "max_auroc_shift": 0.02,
+    "min_margin_correlation": 0.95,
+    "min_prediction_agreement": 0.95
+  }
+}

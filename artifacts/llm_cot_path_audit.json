@@ -1,0 +1,593 @@
+{
+  "definitions": {
+    "absent": "neither direction is listed",
+    "cited_edges": "single arrows u->v quoted while reasoning",
+    "listed": "the step is an edge of the graph shown",
+    "reversed": "only the opposite edge is listed",
+    "written_path": "the last chain of three or more node numbers joined by arrows in a generation"
+  },
+  "generations_files": [
+    "artifacts/llm_cot_generations.jsonl",
+    "artifacts/llm_cot_7b_generations.jsonl"
+  ],
+  "models": {
+    "HuggingFaceTB/SmolLM2-1.7B-Instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 1250,
+          "listed": 2986,
+          "reversed": 35
+        },
+        "no_on_reachable": {
+          "generations": 31,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "no_on_unreachable": {
+          "generations": 25,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "unparsed": {
+          "generations": 125,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 1,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "yes_on_reachable": {
+          "generations": 107,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 7,
+          "path_with_absent_step": 9,
+          "path_with_reversed_step": 4,
+          "with_written_path": 9
+        },
+        "yes_on_unreachable": {
+          "generations": 112,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 7,
+          "path_with_absent_step": 8,
+          "path_with_reversed_step": 2,
+          "with_written_path": 8
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 1416,
+          "listed": 1094,
+          "reversed": 128
+        },
+        "no_on_reachable": {
+          "generations": 25,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "no_on_unreachable": {
+          "generations": 16,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 3,
+          "path_with_absent_step": 3,
+          "path_with_reversed_step": 0,
+          "with_written_path": 3
+        },
+        "unparsed": {
+          "generations": 76,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 1,
+          "path_with_absent_step": 3,
+          "path_with_reversed_step": 0,
+          "with_written_path": 3
+        },
+        "yes_on_reachable": {
+          "generations": 130,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 7,
+          "path_with_absent_step": 6,
+          "path_with_reversed_step": 3,
+          "with_written_path": 7
+        },
+        "yes_on_unreachable": {
+          "generations": 153,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 3,
+          "path_with_absent_step": 5,
+          "path_with_reversed_step": 3,
+          "with_written_path": 5
+        }
+      }
+    },
+    "Qwen/Qwen2.5-3B-Instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 404,
+          "listed": 11046,
+          "reversed": 115
+        },
+        "no_on_reachable": {
+          "generations": 110,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 4,
+          "path_with_reversed_step": 2,
+          "with_written_path": 5
+        },
+        "no_on_unreachable": {
+          "generations": 118,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 1,
+          "with_written_path": 3
+        },
+        "unparsed": {
+          "generations": 70,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 1,
+          "path_with_absent_step": 7,
+          "path_with_reversed_step": 7,
+          "with_written_path": 9
+        },
+        "yes_on_reachable": {
+          "generations": 55,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 26,
+          "path_with_absent_step": 23,
+          "path_with_reversed_step": 13,
+          "with_written_path": 27
+        },
+        "yes_on_unreachable": {
+          "generations": 47,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 24,
+          "path_with_absent_step": 23,
+          "path_with_reversed_step": 12,
+          "with_written_path": 28
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 152,
+          "listed": 4441,
+          "reversed": 122
+        },
+        "no_on_reachable": {
+          "generations": 80,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 0,
+          "with_written_path": 2
+        },
+        "no_on_unreachable": {
+          "generations": 99,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 1,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 2,
+          "with_written_path": 3
+        },
+        "unparsed": {
+          "generations": 16,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 1,
+          "with_written_path": 2
+        },
+        "yes_on_reachable": {
+          "generations": 114,
+          "path_all_steps_listed": 21,
+          "path_from_s_to_t": 36,
+          "path_with_absent_step": 13,
+          "path_with_reversed_step": 8,
+          "with_written_path": 41
+        },
+        "yes_on_unreachable": {
+          "generations": 91,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 41,
+          "path_with_absent_step": 31,
+          "path_with_reversed_step": 27,
+          "with_written_path": 47
+        }
+      }
+    },
+    "Qwen/Qwen2.5-7B-Instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 225,
+          "listed": 1534,
+          "reversed": 204
+        },
+        "no_on_reachable": {
+          "generations": 64,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 1
+        },
+        "no_on_unreachable": {
+          "generations": 72,
+          "path_all_steps_listed": 3,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 1,
+          "with_written_path": 6
+        },
+        "unparsed": {
+          "generations": 71,
+          "path_all_steps_listed": 4,
+          "path_from_s_to_t": 2,
+          "path_with_absent_step": 20,
+          "path_with_reversed_step": 13,
+          "with_written_path": 26
+        },
+        "yes_on_reachable": {
+          "generations": 100,
+          "path_all_steps_listed": 3,
+          "path_from_s_to_t": 71,
+          "path_with_absent_step": 53,
+          "path_with_reversed_step": 37,
+          "with_written_path": 71
+        },
+        "yes_on_unreachable": {
+          "generations": 93,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 62,
+          "path_with_absent_step": 44,
+          "path_with_reversed_step": 39,
+          "with_written_path": 63
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 103,
+          "listed": 1861,
+          "reversed": 251
+        },
+        "no_on_reachable": {
+          "generations": 29,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 2,
+          "with_written_path": 2
+        },
+        "no_on_unreachable": {
+          "generations": 46,
+          "path_all_steps_listed": 3,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 1,
+          "with_written_path": 5
+        },
+        "unparsed": {
+          "generations": 9,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 2,
+          "with_written_path": 2
+        },
+        "yes_on_reachable": {
+          "generations": 167,
+          "path_all_steps_listed": 46,
+          "path_from_s_to_t": 83,
+          "path_with_absent_step": 23,
+          "path_with_reversed_step": 25,
+          "with_written_path": 89
+        },
+        "yes_on_unreachable": {
+          "generations": 149,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 84,
+          "path_with_absent_step": 53,
+          "path_with_reversed_step": 48,
+          "with_written_path": 88
+        }
+      }
+    },
+    "allenai/OLMo-2-0425-1B-Instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 4144,
+          "listed": 12979,
+          "reversed": 169
+        },
+        "no_on_reachable": {
+          "generations": 30,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "no_on_unreachable": {
+          "generations": 29,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "unparsed": {
+          "generations": 116,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 2,
+          "path_with_absent_step": 21,
+          "path_with_reversed_step": 12,
+          "with_written_path": 23
+        },
+        "yes_on_reachable": {
+          "generations": 112,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 41,
+          "path_with_absent_step": 77,
+          "path_with_reversed_step": 17,
+          "with_written_path": 77
+        },
+        "yes_on_unreachable": {
+          "generations": 113,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 35,
+          "path_with_absent_step": 76,
+          "path_with_reversed_step": 28,
+          "with_written_path": 76
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 2678,
+          "listed": 10828,
+          "reversed": 298
+        },
+        "no_on_reachable": {
+          "generations": 3,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 1,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 0,
+          "with_written_path": 1
+        },
+        "no_on_unreachable": {
+          "generations": 9,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 0,
+          "with_written_path": 2
+        },
+        "unparsed": {
+          "generations": 30,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 9,
+          "path_with_reversed_step": 4,
+          "with_written_path": 11
+        },
+        "yes_on_reachable": {
+          "generations": 182,
+          "path_all_steps_listed": 2,
+          "path_from_s_to_t": 81,
+          "path_with_absent_step": 125,
+          "path_with_reversed_step": 63,
+          "with_written_path": 127
+        },
+        "yes_on_unreachable": {
+          "generations": 176,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 67,
+          "path_with_absent_step": 119,
+          "path_with_reversed_step": 53,
+          "with_written_path": 121
+        }
+      }
+    },
+    "microsoft/Phi-3.5-mini-instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 280,
+          "listed": 966,
+          "reversed": 100
+        },
+        "no_on_reachable": {
+          "generations": 9,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "no_on_unreachable": {
+          "generations": 13,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "unparsed": {
+          "generations": 13,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "yes_on_reachable": {
+          "generations": 185,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 103,
+          "path_with_absent_step": 108,
+          "path_with_reversed_step": 58,
+          "with_written_path": 113
+        },
+        "yes_on_unreachable": {
+          "generations": 180,
+          "path_all_steps_listed": 2,
+          "path_from_s_to_t": 104,
+          "path_with_absent_step": 109,
+          "path_with_reversed_step": 51,
+          "with_written_path": 117
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 180,
+          "listed": 1452,
+          "reversed": 193
+        },
+        "no_on_reachable": {
+          "generations": 12,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "no_on_unreachable": {
+          "generations": 8,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 1
+        },
+        "unparsed": {
+          "generations": 7,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 0
+        },
+        "yes_on_reachable": {
+          "generations": 185,
+          "path_all_steps_listed": 37,
+          "path_from_s_to_t": 124,
+          "path_with_absent_step": 69,
+          "path_with_reversed_step": 53,
+          "with_written_path": 130
+        },
+        "yes_on_unreachable": {
+          "generations": 188,
+          "path_all_steps_listed": 2,
+          "path_from_s_to_t": 126,
+          "path_with_absent_step": 91,
+          "path_with_reversed_step": 90,
+          "with_written_path": 135
+        }
+      }
+    },
+    "tiiuae/Falcon3-3B-Instruct": {
+      "crossed_long": {
+        "cited_edges": {
+          "absent": 336,
+          "listed": 2116,
+          "reversed": 335
+        },
+        "no_on_reachable": {
+          "generations": 19,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 1,
+          "path_with_reversed_step": 2,
+          "with_written_path": 2
+        },
+        "no_on_unreachable": {
+          "generations": 28,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "unparsed": {
+          "generations": 208,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 2,
+          "with_written_path": 4
+        },
+        "yes_on_reachable": {
+          "generations": 66,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 40,
+          "path_with_absent_step": 38,
+          "path_with_reversed_step": 25,
+          "with_written_path": 43
+        },
+        "yes_on_unreachable": {
+          "generations": 79,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 55,
+          "path_with_absent_step": 45,
+          "path_with_reversed_step": 35,
+          "with_written_path": 57
+        }
+      },
+      "crossed_val": {
+        "cited_edges": {
+          "absent": 156,
+          "listed": 1504,
+          "reversed": 254
+        },
+        "no_on_reachable": {
+          "generations": 21,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 0,
+          "with_written_path": 1
+        },
+        "no_on_unreachable": {
+          "generations": 27,
+          "path_all_steps_listed": 1,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 2,
+          "path_with_reversed_step": 0,
+          "with_written_path": 3
+        },
+        "unparsed": {
+          "generations": 27,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 0,
+          "path_with_absent_step": 0,
+          "path_with_reversed_step": 1,
+          "with_written_path": 1
+        },
+        "yes_on_reachable": {
+          "generations": 169,
+          "path_all_steps_listed": 38,
+          "path_from_s_to_t": 92,
+          "path_with_absent_step": 35,
+          "path_with_reversed_step": 35,
+          "with_written_path": 94
+        },
+        "yes_on_unreachable": {
+          "generations": 156,
+          "path_all_steps_listed": 0,
+          "path_from_s_to_t": 80,
+          "path_with_absent_step": 52,
+          "path_with_reversed_step": 53,
+          "with_written_path": 83
+        }
+      }
+    }
+  },
+  "purpose": "do the paths written in step-by-step generations use the listed edges?",
+  "science_open": false
+}
