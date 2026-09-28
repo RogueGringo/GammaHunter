@@ -1,0 +1,381 @@
+{
+  "aggregate": {
+    "looped": {
+      "extended_acc_by_steps_mean": {
+        "16": 0.5,
+        "32": 0.5,
+        "48": 0.5,
+        "6": 0.5
+      },
+      "id_val_acc_mean": 0.5
+    },
+    "unlooped": {
+      "extended_acc_by_steps_mean": {
+        "6": 0.5
+      },
+      "id_val_acc_mean": 0.5
+    }
+  },
+  "calibration": "artifacts/mp_calibration.json",
+  "control": {
+    "0": {
+      "looped": {
+        "arm": "looped",
+        "extended_by_steps": {
+          "16": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.698599661976099
+          },
+          "32": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6967829134464264
+          },
+          "48": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6975843882262707
+          },
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.7204143111407757
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 0
+      },
+      "unlooped": {
+        "arm": "unlooped",
+        "extended_by_steps": {
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.695050072312355
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 0
+      }
+    },
+    "1": {
+      "looped": {
+        "arm": "looped",
+        "extended_by_steps": {
+          "16": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6974656079113484
+          },
+          "32": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.7146815704703331
+          },
+          "48": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.7139702053666115
+          },
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6986245064735412
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 1
+      },
+      "unlooped": {
+        "arm": "unlooped",
+        "extended_by_steps": {
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6938782508075237
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 1
+      }
+    },
+    "2": {
+      "looped": {
+        "arm": "looped",
+        "extended_by_steps": {
+          "16": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6938189425170421
+          },
+          "32": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6938898768424988
+          },
+          "48": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6998892929553986
+          },
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.71647834867239
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 2
+      },
+      "unlooped": {
+        "arm": "unlooped",
+        "extended_by_steps": {
+          "6": {
+            "acc": 0.5,
+            "by_graph_hop": {
+              "10": 0.5,
+              "12": 0.5,
+              "14": 0.5,
+              "16": 0.5,
+              "8": 0.5
+            },
+            "loss": 0.6930662910938263
+          }
+        },
+        "id_val_acc": 0.5,
+        "id_val_by_graph_hop": {
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "seed": 2
+      }
+    }
+  },
+  "d": 64,
+  "device": "cuda",
+  "extended_data": "data/extended_disjoint_2k.jsonl",
+  "learned_margin": {
+    "seed0/looped/best": {
+      "extended_by_steps": {
+        "16": 0.5,
+        "32": 0.49950000000000006,
+        "48": 0.497,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed0/looped/final": {
+      "extended_by_steps": {
+        "16": 0.5,
+        "32": 0.0,
+        "48": 0.0,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed0/unlooped/best": {
+      "extended_by_steps": {
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed0/unlooped/final": {
+      "extended_by_steps": {
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed1/looped/best": {
+      "extended_by_steps": {
+        "16": 0.0,
+        "32": 0.0,
+        "48": 0.0,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed1/looped/final": {
+      "extended_by_steps": {
+        "16": 0.0,
+        "32": 0.0,
+        "48": 0.0,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed1/unlooped/best": {
+      "extended_by_steps": {
+        "6": 0.0695
+      },
+      "id_val": 0.41500000000000004
+    },
+    "seed1/unlooped/final": {
+      "extended_by_steps": {
+        "6": 0.23550000000000004
+      },
+      "id_val": 0.21999999999999997
+    },
+    "seed2/looped/best": {
+      "extended_by_steps": {
+        "16": 0.5,
+        "32": 0.49750000000000005,
+        "48": 0.497,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed2/looped/final": {
+      "extended_by_steps": {
+        "16": 0.5,
+        "32": 0.5,
+        "48": 0.49750000000000005,
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed2/unlooped/best": {
+      "extended_by_steps": {
+        "6": 0.0
+      },
+      "id_val": 0.5
+    },
+    "seed2/unlooped/final": {
+      "extended_by_steps": {
+        "6": 0.0
+      },
+      "id_val": 0.5
+    }
+  },
+  "purpose": "untrained-model control: accuracy at the weights training starts from",
+  "science_open": false,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "torch_version": "2.14.0+cu130",
+  "train_data": "data/id_disjoint_20k.jsonl"
+}

@@ -25,8 +25,8 @@ requires is known exactly.
   small input perturbations.
 - **Integrity controls.** Checkpoint re-scoring against recorded results,
   input-length guards, dataset-composition and coverage checks, ceilings for
-  shortcut rules that need no path search, and automatic flags for degenerate
-  training outcomes.
+  shortcut rules that need no path search, untrained-model controls, and
+  automatic flags for degenerate training outcomes.
 
 ## Why it matters
 

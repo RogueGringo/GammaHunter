@@ -24,6 +24,8 @@
   calibration runner that trains on short paths and tests on long ones.
 - Reach-cue audit: ceilings for rules that read only one endpoint's reach,
   on the graph-disjoint sets.
+- Untrained-model control for the calibration: each arm scored at the
+  weights its training starts from, with the learned margin.
 
 ## 0.1.0 (2026-09-27)
 

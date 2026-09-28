@@ -88,7 +88,10 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    needs, the looped arm scored 0.500 in every seed. The unlooped arm reached
    1.000 in two seeds; in the third it peaked at 0.915 and ended at 0.720, and
    it scored 0.7355 on the long-path set although every path there is longer
-   than its depth (see item 10). These arms receive each graph as explicit structure,
+   than its depth (see item 10). At the weights their training starts from,
+   both arms score exactly 0.500 on both sets at every step count
+   (`artifacts/mp_calibration_untrained_control.json`), so their results
+   above 0.5 were learned, not built in. These arms receive each graph as explicit structure,
    whereas the sequence arms must recover it from tokens, so the calibration
    is a reference point for the harness, not a like-for-like comparison with
    the sequence arms.

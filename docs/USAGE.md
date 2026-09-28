@@ -141,6 +141,18 @@ reported in the literature (how its results vary by seed is described in
 `artifacts/mp_calibration.json` with self-audited best and final checkpoints
 in `artifacts/mp_calibration/`.
 
+```bash
+python -m reachability_gen.untrained_control --device cuda
+```
+
+The untrained-model control rebuilds, for each seed and arm, the exact
+weights its training started from and scores them with the calibration's own
+evaluation, on the same sets and step counts: an accuracy reached before any
+training cannot be attributed to learning. It writes
+`artifacts/mp_calibration_untrained_control.json`, including the learned
+margin (trained minus untrained accuracy) for both saved checkpoints when the
+calibration's result file is present.
+
 ## External benchmarks
 
 ```bash

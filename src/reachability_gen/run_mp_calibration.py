@@ -85,6 +85,14 @@ def build(kind: str, d_unlooped: int) -> MessagePassing:
     raise ValueError(f"unknown arm {kind!r}")
 
 
+def init_model(kind: str, d_unlooped: int, seed: int, device: str = "cpu") -> MessagePassing:
+    """The weights training starts from for ``seed`` (also used by the untrained control)."""
+    import torch
+
+    torch.manual_seed(seed)
+    return build(kind, d_unlooped).to(device)
+
+
 def evaluate(
     model: MessagePassing,
     graphs: Sequence[ParsedGraph],
@@ -136,8 +144,7 @@ def train_arm(
     import torch.nn.functional as F
     from torch.nn.utils import clip_grad_norm_
 
-    torch.manual_seed(seed)
-    model = build(kind, d).to(device)
+    model = init_model(kind, d, seed, device)
     opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
 
     def cpu_state() -> dict[str, Any]:

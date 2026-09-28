@@ -1,0 +1,2 @@
+unlooped  untrained ID val 0.5000 | long paths T=6:0.500
+looped    untrained ID val 0.5000 | long paths T=6:0.500 T=16:0.500 T=32:0.500 T=48:0.500
