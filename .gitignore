@@ -20,3 +20,6 @@ data/benchmarks/
 
 # take-off study checkpoints (hashes are recorded in artifacts/takeoff_study.json)
 artifacts/takeoff/
+
+# reader-pipeline checkpoints (hashes are recorded in artifacts/reader_pipeline.json)
+artifacts/reader_pipeline/

@@ -52,6 +52,9 @@ reachability-takeoff = "reachability_gen.run_takeoff:main"
 reachability-llm-reference = "reachability_gen.run_llm_reference:main"
 reachability-llm-cot = "reachability_gen.run_llm_cot:main"
 reachability-llm-edge-probe = "reachability_gen.run_llm_edge_probe:main"
+reachability-llm-cue-conflict = "reachability_gen.llm_cue_conflict:main"
+reachability-llm-int8-fidelity = "reachability_gen.llm_int8_fidelity:main"
+reachability-reader = "reachability_gen.run_reader:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

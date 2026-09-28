@@ -103,8 +103,13 @@ def kv_bytes_per_token(model) -> int:
 
 
 def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: int, max_new_tokens: int,
-             kv_budget: int = KV_BUDGET) -> tuple[list[str], list[int]]:
-    """Greedy generations; each batch stays within ``kv_budget`` bytes of attention cache."""
+             kv_budget: int = KV_BUDGET, stats: Optional[dict[str, int]] = None) -> tuple[list[str], list[int]]:
+    """Greedy generations; each batch stays within ``kv_budget`` bytes of attention cache.
+
+    A batch that runs out of GPU memory is split in half and retried, and each
+    split is counted in ``stats["oom_splits"]``; a single sequence that does not
+    fit still raises.
+    """
     import torch
 
     tokenizer.padding_side = "left"
@@ -116,6 +121,33 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
     lengths: list[int] = [0] * len(prompts)
     order = sorted(range(len(prompts)), key=lambda i: sizes[i])
     first = model.get_input_embeddings().weight.device
+
+    def run(idx: list[int]) -> None:
+        enc = tokenizer([chats[i] for i in idx], return_tensors="pt", padding=True,
+                        add_special_tokens=False).to(first)
+        try:
+            out = model.generate(**enc, do_sample=False, max_new_tokens=max_new_tokens,
+                                 pad_token_id=tokenizer.pad_token_id)
+        except torch.OutOfMemoryError:
+            if len(idx) == 1:
+                raise
+            out = None  # recover outside the handler, once the failed attempt's tensors are released
+        if out is None:
+            del enc
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            if stats is not None:
+                stats["oom_splits"] = stats.get("oom_splits", 0) + 1
+            run(idx[: len(idx) // 2])
+            run(idx[len(idx) // 2 :])
+            return
+        new = out[:, enc["input_ids"].shape[1]:]
+        for row, i in enumerate(idx):
+            ids = new[row]
+            keep = ids[ids != tokenizer.pad_token_id]
+            lengths[i] = int(keep.numel())
+            texts[i] = tokenizer.decode(keep, skip_special_tokens=True)
+
     start = 0
     with torch.inference_mode():
         while start < len(order):
@@ -123,17 +155,7 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
             while (end < len(order) and end - start < batch
                    and (end - start + 1) * (sizes[order[end]] + max_new_tokens) * per_token <= kv_budget):
                 end += 1
-            idx = order[start:end]
-            enc = tokenizer([chats[i] for i in idx], return_tensors="pt", padding=True,
-                            add_special_tokens=False).to(first)
-            out = model.generate(**enc, do_sample=False, max_new_tokens=max_new_tokens,
-                                 pad_token_id=tokenizer.pad_token_id)
-            new = out[:, enc["input_ids"].shape[1]:]
-            for row, i in enumerate(idx):
-                ids = new[row]
-                keep = ids[ids != tokenizer.pad_token_id]
-                lengths[i] = int(keep.numel())
-                texts[i] = tokenizer.decode(keep, skip_special_tokens=True)
+            run(order[start:end])
             start = end
     return texts, lengths
 
@@ -179,7 +201,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             "max_new_tokens": args.max_new_tokens,
             "answer_rule": "last 'Answer: Yes/No' in the output; none counts as wrong",
             "graphs_per_hop": per_hop,
-            "batching": f"at most {args.batch} sequences and {args.kv_budget_gib} GiB of attention cache per batch",
+            "batching": f"at most {args.batch} sequences and {args.kv_budget_gib} GiB of attention cache per batch; "
+                        "a batch that runs out of GPU memory is halved and retried (counted per model)",
             "dtype": args.dtype,
             "int8_weights": args.int8,
             "device": args.device,
@@ -209,12 +232,13 @@ def main(argv: Optional[list[str]] = None) -> int:
                 tokenizer.pad_token = tokenizer.eos_token
             model = load_model(name, args.dtype, args.device, parse_max_memory(args.max_memory), args.int8)
             res: dict[str, Any] = {"sets": {}, "kv_bytes_per_token": kv_bytes_per_token(model)}
+            stats: dict[str, int] = {"oom_splits": 0}
             for set_name, rows in sets.items():
                 prompts = [question(r["encoding"], graph=set_name != "no_graph") for r in rows]
                 t2 = time.perf_counter()
                 texts, lengths = generate(model, tokenizer, prompts, args.device, batch=args.batch,
                                           max_new_tokens=args.max_new_tokens,
-                                          kv_budget=int(args.kv_budget_gib * 2**30))
+                                          kv_budget=int(args.kv_budget_gib * 2**30), stats=stats)
                 answers = [parse_answer(t) for t in texts]
                 entry = summarise(rows, answers, lengths, args.max_new_tokens)
                 entry["seconds"] = time.perf_counter() - t2
@@ -227,6 +251,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 print(f"[{name}] {set_name}: acc {entry['acc']:.3f} parsed {entry['parsed_rate']:.2f} "
                       f"tokens {entry['mean_generated_tokens']:.0f} ({entry['seconds']:.0f}s)", file=sys.stderr, flush=True)
             res["seconds"] = time.perf_counter() - t1
+            res["oom_splits"] = stats["oom_splits"]  # batches halved after running out of GPU memory
             results[name] = res
             write()  # after every model, so a later failure keeps what finished
             del model

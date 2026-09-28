@@ -53,6 +53,14 @@
 - Related-work page mapping the measurements to published terms and papers.
 - Edge-lookup probe: whether the reference LLMs read single edges (listed,
   reversed, absent) of the same graphs, separating reading from search.
+- 8-bit weight storage for the reference LLMs (one scale per output channel,
+  expanded at each call) and a fidelity gate comparing a model's 16-bit and
+  8-bit margins question by question against limits fixed in advance.
+- Reader pipeline: a question-blind reader with no node identities turns the
+  edge list into an explicit 0/1 adjacency for the anchored arm; supervised
+  and answers-only regimes over 10 seeds, scored on the reader (edges,
+  topology loss, closure), the pipeline (accuracy and AUROC to 192 steps) and
+  the attribution of each error, with untrained and true-graph controls.
 
 ## 0.1.0 (2026-09-27)
 

@@ -52,3 +52,55 @@ def test_llm_cot_artifact_contract():
         for name, entry in res["sets"].items():
             assert entry["n"] == len(art["sets"][name])
             assert 0.0 <= entry["acc"] <= entry["parsed_rate"] <= 1.0
+
+
+def test_generate_halves_a_batch_that_runs_out_of_memory():
+    torch = pytest.importorskip("torch")
+    from types import SimpleNamespace
+
+    from reachability_gen.run_llm_cot import generate
+
+    class Batch(dict):
+        def to(self, device):
+            return self
+
+    class Tokenizer:
+        pad_token_id = 0
+        padding_side = "right"
+
+        def apply_chat_template(self, messages, add_generation_prompt, tokenize):
+            return messages[0]["content"]
+
+        def __call__(self, texts, return_tensors=None, padding=False, add_special_tokens=True):
+            if isinstance(texts, str):
+                return {"input_ids": [int(x) for x in texts.split()]}
+            rows = [[int(x) for x in t.split()] for t in texts]
+            width = max(map(len, rows))
+            return Batch(input_ids=torch.tensor([[0] * (width - len(r)) + r for r in rows]))
+
+        def decode(self, ids, skip_special_tokens=True):
+            return " ".join(str(int(i)) for i in ids)
+
+    class Model(torch.nn.Module):
+        config = SimpleNamespace(num_attention_heads=1, num_key_value_heads=1, head_dim=1, hidden_size=1,
+                                 num_hidden_layers=1)
+
+        def __init__(self):
+            super().__init__()
+            self.emb = torch.nn.Embedding(10, 1)
+            self.calls = []
+
+        def get_input_embeddings(self):
+            return self.emb
+
+        def generate(self, input_ids, do_sample, max_new_tokens, pad_token_id):
+            self.calls.append(len(input_ids))
+            if len(input_ids) > 2:
+                raise torch.OutOfMemoryError("CUDA out of memory (simulated)")
+            return torch.cat([input_ids, input_ids[:, -1:] * 10], dim=1)  # "answer": last token times ten
+
+    model, stats = Model(), {"oom_splits": 0}
+    texts, lengths = generate(model, Tokenizer(), ["1", "2", "3", "4", "5"], "cpu", batch=8, max_new_tokens=1,
+                              stats=stats)
+    assert texts == ["10", "20", "30", "40", "50"] and lengths == [1] * 5
+    assert stats["oom_splits"] == 2 and model.calls == [5, 2, 3, 1, 2]

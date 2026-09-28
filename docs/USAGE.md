@@ -234,6 +234,59 @@ The edge-lookup probe asks the same models whether single edges are listed
 same graphs), with the same scoring, to separate reading the edge list from
 searching it. It writes `artifacts/llm_edge_probe.json`.
 
+```bash
+python -m reachability_gen.llm_cue_conflict --enriched --device cuda
+```
+
+The cue-conflict test reads the paired-split margins stored in
+`artifacts/llm_reference.json` and, with `--enriched` (optionally followed by
+model names; by default the reference file's models), also scores every
+paired graph in which the target-reach cue conflicts with the label and as
+many in which it agrees. It reports how often each model ranks the reachable
+question higher in each group (wins, ties and losses, Wilson intervals on
+graphs without ties, and a two-sided Fisher exact test between the groups)
+and writes `artifacts/llm_cue_conflict.json`.
+
+```bash
+python -m reachability_gen.run_llm_reference --device cuda --int8 --models MODEL --out EIGHT_BIT.json
+python -m reachability_gen.llm_int8_fidelity --model MODEL --pair SIXTEEN_BIT.json EIGHT_BIT.json
+```
+
+With `--int8` (accepted by every runner above), each linear layer's weights
+are stored in 8 bits with one scale per output channel and expanded to 16
+bits at each call, so a model about twice as large fits the same GPU memory.
+The fidelity gate compares one model's 16-bit and 8-bit result files question
+by question (correlation and Yes/No agreement of the margins, and the AUROC
+shift, against limits fixed in advance), writes
+`artifacts/llm_int8_fidelity.json` and exits with status 1 if any limit is
+missed. 8-bit results are used only for a model family that passed the gate
+at a smaller size.
+
+## Reader pipeline
+
+```bash
+python -m reachability_gen.run_reader --device cuda
+```
+
+Asks whether the graph the anchored arm needs can come from the edge-list
+text. A reader that never sees the question and gives every node token the
+same embedding turns the edge list into an explicit 0/1 adjacency, which the
+anchored arm then searches. Three regimes: the reader trained on the true
+edges, with a solver trained first on true graphs and then frozen; the reader
+trained from the reachability answers alone, with the same frozen solver; and
+reader and solver trained together from the answers alone. Each run is
+scored in three layers: the reader (edge precision, recall and F1,
+exact-graph rate, reversed edges, the topology loss against the true edges,
+and agreement of the reachability closure with the true graph's), the
+pipeline (accuracy and AUROC on the crossed validation split and on the
+long-path set at 16, 48 and 192 steps), and the attribution of every wrong
+answer to the reader or the solver. Controls: the untrained reader, and the
+solver on the true graph. The pass criteria are fixed in the runner. It
+writes `artifacts/reader_pipeline.json`; the checkpoints
+(`artifacts/reader_pipeline/`) are not versioned, and their SHA-256 hashes are
+recorded instead. Regimes can run as separate processes
+(`--regimes ... --out PART.json`) and be merged with `--merge`.
+
 ## External benchmarks
 
 ```bash
