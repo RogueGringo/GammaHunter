@@ -1,0 +1,5 @@
+[answers_frozen_prior/seed0] epoch 1/5: loss 4.4225 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 9.4979 edges 0.0/32.5 | gradient 0.00e+00: on query pair 0.00, true edges 0.00
+[answers_frozen_prior/seed0] epoch 2/5: loss 4.4191 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 7.1552 edges 0.0/32.5 | gradient 0.00e+00: on query pair 0.00, true edges 0.00
+[answers_frozen_prior/seed0] epoch 3/5: loss 4.4191 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.4059 edges 0.0/32.5 | gradient 0.00e+00: on query pair 0.00, true edges 0.00
+[answers_frozen_prior/seed0] epoch 4/5: loss 4.4191 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 4.0964 edges 0.0/32.5 | gradient 0.00e+00: on query pair 0.00, true edges 0.00
+[answers_frozen_prior/seed0] epoch 5/5: loss 4.4191 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 3.1124 edges 0.0/32.5 | gradient 0.00e+00: on query pair 0.00, true edges 0.00

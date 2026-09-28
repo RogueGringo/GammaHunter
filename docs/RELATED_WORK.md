@@ -54,8 +54,13 @@ alone, the same pipeline stayed at chance. The exact zeros that keep the
 processor's answers stable at any depth also leave the answers loss with no
 gradient on edges into the part of the graph the source does not reach.
 
-Two questions follow. Can a training signal that does not rely on that
-gradient, such as a relaxation of the hard graph during training or a prior
-on edge density, teach the reader from answers alone? And is the language
-models' edge reading, close to exact but not exact, good enough to supply the
-processor's graph?
+Two follow-up questions were then measured (limitations item 16). A soft
+graph during training, a prior on edge density, or both, did not teach the
+reader from answers alone: with the density held near the truth and the
+gradient alive, the answers still did not single out which edges exist. And
+the language models' edge reading did not carry over from checking one edge to
+listing a node's edges: asked for every node's successors, they read at most
+1% of the graphs exactly (edge F1 0.53–0.77), and the exact processor searching
+their graphs scored at most 0.58 (their own step-by-step answers: 0.48–0.53). Among
+the routes measured, only the reader trained on edges supplied graphs exact
+enough for the processor's search.

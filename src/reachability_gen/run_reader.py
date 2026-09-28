@@ -440,14 +440,20 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
 def merge(parts: Sequence[Path], out: Path) -> int:
     """Combine result files of one protocol (e.g. one per regime) into one."""
     loaded = [json.loads(Path(p).read_text(encoding="utf-8")) for p in parts]
+    only_with_prior = ("edge_density_prior", "prior_weight")  # recorded only by runs of a prior regime
 
     def shared(art: dict[str, Any]) -> dict[str, Any]:
-        return {k: v for k, v in art["protocol"].items() if k != "seeds"}
+        return {k: v for k, v in art["protocol"].items() if k != "seeds" and k not in only_with_prior}
 
+    prior: dict[str, Any] = {}
     for path, art in zip(parts, loaded):
         if shared(art) != shared(loaded[0]) or art["science_open"] is not False:
             print(f"FAIL: {path} was run with a different protocol", file=sys.stderr)
             return 1
+        for k in only_with_prior:
+            if k in art["protocol"] and prior.setdefault(k, art["protocol"][k]) != art["protocol"][k]:
+                print(f"FAIL: {path} was run with a different {k}", file=sys.stderr)
+                return 1
     runs = [r for art in loaded for r in art["runs"]]
     ids = [(r["regime"], r["seed"]) for r in runs]
     if len(ids) != len(set(ids)):
@@ -459,7 +465,7 @@ def merge(parts: Sequence[Path], out: Path) -> int:
         "science_open": False,
         "purpose": loaded[0]["purpose"],
         "regimes": {k: regimes[k] for k in ALL_REGIMES if k in regimes},
-        "protocol": dict(loaded[0]["protocol"], seeds=sorted({r["seed"] for r in runs})),
+        "protocol": dict(shared(loaded[0]), **prior, seeds=sorted({r["seed"] for r in runs})),
         "runs": runs,
         "summary": summarise(runs),
         "self_audit_mismatches": mismatches,

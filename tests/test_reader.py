@@ -249,3 +249,43 @@ def test_density_prior_acts_on_an_empty_graph():
     density_kl(adj, graph, 0.25).backward()
     off = ~torch.eye(4, dtype=torch.bool)
     assert (adj.grad[0][off] < 0).all()  # descent raises every off-diagonal entry
+
+
+def test_merge_accepts_prior_settings_absent_from_parts_without_a_prior(tmp_path, monkeypatch):
+    from reachability_gen import run_reader as rr
+
+    monkeypatch.setattr(rr, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=11, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=12, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    common = ["--train-data", str(train_path), "--extended-data", str(ext_path), "--seeds", "0",
+              "--reader-epochs", "1", "--solver-epochs", "1", "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify"]
+    soft, prior = tmp_path / "soft.json", tmp_path / "prior.json"
+    assert rr.main(common + ["--regimes", "answers_frozen_soft", "--out", str(soft)]) == 0
+    assert rr.main(common + ["--regimes", "answers_frozen_prior", "--out", str(prior)]) == 0
+    assert "edge_density_prior" not in json.loads(soft.read_text())["protocol"]
+    merged = tmp_path / "merged.json"
+    assert rr.main(["--merge", str(soft), str(prior), "--out", str(merged)]) == 0
+    p = json.loads(merged.read_text())["protocol"]
+    assert p["prior_weight"] == rr.PRIOR_WEIGHT and 0 < p["edge_density_prior"] < 1
+    other = json.loads(prior.read_text())
+    other["protocol"]["prior_weight"] = 2.0
+    other["runs"][0]["seed"] = 1
+    conflict = tmp_path / "conflict.json"
+    conflict.write_text(json.dumps(other))
+    assert rr.main(["--merge", str(prior), str(conflict), "--out", str(tmp_path / "bad.json")]) == 1
+
+
+VARIANTS_STUDY = Path(__file__).resolve().parents[1] / "artifacts" / "reader_variants.json"
+
+
+@pytest.mark.skipif(not VARIANTS_STUDY.exists(), reason="reader-variants artifact not present")
+def test_reader_variants_artifact_contract():
+    from reachability_gen.run_reader import PRIOR_WEIGHT, VARIANTS
+
+    art = json.loads(VARIANTS_STUDY.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["self_audit_mismatches"] == []
+    assert set(art["summary"]) == set(VARIANTS) and art["protocol"]["prior_weight"] == PRIOR_WEIGHT
+    assert all(len(s["seeds"]) == 10 for s in art["summary"].values())

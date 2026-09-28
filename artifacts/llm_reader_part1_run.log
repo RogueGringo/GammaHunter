@@ -1,0 +1,87 @@
+Loading weights:   0%|          | 0/434 [00:00<?, ?it/s]Loading weights:   1%|▏         | 6/434 [00:00<00:09, 44.37it/s]Loading weights:   3%|▎         | 11/434 [00:00<00:09, 46.53it/s]Loading weights:   5%|▍         | 21/434 [00:00<00:06, 64.82it/s]Loading weights:   7%|▋         | 29/434 [00:00<00:06, 65.57it/s]Loading weights:   9%|▉         | 41/434 [00:00<00:04, 78.93it/s]Loading weights:  11%|█▏        | 49/434 [00:00<00:06, 63.62it/s]Loading weights:  13%|█▎        | 56/434 [00:00<00:06, 56.40it/s]Loading weights:  14%|█▍        | 62/434 [00:01<00:06, 55.15it/s]Loading weights:  16%|█▌        | 68/434 [00:01<00:08, 42.70it/s]Loading weights:  20%|█▉        | 86/434 [00:01<00:05, 64.47it/s]Loading weights:  22%|██▏       | 95/434 [00:01<00:06, 51.44it/s]Loading weights:  25%|██▍       | 107/434 [00:01<00:05, 61.01it/s]Loading weights:  26%|██▋       | 114/434 [00:01<00:05, 60.75it/s]Loading weights:  28%|██▊       | 121/434 [00:02<00:05, 55.15it/s]Loading weights:  29%|██▉       | 128/434 [00:02<00:05, 56.05it/s]Loading weights:  31%|███       | 134/434 [00:02<00:05, 50.09it/s]Loading weights:  32%|███▏      | 141/434 [00:02<00:05, 49.40it/s]Loading weights: 100%|██████████| 434/434 [00:02<00:00, 170.52it/s]
+[W928 12:28:19.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 144703488 bytes (free: 0, total: 12792037376).
+[W928 12:29:09.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 169869312 bytes (free: 0, total: 12792037376).
+[W928 12:29:50.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 197132288 bytes (free: 0, total: 12792037376).
+[Qwen/Qwen2.5-3B-Instruct] crossed_val: edge F1 0.549 exact graphs 0.000 closure 0.775 | pipeline 6 steps acc 0.505 auroc 0.505 (154s)
+[W928 12:30:48.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 224395264 bytes (free: 0, total: 12792037376).
+[W928 12:31:29.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 236978176 bytes (free: 0, total: 12792037376).
+[W928 12:32:21.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 249561088 bytes (free: 0, total: 12792037376).
+[W928 12:33:04.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 262144000 bytes (free: 0, total: 12792037376).
+[W928 12:33:40.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 272629760 bytes (free: 0, total: 12792037376).
+[W928 12:34:10.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 285212672 bytes (free: 0, total: 12792037376).
+[W928 12:34:57.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 297795584 bytes (free: 0, total: 12792037376).
+[W928 12:35:49.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 306184192 bytes (free: 0, total: 12792037376).
+[W928 12:36:11.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 318767104 bytes (free: 0, total: 12792037376).
+[W928 12:36:37.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 327155712 bytes (free: 0, total: 12792037376).
+[W928 12:37:13.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 337641472 bytes (free: 0, total: 12792037376).
+[W928 12:37:38.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 427819008 bytes (free: 0, total: 12792037376).
+[W928 12:37:53.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 455081984 bytes (free: 0, total: 12792037376).
+[Qwen/Qwen2.5-3B-Instruct] crossed_long: edge F1 0.526 exact graphs 0.000 closure 0.744 | pipeline 16 steps acc 0.478 auroc 0.478 48 steps acc 0.478 auroc 0.478 192 steps acc 0.478 auroc 0.478 (483s)
+[transformers] This model config has set a `rope_parameters['original_max_position_embeddings']` field, to be used together with `max_position_embeddings` to determine a scaling factor. Please set the `factor` field of `rope_parameters`with this ratio instead -- we recommend the use of this field over `original_max_position_embeddings`, as it is compatible with most model architectures.
+Loading weights:   0%|          | 0/195 [00:00<?, ?it/s]Loading weights:   3%|▎         | 5/195 [00:00<00:16, 11.54it/s]Loading weights:   5%|▍         | 9/195 [00:01<00:30,  6.07it/s]Loading weights:   6%|▌         | 11/195 [00:02<00:50,  3.67it/s]Loading weights:   8%|▊         | 15/195 [00:02<00:37,  4.82it/s]Loading weights:   9%|▊         | 17/195 [00:03<00:42,  4.23it/s]Loading weights:  12%|█▏        | 23/195 [00:04<00:28,  6.12it/s]Loading weights:  16%|█▌        | 31/195 [00:04<00:16,  9.74it/s]Loading weights:  17%|█▋        | 33/195 [00:05<00:28,  5.71it/s]Loading weights:  18%|█▊        | 35/195 [00:05<00:26,  6.01it/s]Loading weights:  24%|██▎       | 46/195 [00:06<00:11, 12.53it/s]Loading weights:  25%|██▌       | 49/195 [00:06<00:14, 10.04it/s]Loading weights:  26%|██▌       | 51/195 [00:07<00:16,  8.81it/s]Loading weights:  27%|██▋       | 53/195 [00:07<00:15,  9.03it/s]Loading weights:  29%|██▊       | 56/195 [00:07<00:18,  7.41it/s]Loading weights:  31%|███       | 60/195 [00:08<00:16,  7.96it/s]Loading weights:  32%|███▏      | 62/195 [00:08<00:15,  8.69it/s]Loading weights:  33%|███▎      | 64/195 [00:10<00:38,  3.37it/s]Loading weights:  33%|███▎      | 65/195 [00:11<00:47,  2.73it/s]Loading weights:  34%|███▍      | 66/195 [00:12<01:07,  1.91it/s]Loading weights:  36%|███▋      | 71/195 [00:12<00:35,  3.54it/s]Loading weights:  37%|███▋      | 72/195 [00:13<00:42,  2.89it/s]Loading weights:  38%|███▊      | 74/195 [00:13<00:36,  3.28it/s]Loading weights:  39%|███▉      | 76/195 [00:14<00:29,  4.04it/s]Loading weights:  40%|████      | 78/195 [00:14<00:31,  3.75it/s]Loading weights:  41%|████      | 79/195 [00:14<00:28,  4.09it/s]Loading weights:  41%|████      | 80/195 [00:15<00:30,  3.73it/s]Loading weights:  43%|████▎     | 83/195 [00:15<00:21,  5.31it/s]Loading weights:  43%|████▎     | 84/195 [00:15<00:22,  4.99it/s]Loading weights:  47%|████▋     | 92/195 [00:16<00:09, 10.68it/s]Loading weights:  48%|████▊     | 94/195 [00:16<00:10,  9.91it/s]Loading weights:  49%|████▉     | 96/195 [00:16<00:09, 10.17it/s]Loading weights: 100%|██████████| 195/195 [00:16<00:00, 11.71it/s]
+[W928 12:38:29.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 100663296 bytes (free: 0, total: 12792037376).
+[W928 12:38:37.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 35651584 bytes (free: 0, total: 12792037376).
+[W928 12:38:43.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 37748736 bytes (free: 0, total: 12792037376).
+[W928 12:38:49.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 165675008 bytes (free: 0, total: 12792037376).
+[W928 12:39:18.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 178257920 bytes (free: 0, total: 12792037376).
+[W928 12:39:46.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 190840832 bytes (free: 0, total: 12792037376).
+[W928 12:39:57.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 197132288 bytes (free: 0, total: 12792037376).
+[W928 12:40:18.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 201326592 bytes (free: 0, total: 12792037376).
+[W928 12:40:36.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 205520896 bytes (free: 0, total: 12792037376).
+[W928 12:40:43.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 207618048 bytes (free: 0, total: 12792037376).
+[W928 12:40:58.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 209715200 bytes (free: 0, total: 12792037376).
+[W928 12:41:02.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 211812352 bytes (free: 0, total: 12792037376).
+[W928 12:41:03.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 106954752 bytes (free: 0, total: 12792037376).
+[W928 12:41:03.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 106954752 bytes (free: 0, total: 12792037376).
+[W928 12:44:20.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 138412032 bytes (free: 0, total: 12792037376).
+[microsoft/Phi-3.5-mini-instruct] crossed_val: edge F1 0.769 exact graphs 0.010 closure 0.766 | pipeline 6 steps acc 0.580 auroc 0.589 (387s)
+[W928 12:48:10.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 169869312 bytes (free: 0, total: 12792037376).
+[W928 12:49:59.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 182452224 bytes (free: 0, total: 12792037376).
+[W928 12:51:32.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 190840832 bytes (free: 0, total: 12792037376).
+[W928 12:51:50.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 195035136 bytes (free: 0, total: 12792037376).
+[W928 12:52:20.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 199229440 bytes (free: 0, total: 12792037376).
+[W928 12:52:50.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 203423744 bytes (free: 0, total: 12792037376).
+[W928 12:53:10.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 205520896 bytes (free: 0, total: 12792037376).
+[W928 12:53:28.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 207618048 bytes (free: 0, total: 12792037376).
+[W928 12:53:55.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 209715200 bytes (free: 0, total: 12792037376).
+[W928 12:54:05.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 211812352 bytes (free: 0, total: 12792037376).
+[W928 12:54:29.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 213909504 bytes (free: 0, total: 12792037376).
+[W928 12:54:47.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 216006656 bytes (free: 0, total: 12792037376).
+[W928 12:54:48.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 109051904 bytes (free: 0, total: 12792037376).
+[W928 12:54:48.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 109051904 bytes (free: 0, total: 12792037376).
+[microsoft/Phi-3.5-mini-instruct] crossed_long: edge F1 0.615 exact graphs 0.000 closure 0.634 | pipeline 16 steps acc 0.488 auroc 0.490 48 steps acc 0.485 auroc 0.487 192 steps acc 0.485 auroc 0.487 (943s)
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights:   3%|▎         | 7/201 [00:00<00:22,  8.68it/s]Loading weights:   4%|▍         | 8/201 [00:01<00:27,  7.00it/s]Loading weights:   6%|▋         | 13/201 [00:01<00:23,  7.95it/s]Loading weights:  10%|█         | 21/201 [00:02<00:22,  7.94it/s]Loading weights:  11%|█         | 22/201 [00:02<00:23,  7.78it/s]Loading weights:  12%|█▏        | 25/201 [00:03<00:22,  7.77it/s]Loading weights:  13%|█▎        | 26/201 [00:03<00:33,  5.25it/s]Loading weights:  14%|█▍        | 28/201 [00:04<00:43,  3.97it/s]Loading weights:  14%|█▍        | 29/201 [00:05<00:44,  3.85it/s]Loading weights:  15%|█▍        | 30/201 [00:05<00:44,  3.86it/s]Loading weights:  16%|█▋        | 33/201 [00:05<00:37,  4.51it/s]Loading weights:  17%|█▋        | 35/201 [00:06<00:51,  3.24it/s]Loading weights:  18%|█▊        | 37/201 [00:07<00:42,  3.90it/s]Loading weights:  19%|█▉        | 39/201 [00:07<00:36,  4.39it/s]Loading weights:  20%|██        | 41/201 [00:07<00:38,  4.18it/s]Loading weights:  22%|██▏       | 45/201 [00:08<00:30,  5.18it/s]Loading weights:  26%|██▌       | 52/201 [00:08<00:16,  9.02it/s]Loading weights:  27%|██▋       | 55/201 [00:10<00:34,  4.26it/s]Loading weights:  30%|███       | 61/201 [00:11<00:24,  5.67it/s]Loading weights: 100%|██████████| 201/201 [00:11<00:00, 17.86it/s]
+[W928 13:00:56.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 56623104 bytes (free: 0, total: 12792037376).
+[W928 13:00:56.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 56623104 bytes (free: 0, total: 12792037376).
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_llm_reader.py", line 307, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_llm_reader.py", line 261, in main
+    model = load_model(name, args.dtype, args.device, None, args.int8)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_llm_reference.py", line 225, in load_model
+    return model.to(device).eval()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\transformers\modeling_utils.py", line 3706, in to
+    return super().to(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1388, in to
+    return self._apply(convert)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 933, in _apply
+    module._apply(fn)
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 933, in _apply
+    module._apply(fn)
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 933, in _apply
+    module._apply(fn)
+  [Previous line repeated 2 more times]
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 966, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1374, in convert
+    return t.to(
+           ^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 54.00 MiB. GPU 0 has a total capacity of 11.91 GiB of which 0 bytes is free. Process 20364 has 17179869184.00 GiB memory in use. Including non-PyTorch memory, this process has 17179869184.00 GiB memory in use. Of the allocated memory 11.03 GiB is allocated by PyTorch, and 96.43 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

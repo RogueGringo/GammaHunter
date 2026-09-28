@@ -1,0 +1,1 @@
+{"models": ["Qwen/Qwen2.5-3B-Instruct", "microsoft/Phi-3.5-mini-instruct", "tiiuae/Falcon3-3B-Instruct"], "ok": true, "out": "artifacts/llm_reader.json", "science_open": false}

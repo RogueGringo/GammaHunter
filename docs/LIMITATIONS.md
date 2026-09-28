@@ -281,5 +281,57 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     graph, priors on edge density and solvers without an exactly-zero kink
     remain untested.
 
-16. **Measurement-only status.** No result in this repository is presented as
+16. **Reader follow-ups.** The two questions raised by item 15 were run as
+    separate studies, each fixed in code before its runs.
+    - *Answers-only variants* (`artifacts/reader_variants.json`; the frozen
+      solver of item 15, 10 seeds each): during training the solver received
+      the reader's soft graph P(edge) instead of the hard one, a prior pulled
+      the density of the graph it received towards the training graphs'
+      pooled edge density (0.084), or both; evaluation used the hard graph.
+      With the answers-only regime of item 15 this forms a 2×2 design, and no
+      seed in it passed: every pipeline stayed at chance (AUROC 0.50). Both
+      soft variants stayed in the state they reached in the first epoch, a
+      nearly complete graph (8 of 10 seeds without the prior, 1 with it) or
+      an empty one; with the prior, a soft graph whose every pair sits near
+      the target density satisfies the prior and still thresholds to an
+      empty graph. With the hard graph, the prior did what it was built to
+      do: 7 of 10 readers ended with 27–39 edges per graph against 32.5
+      true, and in 7 the gradient on the graph never vanished. But edge F1
+      stayed between 0.08 and 0.26 with no upward trend over the five epochs
+      (a random graph of that size scores about 0.08), and accuracy between
+      0.50 and 0.51. Removing the zero-gradient trap and holding the density
+      near the truth did not let the answers single out which edges exist.
+      The first runs of the two prior variants clamped the density, which
+      gave the prior no gradient at an empty graph; they were stopped and
+      rerun with the fix (logs kept as
+      `artifacts/reader_variants_clamped_*_run.log`).
+    - *Language models as the reader* (`artifacts/llm_reader.json`:
+      Qwen2.5-3B-Instruct, Phi-3.5-mini-instruct and Falcon3-3B-Instruct,
+      greedy decoding, the 100 crossed-validation and 100 long-path graphs of
+      the step-by-step samples, 6,396 replies per model, all recorded): shown
+      a graph's edge list, each model listed every node's successors without
+      ever seeing the question. No model read more than 1% of the graphs
+      exactly. Edge F1 was 0.53–0.77: Qwen2.5-3B missed about half the edges
+      (recall 0.45–0.49), while Phi-3.5 and Falcon3 listed too many
+      (precision 0.50–0.68), 14–31% of the extra ones being listed edges
+      read backwards. The frozen solvers, which answer every
+      question correctly on the true graphs, then scored 0.51–0.58 on the
+      crossed questions (Phi-3.5 0.58, Wilson 95% 0.53–0.63; Falcon3 0.55)
+      and 0.48–0.51 on the long-path questions; all but a handful of the
+      wrong answers trace to the graph read. On the same crossed questions
+      these models, reasoning step by step, had scored 0.48–0.53. They
+      verify a single listed edge at AUROC 0.89–0.99 (item 14), so listing a
+      node's edges is a different and, here, much harder task than checking
+      one. The run stopped after two models when the third could not be
+      loaded while the second was still held in GPU memory; the third ran on
+      its own and the two parts were merged (same protocol and sample). An
+      earlier attempt was stopped on a misread of allocator warnings; its
+      replies were identical (log kept as
+      `artifacts/llm_reader_stopped_run.log`).
+
+    These results do not show that answers can never teach a reader, or that
+    no language model can read the graph exactly: other readers, training
+    signals, prompts and larger models remain untested.
+
+17. **Measurement-only status.** No result in this repository is presented as
     an established finding.

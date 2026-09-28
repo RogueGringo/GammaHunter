@@ -70,7 +70,8 @@
   (limitations item 15).
 - Answers-only reader variants (soft graph in training, a prior on edge
   density, both) and language models as the reader, feeding the reader
-  study's frozen solvers.
+  study's frozen solvers; parts of either study merge with `--merge`.
+  Results recorded (limitations item 16).
 
 ## 0.1.0 (2026-09-27)
 
