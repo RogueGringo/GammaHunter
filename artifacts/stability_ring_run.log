@@ -1,0 +1,13 @@
+C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\_subclasses\functional_tensor.py:368: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\torch\csrc\utils\tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+
+=== stable seeds (long paths >= 0.99 at every step count 16-192) ===
+geo           untrained 0.500 | stable best 0/5 final 0/5 | final ID 0.8000 | T=6:0.500 T=16:0.732 T=32:0.500 T=48:0.500 T=96:0.500 T=192:0.500
+geo_r10       untrained 0.500 | stable best 0/5 final 1/5 | final ID 0.7000 | T=6:0.500 T=16:0.700 T=32:0.700 T=48:0.700 T=96:0.600 T=192:0.600
+geo_r18       untrained 0.500 | stable best 0/5 final 0/5 | final ID 0.5000 | T=6:0.500 T=16:0.500 T=32:0.500 T=48:0.500 T=96:0.500 T=192:0.500
+geo_tau       untrained 0.500 | stable best 0/5 final 0/5 | final ID 0.6000 | T=6:0.500 T=16:0.500 T=32:0.500 T=48:0.500 T=96:0.500 T=192:0.500
+loop          untrained 0.500 | stable best 0/5 final 0/5 | final ID 0.7000 | T=6:0.500 T=16:0.700 T=32:0.700 T=48:0.700 T=96:0.642 T=192:0.520
+loop_r10      untrained 0.500 | stable best 2/5 final 1/5 | final ID 0.8000 | T=6:0.500 T=16:0.800 T=32:0.620 T=48:0.600 T=96:0.600 T=192:0.600
+loop_r18      untrained 0.500 | stable best 1/5 final 1/5 | final ID 0.6000 | T=6:0.500 T=16:0.600 T=32:0.600 T=48:0.600 T=96:0.600 T=192:0.600
+sheaf         untrained 0.502 | stable best 0/5 final 0/5 | final ID 1.0000 | T=6:0.500 T=16:0.752 T=32:0.754 T=48:0.754 T=96:0.754 T=192:0.754
+sheaf_sealed  untrained 1.000 | stable best 5/5 final 5/5 | final ID 1.0000 | T=6:0.500 T=16:0.999 T=32:1.000 T=48:1.000 T=96:1.000 T=192:1.000

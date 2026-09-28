@@ -120,5 +120,32 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     long-path set) and densities differ from the paired sets, so results on
     the two families are not directly comparable.
 
-12. **Measurement-only status.** No result in this repository is presented as
+12. **Learning and stability on the crossed sets.** In the stability ring
+    (`artifacts/stability_ring.json`: nine parameter-matched looped arms,
+    five seeds, 30 epochs, one optimiser setting), every arm scored 0.5
+    before training except the ported arm with its original initialisation,
+    which scored 1.000. The message-passing arms fitted the crossed
+    validation split in 13 of 35 runs (0 to 4 of 5 seeds per arm), each
+    within its first two epochs; the other runs stayed at 0.5 for all 30
+    epochs, whereas on the paired sets every looped seed fitted it in its
+    first epoch (item 9). Three message-passing runs kept their long-path
+    answers at every step count from 16 to 192 at the final checkpoint, all
+    trained with random step counts (one each: the standard step with
+    [6, 10] and with [6, 18], and the recurrence under study with [6, 10]);
+    none trained with a fixed 6 steps did. With a fixed 6 steps, the
+    recurrence under study fitted the split in 4 of 5 seeds (the standard
+    step in 2), but its state stopped changing without carrying the answer
+    at 32 steps and beyond, and one of the four fell back to 0.5 at epoch 28;
+    with per-step vectors, the one seed that fitted the split lost the answer
+    beyond 6 steps. The ported arm with default initialisation fitted the
+    split in every seed within one epoch and scored 0.63–0.84 on the
+    long-path set at every step count: it answered every unreachable pair
+    correctly but missed reachable ones, because it gates edges through
+    node-identity embeddings and left 5–18% of the edges involving node
+    identities never seen in training gated off. With its original
+    initialisation it was correct at every step count in every seed, as it
+    was before training. The range [6, 10] was added after a 3-epoch pilot
+    (seed 0) in which the planned [6, 18] did not start learning.
+
+13. **Measurement-only status.** No result in this repository is presented as
     an established finding.

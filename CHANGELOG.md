@@ -34,7 +34,8 @@
   recurrence under study, per-step vectors, random step counts in training,
   and a ported graph-inference arm with default and original initialisation),
   scored untrained and at best and final checkpoints up to 192 steps; seeds
-  run in parallel and merge.
+  run in parallel and merge. Five-seed results recorded (limitations item
+  12).
 
 ## 0.1.0 (2026-09-27)
 
