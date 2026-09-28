@@ -179,7 +179,11 @@ class GraphReader(nn.Module):
         vanishes once P saturates at 0 or 1; ``through="logit"`` passes it
         through the edge log-odds, which saturates at neither end.
         """
-        log_z = self.edge_log_evidence(batch)
+        return self.adjacency(self.edge_log_evidence(batch), hard=hard, through=through)
+
+    @staticmethod
+    def adjacency(log_z: torch.Tensor, *, hard: bool = True, through: str = "probability") -> torch.Tensor:
+        """The adjacency for given log evidence: P(edge) itself, or hard 0/1 as in ``forward``."""
         z = log_z.exp()
         soft = -torch.expm1(-z)  # 1 - exp(-z)
         if not hard:

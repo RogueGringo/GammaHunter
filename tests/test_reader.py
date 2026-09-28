@@ -196,3 +196,45 @@ def test_reader_pipeline_artifact_contract():
         assert len(run["checkpoint_sha256"]) == 64 and len(run["history"]) == art["protocol"]["reader_epochs"]
     for regime, s in art["summary"].items():
         assert s["passes"] == sum(r["passes"] for r in art["runs"] if r["regime"] == regime)
+
+
+def test_forward_is_adjacency_of_log_evidence():
+    torch.manual_seed(6)
+    reader = GraphReader(d=16, layers=1, heads=2).eval()
+    batch = collate_tokens([edge_list_tokens(encode_instance(5, [(0, 1), (1, 2), (3, 4)], 0, 2))])
+    with torch.no_grad():
+        log_z = reader.edge_log_evidence(batch)
+        for through in ("probability", "logit"):
+            assert torch.equal(reader(batch, hard=True, through=through), reader.adjacency(log_z, hard=True, through=through))
+        assert torch.equal(reader(batch, hard=False), reader.adjacency(log_z, hard=False))
+
+
+def test_density_prior_pulls_towards_the_target_density():
+    from reachability_gen.run_reader import density_kl
+
+    graph = {"node_mask": torch.ones(1, 4, dtype=torch.bool)}
+    off = 1 - torch.eye(4)
+    for fill, sign in ((0.9, 1.0), (0.01, -1.0)):  # too dense: push down; too sparse: push up
+        adj = (fill * off)[None].clone().requires_grad_(True)
+        kl = density_kl(adj, graph, 0.25)
+        kl.backward()
+        assert kl.item() > 0 and (adj.grad[0][off.bool()] * sign > 0).all()
+    assert abs(density_kl((0.25 * off)[None], graph, 0.25).item()) < 1e-6
+
+
+def test_answers_only_variants_smoke(tmp_path, monkeypatch):
+    from reachability_gen import run_reader as rr
+
+    monkeypatch.setattr(rr, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=9, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=10, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    out = tmp_path / "variants.json"
+    assert rr.main(["--train-data", str(train_path), "--extended-data", str(ext_path), "--seeds", "0",
+                    "--reader-epochs", "1", "--solver-epochs", "1", "--out", str(out),
+                    "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify", "--regimes", *rr.VARIANTS]) == 0
+    art = json.loads(out.read_text())
+    assert set(art["summary"]) == set(rr.VARIANTS) and art["self_audit_mismatches"] == []
+    assert 0 < art["protocol"]["edge_density_prior"] < 1 and art["protocol"]["prior_weight"] == rr.PRIOR_WEIGHT

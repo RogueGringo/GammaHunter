@@ -67,6 +67,17 @@ REGIMES: dict[str, str] = {
     "answers_frozen": "reader trained on reachability answers only; solver trained on true graphs first, then frozen",
     "answers_joint": "reader and solver both untrained at the start, trained on reachability answers only",
 }
+# Answers-only variants, fixed after the main study (limitations item 15) and run as a
+# separate study: during training the frozen solver receives the reader's soft graph
+# P(edge) instead of the hard one, and/or a prior pulls the density of the graph it
+# receives towards the training graphs' edge density. Evaluation always uses the hard graph.
+VARIANTS: dict[str, str] = {
+    "answers_frozen_soft": "as answers_frozen, but the solver receives the soft graph P(edge) during training",
+    "answers_frozen_prior": "as answers_frozen, plus a prior on the density of the graph the solver receives",
+    "answers_frozen_soft_prior": "soft graph during training and the density prior",
+}
+ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS}
+PRIOR_WEIGHT: float = 1.0  # weight of the density prior, fixed before the variant runs
 TRAIN_STEPS: int = 6
 SOLVER_EPOCHS: int = 2
 READER_EPOCHS: int = 5
@@ -166,6 +177,28 @@ def pipeline_logits(reader, solver, graph: dict[str, Any], tokens: dict[str, Any
         return solver(graph, steps), graph["adj"].float()
     adj = reader(tokens, hard=True, through=through)
     return solver(dict(graph, adj=adj), steps), adj
+
+
+def edge_density(data: Data) -> float:
+    """True edges over ordered pairs of distinct nodes, pooled over the rows' graphs."""
+    edges = sum(int(g.src.numel()) for g in data.graphs)
+    pairs = sum(g.n * (g.n - 1) for g in data.graphs)
+    return edges / pairs
+
+
+def density_kl(adj, graph: dict[str, Any], density: float):
+    """KL(Bernoulli(density) || Bernoulli(mean of adj over ordered pairs of distinct nodes)).
+
+    ``adj`` is the graph the solver receives in training (hard with a straight-through
+    gradient, or soft), so the prior acts on that graph's density.
+    """
+    import torch
+
+    mask = graph["node_mask"]
+    valid = (mask[:, :, None] & mask[:, None, :]).to(adj.dtype)
+    valid = valid * (1 - torch.eye(adj.shape[1], device=adj.device, dtype=adj.dtype))[None]
+    mean = ((adj * valid).sum() / valid.sum()).clamp(1e-6, 1 - 1e-6)
+    return density * torch.log(density / mean) + (1 - density) * torch.log((1 - density) / (1 - mean))
 
 
 def gradient_probe(reader, solver, data: Data, idx: Sequence[int], *, through: str) -> dict[str, float]:
@@ -273,7 +306,7 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
 
 def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: str, ckpt_dir: Path,
         reader_epochs: int = READER_EPOCHS, solver_epochs: int = SOLVER_EPOCHS,
-        reader_lr: float = READER_LR, through: str = THROUGH) -> dict[str, Any]:
+        reader_lr: float = READER_LR, through: str = THROUGH, density: Optional[float] = None) -> dict[str, Any]:
     import torch
     import torch.nn.functional as F
     from torch.nn.utils import clip_grad_norm_
@@ -311,8 +344,11 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
                 with torch.no_grad():
                     logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
             else:
-                logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS, through=through)
+                adj = reader.adjacency(reader.edge_log_evidence(tokens), hard="_soft" not in regime, through=through)
+                logits = solver(dict(graph, adj=adj), TRAIN_STEPS)
                 loss = F.cross_entropy(logits, graph["y"])
+                if regime.endswith("_prior"):
+                    loss = loss + PRIOR_WEIGHT * density_kl(adj, graph, density)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             clip_grad_norm_(params, GRAD_CLIP)
@@ -368,7 +404,7 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
 
 def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
-    for regime in REGIMES:
+    for regime in ALL_REGIMES:
         rs = [r for r in runs if r["regime"] == regime]
         if not rs:
             continue
@@ -420,7 +456,7 @@ def merge(parts: Sequence[Path], out: Path) -> int:
     artifact = {
         "science_open": False,
         "purpose": loaded[0]["purpose"],
-        "regimes": {k: regimes[k] for k in REGIMES if k in regimes},
+        "regimes": {k: regimes[k] for k in ALL_REGIMES if k in regimes},
         "protocol": dict(loaded[0]["protocol"], seeds=sorted({r["seed"] for r in runs})),
         "runs": runs,
         "summary": summarise(runs),
@@ -439,7 +475,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Reader → anchored solver pipeline (MEASURE).")
     p.add_argument("--train-data", type=Path, default=DEFAULT_TRAIN)
     p.add_argument("--extended-data", type=Path, default=DEFAULT_EXTENDED)
-    p.add_argument("--regimes", nargs="+", choices=list(REGIMES), default=list(REGIMES))
+    p.add_argument("--regimes", nargs="+", choices=list(ALL_REGIMES), default=list(REGIMES),
+                   help="default: the three main regimes; the answers-only variants run on request")
     p.add_argument("--seeds", type=int, nargs="+", default=list(range(10)))
     p.add_argument("--reader-epochs", type=int, default=READER_EPOCHS)
     p.add_argument("--solver-epochs", type=int, default=SOLVER_EPOCHS)
@@ -477,10 +514,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     train = Data([r for r in rows if r["split"] == "train"], args.device)
     val = Data([r for r in rows if r["split"] == "val"], args.device)
     ext = Data(ext_rows, args.device)
+    density = edge_density(train)
     artifact: dict[str, Any] = {
         "science_open": False,
         "purpose": "reader → anchored solver: can the graph come from the edge-list text?",
-        "regimes": {k: REGIMES[k] for k in args.regimes},
+        "regimes": {k: ALL_REGIMES[k] for k in args.regimes},
         "protocol": {
             "reader": "question-blind, identity-free (one embedding for every node token), slot and clipped "
                       "relative-offset positions, hard 0/1 adjacency with a straight-through gradient",
@@ -496,6 +534,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             "long_steps": list(LONG_STEPS),
             "pass_criteria": PASS,
             "gradient_probe_rows": PROBE_ROWS,
+            **({"edge_density_prior": density, "prior_weight": PRIOR_WEIGHT}
+               if any(r.endswith("_prior") for r in args.regimes) else {}),
             "seeds": args.seeds,
             "batch_size": BATCH, "lr": LR, "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "checkpoints_versioned": False,
@@ -507,7 +547,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     t0 = time.perf_counter()
     runs = [run(regime, seed, train, val, ext, device=args.device, ckpt_dir=args.ckpt_dir,
                 reader_epochs=args.reader_epochs, solver_epochs=args.solver_epochs, reader_lr=args.reader_lr,
-                through=args.through)
+                through=args.through, density=density)
             for regime in args.regimes for seed in args.seeds]
     mismatches = [f"{r['regime']}/seed{r['seed']}" for r in runs if not r["rescore_matches_record"]]
     artifact.update({"runs": runs, "summary": summarise(runs), "self_audit_mismatches": mismatches,

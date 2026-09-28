@@ -68,6 +68,9 @@
   the attribution of each error, with untrained and true-graph controls and a
   gradient probe. Edge evidence computed in log space. Results recorded
   (limitations item 15).
+- Answers-only reader variants (soft graph in training, a prior on edge
+  density, both) and language models as the reader, feeding the reader
+  study's frozen solvers.
 
 ## 0.1.0 (2026-09-27)
 

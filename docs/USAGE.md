@@ -297,6 +297,29 @@ writes `artifacts/reader_pipeline.json`; the checkpoints
 recorded instead. Regimes can run as separate processes
 (`--regimes ... --out PART.json`) and be merged with `--merge`.
 
+```bash
+python -m reachability_gen.run_reader --device cuda --regimes answers_frozen_soft answers_frozen_prior answers_frozen_soft_prior --out artifacts/reader_variants.json
+```
+
+Answers-only variants, run on request: during training the frozen solver
+receives the reader's soft graph P(edge) instead of the hard one, a prior
+pulls the density of the graph it receives towards the training graphs' edge
+density, or both. Evaluation always uses the hard graph and the same pass
+criteria.
+
+```bash
+python -m reachability_gen.run_llm_reader --device cuda
+```
+
+Uses instruction-tuned language models as the reader: shown a graph's edge
+list, a model lists each node's successors, never seeing the question, and
+the frozen solvers of the reader study (checkpoints verified against their
+recorded SHA-256) search the graph it read. Scored in the same three layers,
+on the samples of the step-by-step runner, so that each model's pipeline
+answers can be set against its own step-by-step answers to the same
+questions. It writes `artifacts/llm_reader.json` and records every reply in
+`artifacts/llm_reader_generations.jsonl`.
+
 ## External benchmarks
 
 ```bash

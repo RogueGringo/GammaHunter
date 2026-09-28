@@ -56,6 +56,7 @@ reachability-llm-cue-conflict = "reachability_gen.llm_cue_conflict:main"
 reachability-llm-cot-paths = "reachability_gen.llm_cot_paths:main"
 reachability-llm-int8-fidelity = "reachability_gen.llm_int8_fidelity:main"
 reachability-reader = "reachability_gen.run_reader:main"
+reachability-llm-reader = "reachability_gen.run_llm_reader:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
