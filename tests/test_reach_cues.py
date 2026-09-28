@@ -16,6 +16,7 @@ from reachability_gen.reach_cues import (
     best_threshold_accuracy,
     endpoint_reach_features,
     reach_cue_report,
+    undirected_distance,
 )
 
 AUDIT = Path(__file__).resolve().parents[1] / "artifacts" / "reach_cue_audit.json"
@@ -35,6 +36,13 @@ def test_features_on_a_small_graph():
         "target_ancestors": 2,
         "target_ancestor_depth": 1,
     }
+
+
+def test_undirected_distance_ignores_direction():
+    edges = [(0, 1), (2, 1), (2, 3)]
+    assert undirected_distance(5, edges, 0, 3) == 3  # 0→1←2→3
+    assert undirected_distance(5, edges, 3, 0) == 3
+    assert undirected_distance(5, edges, 0, 4) == 5  # disconnected: n
 
 
 def test_best_threshold_accuracy():
@@ -66,8 +74,11 @@ def test_reach_cue_artifact_contract():
     art = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert art["science_open"] is False
     assert art["sets"]
-    for rep in art["sets"].values():
+    for name, rep in art["sets"].items():
         assert set(rep["rules"]) == set(FEATURES)
+        assert 0.5 <= rep["direction_blind_distance"] <= 1.0
         for key, best in rep["max_by_horizon"].items():
             assert best == max(rep["rules"][f][key] for f in FEATURES)
             assert 0.5 <= best <= 1.0
+        if "crossed" in name:  # every endpoint appears once with each label
+            assert set(rep["max_by_horizon"].values()) == {0.5}

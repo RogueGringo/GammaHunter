@@ -1,0 +1,131 @@
+{
+  "by_split": {
+    "train": {
+      "graphs": 0,
+      "hop_counts": {},
+      "rows": 0,
+      "y_counts": {
+        "0": 0,
+        "1": 0
+      }
+    },
+    "val": {
+      "graphs": 500,
+      "hop_counts": {
+        "-1": 1000,
+        "10": 200,
+        "12": 200,
+        "14": 200,
+        "16": 200,
+        "8": 200
+      },
+      "rows": 2000,
+      "y_counts": {
+        "0": 1000,
+        "1": 1000
+      }
+    }
+  },
+  "design": "crossed: two k-hop paths per graph; both crossings are the negatives",
+  "endpoint_balance": {
+    "sources_unbalanced": 0,
+    "targets_unbalanced": 0
+  },
+  "endpoint_rule_accuracy": {
+    "val": 0.5
+  },
+  "graph_draws": 500,
+  "graphs_shared_by_train_and_val": 0,
+  "mean_out_degree_by_hop": {
+    "10": 1.6304962121212123,
+    "12": 1.5175340909090909,
+    "14": 1.4436818181818183,
+    "16": 1.314852272727273,
+    "8": 1.7050454545454545
+  },
+  "n_total": 2000,
+  "n_values_by_hop": {
+    "10": {
+      "40": 30,
+      "44": 36,
+      "48": 34
+    },
+    "12": {
+      "40": 38,
+      "44": 32,
+      "48": 30
+    },
+    "14": {
+      "40": 28,
+      "44": 44,
+      "48": 28
+    },
+    "16": {
+      "40": 36,
+      "44": 37,
+      "48": 27
+    },
+    "8": {
+      "40": 28,
+      "44": 33,
+      "48": 39
+    }
+  },
+  "negatives_with_endpoint_cue": {
+    "count": 0,
+    "of": 1000
+  },
+  "reject_reasons": {},
+  "science_open": false,
+  "seed": 191000,
+  "spec": {
+    "hops": [
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "max_tokens": 600,
+    "mean_degree_by_hop": {
+      "10": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "12": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "14": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "16": [
+        1.5,
+        2.0,
+        2.5
+      ],
+      "8": [
+        1.5,
+        2.0,
+        2.5
+      ]
+    },
+    "n_support": [
+      40,
+      44,
+      48
+    ]
+  },
+  "token_len": {
+    "cap": 600,
+    "max": 354,
+    "mean": 207.396,
+    "min": 135
+  },
+  "verify_issues": [],
+  "verify_ok": true
+}

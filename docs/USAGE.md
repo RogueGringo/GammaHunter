@@ -40,11 +40,16 @@ pytest -q                   # full suite, including longer training checks
 | `python -m reachability_gen.generate --all-splits --n-per-cell 4` | Base train / val / test / size-OOD splits in `data/` |
 | `python -m reachability_gen.gen_id_2k` | Fixed 2,000-instance in-distribution set, `data/id_2k.jsonl` |
 | `python -m reachability_gen.gen_id_disjoint` | Graph-disjoint, label-paired 2,000-instance in-distribution set, `data/id_disjoint_2k.jsonl` (`--n-total` / `--n-val` scale it; `--spec extended` builds the long-path evaluation set) |
+| `python -m reachability_gen.gen_crossed` | Crossed 20,000-instance in-distribution set, `data/id_crossed_20k.jsonl`: two reachable queries and the two queries crossing them per graph, so every endpoint appears once with each label (`--spec extended` builds the long-path version) |
 | `python -m reachability_gen.gen_ood_hops` | Extended-step evaluation set, `data/ood_hops.jsonl` |
 | `python -m reachability_gen.gen_covariate_matched_ood` | Length-matched extended-step set, `data/covariate_matched_ood.jsonl` |
 
 Each fixed set's generator accepts `--verify-only <path>` to check an existing
-file against its specification.
+file against its specification. The crossed long-path set:
+
+```bash
+python -m reachability_gen.gen_crossed --spec extended --n-total 2000 --n-val 2000 --seed 191000 --out data/extended_crossed_2k.jsonl --report artifacts/extended_crossed_2k_generation_report.json
+```
 
 ## Sanity gates
 
@@ -199,13 +204,13 @@ present in `data/`, evaluation-set coverage.
 python -m reachability_gen.reach_cues
 ```
 
-On the validation rows of each graph-disjoint set (by default the 2,000- and
-20,000-instance sets and the long-path set), scores rules that read only one
-endpoint's reach: how many nodes the source reaches, how many nodes reach the
-target, and how far those sets extend, within 1 hop, within 6 hops and
-without limit. Each rule's threshold is fitted on the audited rows
-themselves, so every score is a ceiling for that rule. Writes
-`artifacts/reach_cue_audit.json`.
+On the validation rows of each graph-disjoint set (by default the paired and
+the crossed sets), scores rules that read only one endpoint's reach: how many
+nodes the source reaches, how many nodes reach the target, and how far those
+sets extend, within 1 hop, within 6 hops and without limit. It also scores the
+distance between the two endpoints with edge direction ignored. Each rule's
+threshold is fitted on the audited rows themselves, so every score is a
+ceiling for that rule. Writes `artifacts/reach_cue_audit.json`.
 
 ## Utilities
 

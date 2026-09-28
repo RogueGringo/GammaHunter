@@ -107,7 +107,18 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     to 6 hops from the endpoint); endpoint degrees alone score up to 0.62
     (`artifacts/reach_cue_audit.json`). Accuracy between 0.5 and these levels
     does not by itself show path search; results at 1.000, such as those of
-    the message-passing arms on the validation splits, exceed them.
+    the message-passing arms on the validation splits, exceed them. The
+    crossed sets (`id_crossed_20k`, `extended_crossed_2k`) remove these cues
+    by construction: each graph contributes two reachable queries and the two
+    queries that cross them, so every source and every target appears once
+    with each label, and every one-endpoint rule scores exactly 0.5. A rule on
+    the distance between the two endpoints with edge direction ignored scores
+    0.51 on them (0.53–0.54 on the paired sets).
 
-11. **Measurement-only status.** No result in this repository is presented as
+11. **Crossed-set construction.** In a crossed graph, each reachable query has
+    exactly one path, and graph sizes (16–24 nodes, and 40–48 for the
+    long-path set) and densities differ from the paired sets, so results on
+    the two families are not directly comparable.
+
+12. **Measurement-only status.** No result in this repository is presented as
     an established finding.

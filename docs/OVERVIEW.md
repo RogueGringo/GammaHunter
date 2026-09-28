@@ -17,6 +17,9 @@ the number of reasoning steps it requires and evaluation can be stratified by
 it.
 Instances are generated from fixed seeds, with class balance and hard
 negatives (both endpoints connected to the graph, yet mutually unreachable).
+Crossed sets go further: each graph contributes two reachable queries and the
+two queries that cross them, so every endpoint appears once with each label
+and only the relation between the two endpoints decides the answer.
 
 ## Components
 
@@ -52,7 +55,7 @@ negatives (both endpoints connected to the graph, yet mutually unreachable).
 | Input-length guard | Instances whose query would be cut off by the model's context size |
 | Dataset composition | Graph reuse across splits, measured against a query-blind baseline |
 | Endpoint-cue baseline | Negatives decidable from one endpoint without any path search |
-| Reach-cue ceilings | How far rules that read only one endpoint's reach (nodes the source reaches, nodes that reach the target) get without a path between the endpoints |
+| Reach-cue ceilings | How far rules that read only one endpoint's reach (nodes the source reaches, nodes that reach the target) get without a path between the endpoints, and how far the endpoints' distance with edge direction ignored gets |
 | Untrained control | Accuracy an arm already reaches at the weights its training starts from, which cannot be attributed to learning |
 | Evaluation coverage | Tokens or graph sizes present in evaluation data but absent from training data |
 | Breakdown flags | Representation collapse, input-independent outputs, abrupt training regressions, and final-epoch results well below the best checkpoint |

@@ -14,7 +14,8 @@ requires is known exactly.
 
 - **Instance generation.** Labeled directed-graph reachability problems with
   exact shortest-path step counts, class balancing, hard negatives, and
-  separate in-distribution and extended-step strata.
+  separate in-distribution and extended-step strata, including crossed sets
+  in which every endpoint appears once with each label.
 - **Matched model arms.** A fixed-depth transformer baseline and weight-tied
   recurrent variants behind a common interface, held to a parameter-parity
   gate so that model size is matched, plus message-passing arms that operate

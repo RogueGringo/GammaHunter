@@ -1,4 +1,5 @@
 {
+  "direction_blind_distance": "distance between the two endpoints with edge direction ignored",
   "features": {
     "source_reach": "nodes reachable from the source",
     "source_reach_depth": "largest distance from the source to a node it reaches",
@@ -15,7 +16,40 @@
   "purpose": "ceilings for rules that read only one endpoint's reach (no path between the endpoints)",
   "science_open": false,
   "sets": {
+    "data/extended_crossed_2k.jsonl": {
+      "direction_blind_distance": 0.512,
+      "max_by_horizon": {
+        "unlimited": 0.5,
+        "within_1": 0.5,
+        "within_6": 0.5
+      },
+      "n": 2000,
+      "positive_rate": 0.5,
+      "rules": {
+        "source_reach": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "source_reach_depth": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "target_ancestor_depth": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "target_ancestors": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        }
+      }
+    },
     "data/extended_disjoint_2k.jsonl": {
+      "direction_blind_distance": 0.5395,
       "max_by_horizon": {
         "unlimited": 0.8555,
         "within_1": 0.529,
@@ -46,7 +80,40 @@
         }
       }
     },
+    "data/id_crossed_20k.jsonl": {
+      "direction_blind_distance": 0.508,
+      "max_by_horizon": {
+        "unlimited": 0.5,
+        "within_1": 0.5,
+        "within_6": 0.5
+      },
+      "n": 4000,
+      "positive_rate": 0.5,
+      "rules": {
+        "source_reach": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "source_reach_depth": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "target_ancestor_depth": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        },
+        "target_ancestors": {
+          "unlimited": 0.5,
+          "within_1": 0.5,
+          "within_6": 0.5
+        }
+      }
+    },
     "data/id_disjoint_20k.jsonl": {
+      "direction_blind_distance": 0.5265,
       "max_by_horizon": {
         "unlimited": 0.782,
         "within_1": 0.60425,
@@ -78,6 +145,7 @@
       }
     },
     "data/id_disjoint_2k.jsonl": {
+      "direction_blind_distance": 0.525,
       "max_by_horizon": {
         "unlimited": 0.7775,
         "within_1": 0.62,

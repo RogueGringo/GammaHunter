@@ -26,6 +26,10 @@
   on the graph-disjoint sets.
 - Untrained-model control for the calibration: each arm scored at the
   weights its training starts from, with the learned margin.
+- Crossed reachability sets: two reachable queries and the two queries
+  crossing them per graph, so no rule on a single endpoint beats 0.5; a
+  20,000-instance in-distribution set and a long-path set. The reach-cue
+  audit also scores the endpoints' distance with edge direction ignored.
 
 ## 0.1.0 (2026-09-27)
 

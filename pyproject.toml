@@ -40,6 +40,7 @@ reachability-gen-covariate-matched-ood = "reachability_gen.gen_covariate_matched
 reachability-ood-covariate-matched = "reachability_gen.run_covariate_matched_ood:main"
 reachability-audit-checkpoints = "reachability_gen.audit_checkpoints:main"
 reachability-gen-id-disjoint = "reachability_gen.gen_id_disjoint:main"
+reachability-gen-crossed = "reachability_gen.gen_crossed:main"
 reachability-disjoint-rematch = "reachability_gen.run_disjoint_rematch:main"
 reachability-nlgraph = "reachability_gen.benchmarks.nlgraph:main"
 reachability-mp-calibration = "reachability_gen.run_mp_calibration:main"

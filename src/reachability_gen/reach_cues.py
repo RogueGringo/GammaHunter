@@ -14,7 +14,9 @@ needs a path between the two endpoints.
 For each feature this reports the best single-threshold rule fitted on the set
 itself, an optimistic ceiling for a rule on that feature alone, at three
 horizons: 1 hop (endpoint degrees), 6 hops (as far as a 6-step arm sees from
-one endpoint) and unlimited.
+one endpoint) and unlimited. It also reports the same ceiling for the distance
+between the two endpoints with edge direction ignored: that rule does search,
+but not the directed search the label depends on.
 
 ``science_open=false`` always.
 
@@ -46,6 +48,8 @@ DEFAULT_DATA: tuple[str, ...] = (
     "data/id_disjoint_2k.jsonl",
     "data/id_disjoint_20k.jsonl",
     "data/extended_disjoint_2k.jsonl",
+    "data/id_crossed_20k.jsonl",
+    "data/extended_crossed_2k.jsonl",
 )
 DEFAULT_OUT = Path("artifacts/reach_cue_audit.json")
 
@@ -86,6 +90,15 @@ def endpoint_reach_features(
         "target_ancestors": len(up) - 1,
         "target_ancestor_depth": max(up.values()),
     }
+
+
+def undirected_distance(n: int, edges: Iterable[tuple[int, int]], s: int, t: int) -> int:
+    """Distance from ``s`` to ``t`` ignoring edge direction (``n`` if disconnected)."""
+    adj: dict[int, list[int]] = {}
+    for u, v in edges:
+        adj.setdefault(u, []).append(v)
+        adj.setdefault(v, []).append(u)
+    return _bfs(adj, s, None).get(t, n)
 
 
 def best_threshold_accuracy(values: Sequence[float], labels: Sequence[int]) -> float:
@@ -131,6 +144,9 @@ def reach_cue_report(
             horizon_key(limit): max(rules[f][horizon_key(limit)] for f in FEATURES)
             for limit in horizons
         },
+        "direction_blind_distance": best_threshold_accuracy(
+            [undirected_distance(n, edges, s, t) for n, edges, s, t in parsed], labels
+        ),
     }
 
 
@@ -161,6 +177,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         "method": "best single-threshold rule per feature, fitted on the audited rows themselves",
         "split": args.split,
         "features": FEATURES,
+        "direction_blind_distance": "distance between the two endpoints with edge direction ignored",
         "horizons": [horizon_key(h) for h in HORIZONS],
         "sets": sets,
         "missing": missing,
@@ -169,7 +186,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     args.out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
     for name, rep in sets.items():
         best = " ".join(f"{k}={v:.4f}" for k, v in rep["max_by_horizon"].items())
-        print(f"{name} (n={rep['n']}): best rule {best}", file=sys.stderr)
+        print(f"{name} (n={rep['n']}): best one-endpoint rule {best}; "
+              f"direction-blind distance {rep['direction_blind_distance']:.4f}", file=sys.stderr)
     print(json.dumps({"ok": True, "out": args.out.as_posix(), "science_open": False}, sort_keys=True))
     return 0
 
