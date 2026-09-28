@@ -225,6 +225,15 @@ and end with "Answer: Yes" or "Answer: No", decodes greedily and records every
 generation in `artifacts/llm_cot_generations.jsonl`. They write
 `artifacts/llm_reference.json` and `artifacts/llm_cot.json`.
 
+```bash
+python -m reachability_gen.run_llm_edge_probe --device cuda
+```
+
+The edge-lookup probe asks the same models whether single edges are listed
+(two listed edges, one reversed edge and one absent pair per graph, on the
+same graphs), with the same scoring, to separate reading the edge list from
+searching it. It writes `artifacts/llm_edge_probe.json`.
+
 ## External benchmarks
 
 ```bash

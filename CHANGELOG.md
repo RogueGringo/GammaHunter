@@ -51,6 +51,8 @@
 - Cue-conflict test: whether the LLMs' paired-split signal follows one-endpoint
   reach cues, on every cue-conflicting paired graph and as many agreeing ones.
 - Related-work page mapping the measurements to published terms and papers.
+- Edge-lookup probe: whether the reference LLMs read single edges (listed,
+  reversed, absent) of the same graphs, separating reading from search.
 
 ## 0.1.0 (2026-09-27)
 

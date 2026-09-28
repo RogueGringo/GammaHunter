@@ -186,7 +186,15 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     ties, p ≈ 5×10⁻¹⁶): its signal follows the one-endpoint cue, not a path.
     Qwen2.5-1.5B showed the same pattern more weakly (56% against 46%,
     p = 0.003) and the two Qwen2.5-3B models the reverse (48% against 57%,
-    p ≤ 0.005), which a model that searches would not show either. Asked to
+    p ≤ 0.005), which a model that searches would not show either. Asked
+    only whether single edges are listed (`artifacts/llm_edge_probe.json`,
+    1,000 questions per set: two listed edges, one reversed edge and one
+    absent pair per graph), the models of 3 to 3.8 billion parameters scored
+    AUROC 0.89–0.99 on both sets and rejected reversed edges in 67–87% of
+    cases, while scoring at chance on reachability over the same graphs:
+    they read the edge list but do not search it. Models of 1.7 billion
+    parameters or fewer scored 0.62–0.81, with strong biases towards one
+    answer. Asked to
     reason step by step (`artifacts/llm_cot.json`: five instruction-tuned
     models, greedy decoding, 400 questions per set, every generation in
     `artifacts/llm_cot_generations.jsonl`), they reached 0.45–0.55 among

@@ -181,7 +181,7 @@ def score_prompts(model, tokenizer, prompts: Sequence[str], device: str, tokens_
             ids, mask = ids.to(first), mask.to(first)
             hidden = body(input_ids=ids, attention_mask=mask, use_cache=False).last_hidden_state
             last = hidden[torch.arange(len(idx), device=hidden.device), mask.sum(dim=1).to(hidden.device) - 1]
-            logits = head(last.to(head.weight.device)).float()
+            logits = head(last.to(module_device(head))).float()
             for row, i in enumerate(idx):
                 _, yes_id, no_id = encoded[i]
                 margins[i] = float(logits[row, yes_id] - logits[row, no_id])
@@ -207,15 +207,29 @@ def metrics(rows: Sequence[dict[str, Any]], margins: Sequence[float]) -> dict[st
     }
 
 
-def load_model(name: str, dtype: str, device: str, max_memory: Optional[dict[Any, str]] = None):
-    """Load from the local cache; with ``max_memory``, spread layers over the listed GPUs."""
+def load_model(name: str, dtype: str, device: str, max_memory: Optional[dict[Any, str]] = None,
+               int8: bool = False):
+    """Load from the local cache; ``max_memory`` spreads layers over GPUs, ``int8`` stores
+    every linear layer's weights in 8 bits (``int8_linear``) before moving to ``device``."""
     import torch
     from transformers import AutoModelForCausalLM
 
     kwargs: dict[str, Any] = {"local_files_only": True, "dtype": getattr(torch, dtype)}
     if max_memory:
         return AutoModelForCausalLM.from_pretrained(name, device_map="auto", max_memory=max_memory, **kwargs).eval()
-    return AutoModelForCausalLM.from_pretrained(name, **kwargs).to(device).eval()
+    model = AutoModelForCausalLM.from_pretrained(name, **kwargs)
+    if int8:
+        from reachability_gen.int8_linear import quantize_linears
+
+        quantize_linears(model)
+    return model.to(device).eval()
+
+
+def module_device(module):
+    """Device of a module's first parameter or buffer."""
+    for tensor in list(module.parameters()) + list(module.buffers()):
+        return tensor.device
+    raise ValueError("module has no tensors")
 
 
 def parse_max_memory(spec: Optional[str]) -> Optional[dict[Any, str]]:
@@ -231,7 +245,7 @@ def parse_max_memory(spec: Optional[str]) -> Optional[dict[Any, str]]:
 
 def evaluate_model(name: str, sets: dict[str, list[dict[str, Any]]], shots: list[dict[str, Any]], *,
                    device: str, dtype: str, tokens_per_batch: int,
-                   max_memory: Optional[dict[Any, str]] = None) -> dict[str, Any]:
+                   max_memory: Optional[dict[Any, str]] = None, int8: bool = False) -> dict[str, Any]:
     import torch
     from transformers import AutoTokenizer
 
@@ -239,9 +253,9 @@ def evaluate_model(name: str, sets: dict[str, list[dict[str, Any]]], shots: list
     tokenizer = AutoTokenizer.from_pretrained(name, local_files_only=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
-    model = load_model(name, dtype, device, max_memory)
+    model = load_model(name, dtype, device, max_memory, int8)
     out: dict[str, Any] = {"params": int(sum(p.numel() for p in model.parameters())), "sets": {},
-                           "dtype": dtype, "max_memory": max_memory}
+                           "dtype": dtype, "max_memory": max_memory, "int8_weights": int8}
     for set_name, rows in sets.items():
         graph = set_name != "no_graph"
         prompts = [build_prompt(r["encoding"], shots, graph=graph) for r in rows]
@@ -273,6 +287,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--dtype", choices=("bfloat16", "float16", "float32"), default="bfloat16")
     p.add_argument("--tokens-per-batch", type=int, default=TOKENS_PER_BATCH)
     p.add_argument("--max-memory", default=None, help='spread a model over GPUs, e.g. "0=11GiB,1=5GiB"')
+    p.add_argument("--int8", action="store_true", help="store linear weights in 8 bits (int8_linear)")
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = p.parse_args(argv)
     try:
@@ -301,7 +316,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     results = {
         name: evaluate_model(name, sets, shots, device=args.device, dtype=args.dtype,
                              tokens_per_batch=args.tokens_per_batch,
-                             max_memory=parse_max_memory(args.max_memory))
+                             max_memory=parse_max_memory(args.max_memory), int8=args.int8)
         for name in args.models
     }
     artifact = {
@@ -317,6 +332,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "dtype": args.dtype,
             "device": args.device,
             "max_memory": args.max_memory,
+            "int8_weights": args.int8,
             "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
             "torch_version": torch.__version__,
             "transformers_version": transformers.__version__,

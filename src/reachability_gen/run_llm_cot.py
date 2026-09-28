@@ -149,6 +149,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--batch", type=int, default=BATCH)
     p.add_argument("--kv-budget-gib", type=float, default=KV_BUDGET / 2**30)
     p.add_argument("--max-memory", default=None, help='spread a model over GPUs, e.g. "0=11GiB,1=5GiB"')
+    p.add_argument("--int8", action="store_true", help="store linear weights in 8 bits (int8_linear)")
     p.add_argument("--max-new-tokens", type=int, default=MAX_NEW_TOKENS)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--generations", type=Path, default=DEFAULT_GENERATIONS)
@@ -180,6 +181,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "graphs_per_hop": per_hop,
             "batching": f"at most {args.batch} sequences and {args.kv_budget_gib} GiB of attention cache per batch",
             "dtype": args.dtype,
+            "int8_weights": args.int8,
             "device": args.device,
             "max_memory": args.max_memory,
             "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
@@ -205,7 +207,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             tokenizer = AutoTokenizer.from_pretrained(name, local_files_only=True)
             if tokenizer.pad_token_id is None:
                 tokenizer.pad_token = tokenizer.eos_token
-            model = load_model(name, args.dtype, args.device, parse_max_memory(args.max_memory))
+            model = load_model(name, args.dtype, args.device, parse_max_memory(args.max_memory), args.int8)
             res: dict[str, Any] = {"sets": {}, "kv_bytes_per_token": kv_bytes_per_token(model)}
             for set_name, rows in sets.items():
                 prompts = [question(r["encoding"], graph=set_name != "no_graph") for r in rows]

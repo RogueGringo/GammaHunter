@@ -34,15 +34,15 @@ literature describes from both sides:
 * **Text.** Every model that reads the graph as text stayed at chance:
   sequence arms trained from scratch even on the paired sets, and open LLMs
   of up to 3.8 billion parameters on the crossed sets, in line with the
-  search and heuristics findings above. Whether they fail at reading the edge
-  list or at searching it has not been measured.
+  search and heuristics findings above. An edge-lookup probe separates
+  reading from search: the LLMs of 3 to 3.8 billion parameters read single
+  edges of the same graphs almost perfectly (AUROC 0.89–0.99), so their
+  failure is in the search.
 
-Two measurements follow. A direct-edge probe (is u→v listed?) puts the
-one-step lookup to the same models and separates reading from search. And a
-reader placed in front of the anchored processor, which must emit an
-explicit, discrete graph (scored against the true edges) without seeing the
-question, so that it cannot write the answer into the graph, trained from
-question-answer pairs and evaluated with the same controls (untrained model,
-cue ceilings, several seeds, re-scored checkpoints). Together they would say
-whether depth- and size-robust search can be obtained from text, not only
-from given structure.
+The next measurement is a reader placed in front of the anchored processor,
+which must emit an explicit, discrete graph (scored against the true edges)
+without seeing the question, so that it cannot write the answer into the
+graph, trained from question-answer pairs and evaluated with the same
+controls (untrained model, cue ceilings, several seeds, re-scored
+checkpoints). It would say whether depth- and size-robust search can be
+obtained from text, not only from given structure.

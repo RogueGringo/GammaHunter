@@ -51,6 +51,7 @@ reachability-stability = "reachability_gen.run_stability:main"
 reachability-takeoff = "reachability_gen.run_takeoff:main"
 reachability-llm-reference = "reachability_gen.run_llm_reference:main"
 reachability-llm-cot = "reachability_gen.run_llm_cot:main"
+reachability-llm-edge-probe = "reachability_gen.run_llm_edge_probe:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

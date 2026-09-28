@@ -97,7 +97,7 @@ def cue_groups(rows: Sequence[dict[str, Any]], feature: str, limit: Optional[int
 
 
 def enriched(argv_models: Sequence[str], paired: Sequence[dict[str, Any]], crossed: Sequence[dict[str, Any]], *,
-             device: str, dtype: str, tokens_per_batch: int, seed: int = 11) -> dict[str, Any]:
+             device: str, dtype: str, tokens_per_batch: int, seed: int = 11, int8: bool = False) -> dict[str, Any]:
     """Every cue-conflicting paired graph plus as many cue-agreeing ones, scored by each model."""
     import random
 
@@ -120,6 +120,7 @@ def enriched(argv_models: Sequence[str], paired: Sequence[dict[str, Any]], cross
         "feature": f"{feature}@within_{limit}",
         "available": {k: len(v) for k, v in groups.items()},
         "graphs": {k: len(v) for k, v in chosen.items()},
+        "int8_weights": int8,
         "rows": [{"edge_hash": r["edge_hash"], "s": r["s"], "t": r["t"], "y": r["y"]} for r in rows],
         "models": {},
     }
@@ -127,7 +128,7 @@ def enriched(argv_models: Sequence[str], paired: Sequence[dict[str, Any]], cross
         tokenizer = AutoTokenizer.from_pretrained(name, local_files_only=True)
         if tokenizer.pad_token_id is None:
             tokenizer.pad_token = tokenizer.eos_token
-        model = load_model(name, dtype, device)
+        model = load_model(name, dtype, device, None, int8)
         margins = score_prompts(model, tokenizer, prompts, device, tokens_per_batch)
         result: dict[str, Any] = {}
         members = {key: set(chosen[key]) for key in chosen}
@@ -160,6 +161,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     p.add_argument("--dtype", choices=("bfloat16", "float16", "float32"), default="bfloat16")
     p.add_argument("--tokens-per-batch", type=int, default=12_000)
+    p.add_argument("--int8", action="store_true", help="store linear weights in 8 bits (int8_linear)")
     args = p.parse_args(argv)
     for path in (args.reference, args.paired_data):
         if not path.exists():
@@ -185,7 +187,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.enriched is not None:
         models = args.enriched or list(ref["models"])
         artifact["enriched"] = enriched(models, load_jsonl(args.paired_data), load_jsonl(args.crossed_data),
-                                        device=args.device, dtype=args.dtype, tokens_per_batch=args.tokens_per_batch)
+                                        device=args.device, dtype=args.dtype, tokens_per_batch=args.tokens_per_batch,
+                                        int8=args.int8)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
     key = "target_ancestors@within_6"
