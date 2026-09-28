@@ -112,9 +112,11 @@ class RelativeAttentionLayer(nn.Module):
 class GraphReader(nn.Module):
     """Edge-list tokens → edge scores for every ordered pair of node slots."""
 
-    def __init__(self, d: int = 64, layers: int = 2, heads: int = 4, max_offset: int = 4) -> None:
+    def __init__(self, d: int = 64, layers: int = 2, heads: int = 4, max_offset: int = 4, vocab_size: int = 2) -> None:
         super().__init__()
-        self.kind = nn.Embedding(2, d)  # one embedding for every node token, one for the separator
+        # One embedding for every node token and one per other kind: the separator of the
+        # edge-list format (vocab_size 2), or the words of a natural-language rendering.
+        self.kind = nn.Embedding(vocab_size, d)
         self.slot = nn.Embedding(3, d)
         self.layers = nn.ModuleList([RelativeAttentionLayer(d, heads, max_offset) for _ in range(layers)])
         self.src, self.dst = nn.Linear(d, d), nn.Linear(d, d)
@@ -124,9 +126,13 @@ class GraphReader(nn.Module):
         nn.init.constant_(self.pair_offset.weight, -3.0)
         self.max_offset = max_offset
 
+    def embed(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        """``[B, L, d]`` input states of the tokens."""
+        return self.kind(batch["kinds"]) + self.slot(batch["slots"])
+
     def occurrence_scores(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
         """``[B, L, L]`` logits: token i is the source and token j the target of one listed edge."""
-        h = self.kind(batch["kinds"]) + self.slot(batch["slots"])
+        h = self.embed(batch)
         for layer in self.layers:
             h = layer(h, batch["token_mask"])
         length = h.shape[1]
@@ -203,6 +209,51 @@ class GraphReader(nn.Module):
         return (soft > 0.5).to(soft.dtype) + (carrier - carrier.detach())
 
 
+@dataclass(frozen=True)
+class FeatureTokens:
+    """A rendering as a frozen language model encodes it (no question)."""
+
+    features: torch.Tensor  # [L, F] hidden states of the model's tokens
+    kinds: torch.Tensor  # [L] NODE on the last token of each node number, 1 elsewhere
+    symbol: torch.Tensor  # [L] node number on NODE tokens, -1 elsewhere
+    n: int
+
+
+def collate_features(items: Sequence[FeatureTokens], device: torch.device | str = "cpu") -> dict[str, torch.Tensor]:
+    """Pad a batch of ``FeatureTokens`` into the batch layout ``GraphReader`` reads, plus ``features``."""
+    bsz = len(items)
+    length = max(1, max(int(x.kinds.numel()) for x in items))
+    features = torch.zeros((bsz, length, items[0].features.shape[-1]), dtype=items[0].features.dtype, device=device)
+    kinds = torch.ones((bsz, length), dtype=torch.long)
+    mask = torch.zeros((bsz, length), dtype=torch.bool)
+    node_slot = torch.full((bsz, length), -1, dtype=torch.long)
+    for b, x in enumerate(items):
+        m = int(x.kinds.numel())
+        features[b, :m] = x.features.to(device)
+        kinds[b, :m], mask[b, :m], node_slot[b, :m] = x.kinds, True, x.symbol
+    width = torch.tensor(max(x.n for x in items))
+    return {"features": features, **{k: v.to(device) for k, v in {
+        "kinds": kinds, "slots": torch.zeros_like(kinds), "token_mask": mask, "node_slot": node_slot,
+        "width": width}.items()}}
+
+
+class FeatureReader(GraphReader):
+    """``GraphReader`` on frozen language-model features instead of learned token embeddings.
+
+    The features are normalised and projected to the reader's width, and a kind
+    embedding marks node tokens; the relative-attention layers, the pair scorer
+    and the log evidence are those of ``GraphReader``.
+    """
+
+    def __init__(self, feature_dim: int, d: int = 64, layers: int = 2, heads: int = 4, max_offset: int = 8) -> None:
+        super().__init__(d, layers, heads, max_offset, vocab_size=2)
+        self.norm = nn.LayerNorm(feature_dim)  # hidden states carry a few very large coordinates
+        self.proj = nn.Linear(feature_dim, d)
+
+    def embed(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        return self.proj(self.norm(batch["features"].float())) + self.kind(batch["kinds"])
+
+
 def edge_metrics(pred: torch.Tensor, gold: torch.Tensor, node_mask: torch.Tensor) -> dict[str, Any]:
     """Edge precision/recall/F1, exact-graph matches and error kinds for a batch of 0/1 adjacencies."""
     valid = (node_mask[:, :, None] & node_mask[:, None, :]) & ~torch.eye(pred.shape[1], dtype=torch.bool,
@@ -231,5 +282,5 @@ def closure(adj: torch.Tensor, node_mask: torch.Tensor) -> torch.Tensor:
     return reach
 
 
-__all__ = ["NO_EVIDENCE", "EdgeListTokens", "GraphReader", "closure", "collate_tokens", "edge_list_tokens",
-           "edge_metrics", "log_softplus"]
+__all__ = ["NO_EVIDENCE", "EdgeListTokens", "FeatureReader", "FeatureTokens", "GraphReader", "closure",
+           "collate_features", "collate_tokens", "edge_list_tokens", "edge_metrics", "log_softplus"]

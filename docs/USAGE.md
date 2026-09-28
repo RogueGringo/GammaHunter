@@ -354,6 +354,35 @@ there, which changes only the gradient. With `--criteria closure` a run passes
 on the true reachability closure rather than the exact edge list, since answers
 cannot reveal implied edges.
 
+```bash
+python -m reachability_gen.run_reader --device cuda --criteria closure \
+    --regimes answers_frozen_prior_reinforce answers_dense_prior_reinforce --out artifacts/reader_estimator.json
+```
+
+The same answers-only readers trained with a score-function (REINFORCE)
+estimator instead of the straight-through gradient: graphs are sampled edge by
+edge from the reader's probabilities, the frozen solver's answers score each
+sample, and each sample's baseline is the mean of the other samples of the
+same reading. Nothing is differentiated through the solver.
+
+```bash
+python -m reachability_gen.run_nl_reader --reader words --device cuda
+python -m reachability_gen.run_nl_reader --reader lm --device cuda
+python -m reachability_gen.run_llm_reader --device cuda --rendering nl \
+    --out artifacts/llm_reader_nl.json --generations artifacts/llm_reader_nl_generations.jsonl
+```
+
+Reading graphs from natural language. Each graph is rendered as shuffled
+sentences, one per edge, from training templates or from held-out templates
+whose wording never appears in training, with a quarter as many distractor
+sentences that mention single nodes. The readers are a word reader trained
+from scratch, a reader on the frozen hidden states of a small language model
+from the local cache, and language models listing each node's successors from
+the held-out rendering. All feed the frozen solvers and are scored on held-out
+phrasings, with in-distribution phrasings reported alongside. They write
+`artifacts/nl_reader_words.json`, `artifacts/nl_reader_lm.json` and
+`artifacts/llm_reader_nl.json`.
+
 ## External benchmarks
 
 ```bash

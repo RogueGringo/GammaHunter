@@ -86,7 +86,17 @@ DENSITY_STUDY: dict[str, str] = {
                                      "update ReLUs during reader training (the forward pass is unchanged)",
     "answers_dense_prior_kinkfree": "dense answers and slope 1 at zero",
 }
-ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS, **DENSITY_STUDY}
+# Score-function (REINFORCE) estimator for answers-only readers (limitations item 18), fixed before
+# its runs: graphs are sampled edge by edge from the reader's P(edge) and scored by the frozen
+# solver's answers; nothing is differentiated through the solver, so its ReLU kink plays no part.
+ESTIMATOR_STUDY: dict[str, str] = {
+    "answers_frozen_prior_reinforce": "as answers_frozen_prior, trained with a score-function (REINFORCE) "
+                                      "estimator on sampled graphs",
+    "answers_dense_prior_reinforce": "as answers_dense_prior, trained with a score-function (REINFORCE) "
+                                     "estimator on sampled graphs",
+}
+ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS, **DENSITY_STUDY, **ESTIMATOR_STUDY}
+REINFORCE_SAMPLES: int = 4  # graphs sampled per reading; each sample's baseline is the others' mean (RLOO)
 PRIOR_WEIGHT: float = 1.0  # weight of the density prior, fixed before the variant runs
 TRAIN_STEPS: int = 6
 SOLVER_EPOCHS: int = 2
@@ -405,8 +415,63 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
     }
 
 
+def sample_log_prob(log_z, samples, node_mask):
+    """``[B, K]`` log-probability of sampled 0/1 graphs ``[B, K, N, N]`` under P(edge) = 1 - exp(-z).
+
+    Summed over ordered pairs of distinct nodes, from log z with the terms of
+    ``topology_bce``: log P = log z - z/2 for small z, and log(1 - P) = -z.
+    """
+    import torch
+
+    eye = torch.eye(log_z.shape[1], dtype=torch.bool, device=log_z.device)
+    valid = (node_mask[:, :, None] & node_mask[:, None, :] & ~eye[None]).to(log_z.dtype)
+    z = log_z.exp()
+    log_p = -torch.where(log_z < -9, -log_z + 0.5 * z, -torch.log(-torch.expm1(-z.clamp(min=1e-4))))
+    terms = samples * log_p[:, None] + (1 - samples) * (-z)[:, None]
+    return (terms * valid[:, None]).flatten(2).sum(-1)
+
+
+def rloo_advantages(rewards):
+    """Each sample's reward minus the mean reward of the other samples of the same reading (RLOO)."""
+    k = rewards.shape[1]
+    return rewards - (rewards.sum(dim=1, keepdim=True) - rewards) / (k - 1)
+
+
+def pair_counts(node_mask):
+    """``[B]`` ordered pairs of distinct nodes per graph."""
+    n = node_mask.sum(dim=1).float()
+    return n * (n - 1)
+
+
+def reinforce_rows(reader, solver, graph: dict[str, Any], tokens: dict[str, Any], *, density: Optional[float]):
+    """Score-function loss for question rows: each row's graph sampled K times, rewarded by the answer.
+
+    The reward is the log-likelihood the frozen solver gives the correct answer on a
+    sample; advantages are leave-one-out (RLOO) and normalised over the batch; the
+    log-probability of a sample is divided by the graph's number of node pairs.
+    """
+    import torch
+    import torch.nn.functional as F
+
+    log_z = reader.edge_log_evidence(tokens)
+    prob = -torch.expm1(-log_z.exp())
+    rows, k = prob.shape[0], REINFORCE_SAMPLES
+    with torch.no_grad():
+        samples = torch.bernoulli(prob.detach()[:, None].expand(-1, k, -1, -1).contiguous())
+        repeated = {key: value.repeat_interleave(k, dim=0) for key, value in graph.items()}
+        logits = solver(dict(repeated, adj=samples.flatten(0, 1)), TRAIN_STEPS)
+        rewards = F.log_softmax(logits.float(), dim=-1).gather(1, repeated["y"][:, None]).view(rows, k)
+        adv = rloo_advantages(rewards)
+        adv = adv / (adv.std() + 1e-8)
+    log_prob = sample_log_prob(log_z, samples, graph["node_mask"]) / pair_counts(graph["node_mask"])[:, None]
+    loss = -(adv * log_prob).mean()
+    if density is not None:
+        loss = loss + PRIOR_WEIGHT * density_kl(prob, graph, density)
+    return loss
+
+
 def dense_epoch(reader, solver, dense: DenseAnswers, opt, params, *, through: str,
-                density: Optional[float]) -> tuple[float, int, int]:
+                density: Optional[float], reinforce: bool = False) -> tuple[float, int, int]:
     """One epoch of a dense regime: each graph once, with all its (source, target) answers.
 
     Returns the loss summed over answers, the correct answers and the answers seen.
@@ -421,12 +486,17 @@ def dense_epoch(reader, solver, dense: DenseAnswers, opt, params, *, through: st
     for i in range(0, len(order), DENSE_GRAPHS_PER_BATCH):
         gids = order[i : i + DENSE_GRAPHS_PER_BATCH]
         graph, tokens, row_graph, labels, mask = dense.batch(gids)
-        adj = reader.adjacency(reader.edge_log_evidence(tokens), hard=True, through=through)  # one per graph
-        logits = all_target_logits(solver, dict(graph, adj=adj[row_graph]), TRAIN_STEPS)
-        loss = F.cross_entropy(logits[mask], labels[mask])
-        if density is not None:
-            first_rows = torch.searchsorted(row_graph, torch.arange(len(gids), device=row_graph.device))
-            loss = loss + PRIOR_WEIGHT * density_kl(adj, {"node_mask": graph["node_mask"][first_rows]}, density)
+        first_rows = torch.searchsorted(row_graph, torch.arange(len(gids), device=row_graph.device))
+        node_mask = graph["node_mask"][first_rows]
+        if reinforce:
+            loss, logits = dense_reinforce_loss(reader, solver, graph, tokens, row_graph, labels, mask, node_mask,
+                                                density=density)
+        else:
+            adj = reader.adjacency(reader.edge_log_evidence(tokens), hard=True, through=through)  # one per graph
+            logits = all_target_logits(solver, dict(graph, adj=adj[row_graph]), TRAIN_STEPS)
+            loss = F.cross_entropy(logits[mask], labels[mask])
+            if density is not None:
+                loss = loss + PRIOR_WEIGHT * density_kl(adj, {"node_mask": node_mask}, density)
         opt.zero_grad(set_to_none=True)
         loss.backward()
         clip_grad_norm_(params, GRAD_CLIP)
@@ -436,6 +506,38 @@ def dense_epoch(reader, solver, dense: DenseAnswers, opt, params, *, through: st
         hits += int(((logits.argmax(dim=-1) == labels) & mask).sum().item())
         seen += answered
     return loss_sum, hits, seen
+
+
+def dense_reinforce_loss(reader, solver, graph: dict[str, Any], tokens: dict[str, Any], row_graph, labels, mask,
+                         node_mask, *, density: Optional[float]):
+    """Score-function loss for dense answers: each graph sampled K times, rewarded by all its answers.
+
+    A sample's reward is the mean log-likelihood of the graph's (source, target)
+    answers; also returns the logits of the reader's own hard graph (for logging).
+    """
+    import torch
+    import torch.nn.functional as F
+
+    log_z = reader.edge_log_evidence(tokens)
+    prob = -torch.expm1(-log_z.exp())
+    graphs, k = prob.shape[0], REINFORCE_SAMPLES
+    answers = torch.zeros(graphs, device=prob.device).index_add(0, row_graph, mask.sum(dim=1).float()).clamp(min=1)
+    with torch.no_grad():
+        samples = torch.bernoulli(prob.detach()[:, None].expand(-1, k, -1, -1).contiguous())
+        rewards = torch.zeros(graphs, k, device=prob.device)
+        for j in range(k):
+            logits = all_target_logits(solver, dict(graph, adj=samples[row_graph, j]), TRAIN_STEPS)
+            ll = F.log_softmax(logits.float(), dim=-1).gather(2, labels[..., None]).squeeze(2)
+            rewards[:, j] = torch.zeros(graphs, device=prob.device).index_add(0, row_graph, (ll * mask).sum(dim=1))
+        rewards = rewards / answers[:, None]
+        adv = rloo_advantages(rewards)
+        adv = adv / (adv.std() + 1e-8)
+        own = all_target_logits(solver, dict(graph, adj=(prob > 0.5).to(prob.dtype)[row_graph]), TRAIN_STEPS)
+    log_prob = sample_log_prob(log_z, samples, node_mask) / pair_counts(node_mask)[:, None]
+    loss = -(adv * log_prob).mean()
+    if density is not None:
+        loss = loss + PRIOR_WEIGHT * density_kl(prob, {"node_mask": node_mask}, density)
+    return loss, own
 
 
 def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: str, ckpt_dir: Path,
@@ -475,7 +577,8 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
         solver.train(regime == "answers_joint")
         if dense is not None:
             loss_sum, hits, seen = dense_epoch(reader, solver, dense, opt, params, through=through,
-                                               density=density if "_prior" in regime else None)
+                                               density=density if "_prior" in regime else None,
+                                               reinforce=regime.endswith("_reinforce"))
         else:
             loss_sum, hits, seen = 0.0, 0, 0
             order = torch.randperm(len(train.rows)).tolist()
@@ -485,6 +588,11 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
                 if regime == "supervised":
                     bce, pairs = topology_bce(reader.edge_log_evidence(tokens), graph)
                     loss = bce / pairs
+                    with torch.no_grad():
+                        logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
+                elif regime.endswith("_reinforce"):
+                    loss = reinforce_rows(reader, solver, graph, tokens,
+                                          density=density if "_prior" in regime else None)
                     with torch.no_grad():
                         logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
                 else:
@@ -596,7 +704,8 @@ def merge(parts: Sequence[Path], out: Path) -> int:
     """Combine result files of one protocol (e.g. one per regime) into one."""
     loaded = [json.loads(Path(p).read_text(encoding="utf-8")) for p in parts]
     # Recorded only by parts that ran a prior regime or a dense regime; they must agree where present.
-    conditional = ("edge_density_prior", "prior_weight", "dense_graphs_per_batch")
+    conditional = ("edge_density_prior", "prior_weight", "dense_graphs_per_batch", "reinforce_samples",
+                   "reinforce_baseline")
 
     def shared(art: dict[str, Any]) -> dict[str, Any]:
         return {k: v for k, v in art["protocol"].items() if k != "seeds" and k not in conditional}
@@ -705,6 +814,9 @@ def main(argv: Optional[list[str]] = None) -> int:
                if any("_prior" in r for r in args.regimes) else {}),
             **({"dense_graphs_per_batch": DENSE_GRAPHS_PER_BATCH}
                if any(r.startswith("answers_dense") for r in args.regimes) else {}),
+            **({"reinforce_samples": REINFORCE_SAMPLES, "reinforce_baseline": "leave-one-out (RLOO), "
+                "advantages normalised per batch; log-probability per node pair"}
+               if any(r.endswith("_reinforce") for r in args.regimes) else {}),
             "seeds": args.seeds,
             "batch_size": BATCH, "lr": LR, "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "checkpoints_versioned": False,

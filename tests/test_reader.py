@@ -403,3 +403,59 @@ def test_answer_density_artifact_contract():
                   and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS_CLOSURE["closure_agreement_long"]
                   and all(f[f"long_{s}"]["accuracy"] >= PASS_CLOSURE["long_path_accuracy"] for s in LONG_STEPS))
         assert run["passes"] == passes
+
+
+def test_rloo_advantages_have_zero_mean_per_reading():
+    from reachability_gen.run_reader import rloo_advantages
+
+    adv = rloo_advantages(torch.tensor([[1.0, 2.0, 3.0, 4.0], [5.0, 5.0, 5.0, 5.0]]))
+    assert torch.allclose(adv[0], torch.tensor([-2.0, -2 / 3, 2 / 3, 2.0])) and torch.all(adv[1] == 0)
+    assert torch.allclose(adv.sum(dim=1), torch.zeros(2))
+
+
+def test_sample_log_prob_matches_bernoulli():
+    from reachability_gen.run_reader import sample_log_prob
+
+    torch.manual_seed(5)
+    log_z = torch.randn(2, 4, 4)
+    node_mask = torch.tensor([[True, True, True, False], [True, True, True, True]])
+    prob = -torch.expm1(-log_z.exp())
+    samples = torch.bernoulli(prob[:, None].expand(-1, 3, -1, -1))
+    valid = (node_mask[:, :, None] & node_mask[:, None, :] & ~torch.eye(4, dtype=torch.bool)[None]).float()
+    direct = (torch.distributions.Bernoulli(probs=prob[:, None]).log_prob(samples) * valid[:, None]).flatten(2).sum(-1)
+    assert torch.allclose(sample_log_prob(log_z, samples, node_mask), direct, atol=1e-4)
+
+
+def test_score_function_gradient_favours_rewarded_edges():
+    """Rewarding samples that contain edge 0->1 pushes its log-evidence up, and only its own."""
+    from reachability_gen.run_reader import rloo_advantages, sample_log_prob
+
+    torch.manual_seed(6)
+    log_z = torch.zeros(1, 3, 3, requires_grad=True)
+    node_mask = torch.ones(1, 3, dtype=torch.bool)
+    prob = -torch.expm1(-log_z.exp())
+    samples = torch.bernoulli(prob.detach()[:, None].expand(-1, 256, -1, -1))
+    adv = rloo_advantages(samples[:, :, 0, 1])  # reward: the sample contains 0 -> 1
+    (-(adv * sample_log_prob(log_z, samples, node_mask)).mean()).backward()
+    g = log_z.grad[0]
+    assert g[0, 1] < 0 and g[0, 1].abs() > 5 * g[1, 2].abs()  # descent raises 0 -> 1 far more than any other pair
+
+
+def test_reinforce_regimes_smoke_and_merge(tmp_path, monkeypatch):
+    from reachability_gen import run_reader as rr
+
+    monkeypatch.setattr(rr, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=17, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=18, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    common = ["--train-data", str(train_path), "--extended-data", str(ext_path), "--seeds", "0", "--criteria", "closure",
+              "--reader-epochs", "1", "--solver-epochs", "1", "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify"]
+    est, plain = tmp_path / "estimator.json", tmp_path / "plain.json"
+    assert rr.main(common + ["--regimes", *rr.ESTIMATOR_STUDY, "--out", str(est)]) == 0
+    assert rr.main(common + ["--regimes", "answers_frozen_prior", "--out", str(plain)]) == 0
+    art = json.loads(est.read_text())
+    assert art["protocol"]["reinforce_samples"] == rr.REINFORCE_SAMPLES and art["self_audit_mismatches"] == []
+    assert set(art["summary"]) == set(rr.ESTIMATOR_STUDY)
+    assert rr.main(["--merge", str(est), str(plain), "--out", str(tmp_path / "merged.json")]) == 0

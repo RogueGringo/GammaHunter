@@ -45,6 +45,7 @@ from typing import Any, Optional, Sequence
 from reachability_gen.encode import parse_instance
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_llm_cot import BATCH, GRAPHS_PER_HOP, KV_BUDGET, generate
+from reachability_gen.nl_render import HELDOUT_TEMPLATES, render
 from reachability_gen.run_llm_reference import auroc, format_edges, load_model, sample_graphs
 from reachability_gen.run_takeoff import wilson
 
@@ -62,6 +63,16 @@ DEFAULT_GENERATIONS = Path("artifacts/llm_reader_generations.jsonl")
 SETS: dict[str, tuple[str, tuple[int, ...]]] = {"crossed_val": ("val", (6,)), "crossed_long": ("long", (16, 48, 192))}
 MAX_NEW_TOKENS: int = 64
 NUMBER = re.compile(r"\d+")
+
+
+def successor_prompt_nl(text: str, node: int) -> str:
+    """Ask for one node's successors in a natural-language rendering (``nl_render``); no question."""
+    return (
+        "The text below describes a directed graph. Each sentence either states a one-way connection from "
+        f"one node to another or mentions a node.\n{text}\n"
+        f"List every node that node {node} has a direct one-way connection to. Reply with the node numbers "
+        "separated by commas, or with 'none' if there is no such node, and nothing else."
+    )
 
 
 def successor_prompt(edges: Sequence[tuple[int, int]], node: int) -> str:
@@ -241,6 +252,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     p.add_argument("--max-new-tokens", type=int, default=MAX_NEW_TOKENS)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--generations", type=Path, default=DEFAULT_GENERATIONS)
+    p.add_argument("--rendering", choices=("edges", "nl"), default="edges",
+                   help="show the edge list, or the held-out natural-language rendering of nl_render")
     p.add_argument("--merge", type=Path, nargs="+", default=None, metavar="PART",
                    help="combine result files of separate runs into --out (no model is loaded)")
     args = p.parse_args(argv)
@@ -270,7 +283,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "science_open": False,
         "purpose": "instruction-tuned language models as question-blind graph readers for the anchored solver",
         "protocol": {
-            "prompt_example": successor_prompt([(0, 1), (2, 0)], 0),
+            "prompt_example": (successor_prompt([(0, 1), (2, 0)], 0) if args.rendering == "edges"
+                               else successor_prompt_nl(render(3, [(0, 1), (2, 0)], "heldout", "example"), 0)),
+            "rendering": args.rendering,
+            **({"templates": list(HELDOUT_TEMPLATES)} if args.rendering == "nl" else {}),
             "decoding": "greedy, chat template",
             "max_new_tokens": args.max_new_tokens,
             "parse_rule": "every number in the reply that is a node of the graph other than the asked node",
@@ -309,7 +325,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             res: dict[str, Any] = {"sets": {}}
             for set_name, rows in sets.items():
                 items = [(eh, u) for eh, (n, _) in graphs[set_name].items() for u in range(n)]
-                prompts = [successor_prompt(graphs[set_name][eh][1], u) for eh, u in items]
+                if args.rendering == "nl":
+                    texts = {eh: render(n, e, "heldout", eh) for eh, (n, e) in graphs[set_name].items()}
+                    prompts = [successor_prompt_nl(texts[eh], u) for eh, u in items]
+                else:
+                    prompts = [successor_prompt(graphs[set_name][eh][1], u) for eh, u in items]
                 t2 = time.perf_counter()
                 texts, _ = generate(model, tokenizer, prompts, args.device, batch=args.batch,
                                     max_new_tokens=args.max_new_tokens, kv_budget=int(args.kv_budget_gib * 2**30),

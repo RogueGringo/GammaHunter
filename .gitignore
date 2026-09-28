@@ -25,3 +25,6 @@ artifacts/takeoff/
 
 # reader-pipeline checkpoints (hashes are recorded in artifacts/reader_pipeline.json)
 artifacts/reader_pipeline/
+
+# natural-language reader checkpoints (hashes are recorded in artifacts/nl_reader_*.json)
+artifacts/nl_reader/

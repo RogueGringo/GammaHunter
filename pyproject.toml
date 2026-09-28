@@ -59,6 +59,7 @@ reachability-reader = "reachability_gen.run_reader:main"
 reachability-llm-reader = "reachability_gen.run_llm_reader:main"
 reachability-reader-identifiability = "reachability_gen.reader_identifiability:main"
 reachability-reader-noise = "reachability_gen.reader_noise:main"
+reachability-nl-reader = "reachability_gen.run_nl_reader:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
