@@ -30,6 +30,11 @@
   crossing them per graph, so no rule on a single endpoint beats 0.5; a
   20,000-instance in-distribution set and a long-path set. The reach-cue
   audit also scores the endpoints' distance with edge direction ignored.
+- Stability ring: nine parameter-matched looped arms (standard step, the
+  recurrence under study, per-step vectors, random step counts in training,
+  and a ported graph-inference arm with default and original initialisation),
+  scored untrained and at best and final checkpoints up to 192 steps; seeds
+  run in parallel and merge.
 
 ## 0.1.0 (2026-09-27)
 

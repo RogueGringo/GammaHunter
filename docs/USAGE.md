@@ -158,6 +158,31 @@ training cannot be attributed to learning. It writes
 margin (trained minus untrained accuracy) for both saved checkpoints when the
 calibration's result file is present.
 
+## Stability ring
+
+```bash
+python -m reachability_gen.run_stability --device cuda
+```
+
+Trains nine parameter-matched looped arms on `data/id_crossed_20k.jsonl`
+(5 seeds, 30 epochs, one optimiser setting for all). The arms are the
+standard looped step, the recurrence under study in the message-passing frame
+(with and without per-step vectors), both trained with 6 steps or with a
+random step count per batch, and a ported arm that infers the graph from the
+edge list, with default and with its original initialisation. Each arm is
+scored untrained and at its best and final checkpoints (saved and re-scored)
+on the validation split and on `data/extended_crossed_2k.jsonl` at 6 to 192
+steps, with the relative change of the query target's state per step; a seed
+counts as stable when its long-path accuracy is at least 0.99 at every step
+count from 16 to 192. It writes `artifacts/stability_ring.json` and
+checkpoints in `artifacts/stability_ring/`. Seeds can run as separate
+processes and be merged:
+
+```bash
+python -m reachability_gen.run_stability --device cuda --seeds 0 --out artifacts/stability_ring_seed0.json
+python -m reachability_gen.run_stability --merge artifacts/stability_ring_seed0.json artifacts/stability_ring_seed1.json
+```
+
 ## External benchmarks
 
 ```bash

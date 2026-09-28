@@ -23,7 +23,7 @@ numbering and to graph size.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Optional, Sequence
+from typing import Any, Iterator, Optional, Sequence
 
 import torch
 import torch.nn as nn
@@ -72,6 +72,14 @@ def collate(graphs: Sequence[ParsedGraph], device: torch.device | str = "cpu") -
     }
 
 
+def _max_in_messages(m: torch.Tensor, adj: torch.Tensor) -> torch.Tensor:
+    """``[B, V, d]``: max of the messages ``m`` of each node's in-neighbours (0 if none)."""
+    cand = m.unsqueeze(2).expand(-1, -1, adj.shape[2], -1)  # [B, U, V, d]
+    cand = cand.masked_fill(~adj.unsqueeze(-1), torch.finfo(m.dtype).min)
+    agg = cand.max(dim=1).values  # [B, V, d]: max over in-neighbours
+    return torch.where(adj.any(dim=1).unsqueeze(-1), agg, torch.zeros_like(agg))
+
+
 class MPStep(nn.Module):
     """One update: ``h ← LN(h + U([h, max_{u→v} M(h_u)]))``, padded nodes zeroed."""
 
@@ -82,44 +90,110 @@ class MPStep(nn.Module):
         self.norm = nn.LayerNorm(d)
 
     def forward(self, h: torch.Tensor, adj: torch.Tensor, node_mask: torch.Tensor) -> torch.Tensor:
-        m = self.msg(h)  # [B, U, d]: message sent by each node
-        cand = m.unsqueeze(2).expand(-1, -1, adj.shape[2], -1)  # [B, U, V, d]
-        cand = cand.masked_fill(~adj.unsqueeze(-1), torch.finfo(m.dtype).min)
-        agg = cand.max(dim=1).values  # [B, V, d]: max over in-neighbours
-        agg = torch.where(adj.any(dim=1).unsqueeze(-1), agg, torch.zeros_like(agg))
+        agg = _max_in_messages(self.msg(h), adj)  # m: message sent by each node
         out = self.norm(h + self.upd(torch.cat([h, agg], dim=-1)))
         return out * node_mask.unsqueeze(-1).to(out.dtype)
 
 
-class MessagePassing(nn.Module):
-    """Looped (weight-tied) or unlooped message passing → logits ``[B, 2]``."""
+class GeoStep(nn.Module):
+    """Geometric update: ``h ← B(h + α·(τ + U([N(x), max_{u→v} M(N(x))_u])))``, ``x = h + τ``.
 
-    def __init__(self, d: int = 64, steps: int = 6, *, looped: bool = True) -> None:
+    The branch reads a normalised copy of the state (``N``, LayerNorm); the
+    state moves by a fixed fraction ``α`` of it and is then bounded by an RMS
+    norm ``B``. ``τ`` is an optional per-step vector (cycle embedding).
+    """
+
+    def __init__(self, d: int, *, alpha: float = 0.5) -> None:
+        super().__init__()
+        self.alpha = float(alpha)
+        self.pre = nn.LayerNorm(d)
+        self.msg = nn.Sequential(nn.Linear(d, d), nn.ReLU(), nn.Linear(d, d))
+        self.upd = nn.Sequential(nn.Linear(2 * d, d), nn.ReLU(), nn.Linear(d, d))
+        self.bound = nn.RMSNorm(d)
+
+    def forward(
+        self,
+        h: torch.Tensor,
+        adj: torch.Tensor,
+        node_mask: torch.Tensor,
+        tau: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
+        x = self.pre(h if tau is None else h + tau)
+        branch = self.upd(torch.cat([x, _max_in_messages(self.msg(x), adj)], dim=-1))
+        if tau is not None:
+            branch = branch + tau
+        out = self.bound(h + self.alpha * branch)
+        return out * node_mask.unsqueeze(-1).to(out.dtype)
+
+
+UPDATES: tuple[str, ...] = ("residual", "geo")
+
+
+class MessagePassing(nn.Module):
+    """Looped (weight-tied) or unlooped message passing → logits ``[B, 2]``.
+
+    ``update="residual"`` is the standard post-norm residual step (``MPStep``);
+    ``update="geo"`` the geometric step (``GeoStep``), whose initial state is
+    also RMS-bounded. ``tau=True`` (geo, looped only) adds one learned vector
+    per trained step; steps beyond the trained count reuse the last one.
+    """
+
+    def __init__(
+        self,
+        d: int = 64,
+        steps: int = 6,
+        *,
+        looped: bool = True,
+        update: str = "residual",
+        tau: bool = False,
+    ) -> None:
         super().__init__()
         if steps < 1 or d < 1:
             raise ValueError(f"need steps >= 1 and d >= 1, got steps={steps} d={d}")
-        self.d, self.steps, self.looped = int(d), int(steps), bool(looped)
+        if update not in UPDATES:
+            raise ValueError(f"update must be one of {UPDATES}, got {update!r}")
+        if tau and (update != "geo" or not looped):
+            raise ValueError("tau needs the looped geo update")
+        self.d, self.steps, self.looped, self.update = int(d), int(steps), bool(looped), update
         self.inp = nn.Linear(2, d)
-        self.layers = nn.ModuleList([MPStep(d) for _ in range(1 if looped else steps)])
+        step = MPStep if update == "residual" else GeoStep
+        self.layers = nn.ModuleList([step(d) for _ in range(1 if looped else steps)])
+        self.init_bound = nn.RMSNorm(d) if update == "geo" else None
+        self.tau = nn.Embedding(steps, d) if tau else None
         self.head = nn.Sequential(nn.Linear(2 * d, d), nn.ReLU(), nn.Linear(d, 2))
 
-    def node_states(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> list[torch.Tensor]:
-        """Node states ``[h_0, …, h_T]`` (each ``[B, N, d]``)."""
+    def iter_states(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> Iterator[torch.Tensor]:
+        """Yield node states ``h_0, …, h_T`` (each ``[B, N, d]``) one at a time."""
         n_steps = self.steps if steps is None else int(steps)
         if not self.looped and n_steps != self.steps:
             raise ValueError(f"unlooped arm has fixed depth {self.steps}, got steps={n_steps}")
         mask = batch["node_mask"]
-        h = self.inp(batch["feats"]) * mask.unsqueeze(-1).to(batch["feats"].dtype)
-        states = [h]
+        h = self.inp(batch["feats"])
+        if self.init_bound is not None:
+            h = self.init_bound(h)
+        h = h * mask.unsqueeze(-1).to(batch["feats"].dtype)
+        yield h
         for i in range(n_steps):
-            h = self.layers[0 if self.looped else i](h, batch["adj"], mask)
-            states.append(h)
-        return states
+            layer = self.layers[0 if self.looped else i]
+            if self.tau is not None:
+                h = layer(h, batch["adj"], mask, self.tau.weight[min(i, self.tau.num_embeddings - 1)])
+            else:
+                h = layer(h, batch["adj"], mask)
+            yield h
 
-    def forward(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> torch.Tensor:
-        h = self.node_states(batch, steps)[-1]
+    def node_states(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> list[torch.Tensor]:
+        """Node states ``[h_0, …, h_T]`` (each ``[B, N, d]``)."""
+        return list(self.iter_states(batch, steps))
+
+    def readout(self, h: torch.Tensor, batch: dict[str, torch.Tensor]) -> torch.Tensor:
         rows = torch.arange(h.shape[0], device=h.device)
         return self.head(torch.cat([h[rows, batch["t"]], h[rows, batch["s"]]], dim=-1))
+
+    def forward(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> torch.Tensor:
+        h = batch["feats"]
+        for h in self.iter_states(batch, steps):
+            pass
+        return self.readout(h, batch)
 
     def param_count(self) -> int:
         return int(sum(p.numel() for p in self.parameters()))
@@ -136,12 +210,24 @@ def match_width(target: int, steps: int, *, looped: bool, lo: int = 8, hi: int =
     return min(range(lo, hi + 1), key=lambda d: abs(param_formula(d, layers) - target))
 
 
+def take(packed: dict[str, torch.Tensor], idx: torch.Tensor) -> dict[str, torch.Tensor]:
+    """Rows ``idx`` of a batch built once for a whole set (``collate`` of every graph).
+
+    Padding to the set's largest graph instead of the batch's does not change
+    any real node's state: padded nodes send and receive nothing.
+    """
+    return {k: v[idx] for k, v in packed.items()}
+
+
 __all__ = [
+    "GeoStep",
     "MPStep",
     "MessagePassing",
     "ParsedGraph",
+    "UPDATES",
     "collate",
     "match_width",
     "param_formula",
     "parse_rows",
+    "take",
 ]
