@@ -38,7 +38,9 @@ class Int8Linear(nn.Module):
         self.in_features, self.out_features = linear.in_features, linear.out_features
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        weight = self.qweight.to(x.dtype) * self.scale.to(x.dtype)
+        # Scaled in place: one full-size temporary instead of two (the same
+        # multiplication, so the result is identical to qweight * scale).
+        weight = self.qweight.to(x.dtype, copy=True).mul_(self.scale.to(x.dtype))
         return F.linear(x, weight, None if self.bias is None else self.bias.to(x.dtype))
 
 

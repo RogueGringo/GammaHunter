@@ -104,3 +104,10 @@ def test_generate_halves_a_batch_that_runs_out_of_memory():
                               stats=stats)
     assert texts == ["10", "20", "30", "40", "50"] and lengths == [1] * 5
     assert stats["oom_splits"] == 2 and model.calls == [5, 2, 3, 1, 2]
+    assert stats["batch_cap"] == 1
+
+    model, stats = Model(), {"oom_splits": 0}  # later batches start at the size that fitted
+    texts, _ = generate(model, Tokenizer(), [str(i) for i in range(1, 9)], "cpu", batch=4, max_new_tokens=1,
+                        stats=stats)
+    assert texts == [str(10 * i) for i in range(1, 9)]
+    assert model.calls == [4, 2, 2, 2, 2] and stats == {"oom_splits": 1, "batch_cap": 2}

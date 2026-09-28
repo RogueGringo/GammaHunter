@@ -33,3 +33,13 @@ def test_quantize_linears_replaces_nested_layers_in_place():
     assert isinstance(model[0], Int8Linear) and isinstance(model[2][0], Int8Linear)
     assert model[2][0].bias is None
     assert torch.allclose(model(x), ref, atol=0.05)
+
+
+def test_in_place_expansion_matches_the_out_of_place_product():
+    torch.manual_seed(3)
+    for dtype in (torch.bfloat16, torch.float32):
+        layer = Int8Linear(torch.nn.Linear(96, 40).to(dtype))
+        x = torch.randn(5, 96, dtype=dtype)
+        reference = torch.nn.functional.linear(x, layer.qweight.to(dtype) * layer.scale.to(dtype), layer.bias.to(dtype))
+        assert torch.equal(layer(x), reference)
+        assert layer.qweight.dtype == torch.int8  # the stored weights are untouched

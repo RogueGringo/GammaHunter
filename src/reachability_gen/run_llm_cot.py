@@ -106,9 +106,10 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
              kv_budget: int = KV_BUDGET, stats: Optional[dict[str, int]] = None) -> tuple[list[str], list[int]]:
     """Greedy generations; each batch stays within ``kv_budget`` bytes of attention cache.
 
-    A batch that runs out of GPU memory is split in half and retried, and each
-    split is counted in ``stats["oom_splits"]``; a single sequence that does not
-    fit still raises.
+    A batch that runs out of GPU memory is split in half and retried, and later
+    batches start no larger than that half. Splits are counted in
+    ``stats["oom_splits"]`` and the lowered size kept in ``stats["batch_cap"]``
+    (also across calls); a single sequence that does not fit still raises.
     """
     import torch
 
@@ -121,8 +122,10 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
     lengths: list[int] = [0] * len(prompts)
     order = sorted(range(len(prompts)), key=lambda i: sizes[i])
     first = model.get_input_embeddings().weight.device
+    limit = batch if stats is None else min(batch, stats.get("batch_cap", batch))
 
     def run(idx: list[int]) -> None:
+        nonlocal limit
         enc = tokenizer([chats[i] for i in idx], return_tensors="pt", padding=True,
                         add_special_tokens=False).to(first)
         try:
@@ -136,8 +139,10 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
             del enc
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
+            limit = min(limit, max(1, len(idx) // 2))
             if stats is not None:
                 stats["oom_splits"] = stats.get("oom_splits", 0) + 1
+                stats["batch_cap"] = limit
             run(idx[: len(idx) // 2])
             run(idx[len(idx) // 2 :])
             return
@@ -152,7 +157,7 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
     with torch.inference_mode():
         while start < len(order):
             end = start + 1  # sorted by length: grow while the longest still fits the cache budget
-            while (end < len(order) and end - start < batch
+            while (end < len(order) and end - start < limit
                    and (end - start + 1) * (sizes[order[end]] + max_new_tokens) * per_token <= kv_budget):
                 end += 1
             run(order[start:end])
@@ -202,7 +207,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             "answer_rule": "last 'Answer: Yes/No' in the output; none counts as wrong",
             "graphs_per_hop": per_hop,
             "batching": f"at most {args.batch} sequences and {args.kv_budget_gib} GiB of attention cache per batch; "
-                        "a batch that runs out of GPU memory is halved and retried (counted per model)",
+                        "a batch that runs out of GPU memory is halved and retried, and later batches start "
+                        "no larger than that half (counted per model)",
             "dtype": args.dtype,
             "int8_weights": args.int8,
             "device": args.device,
@@ -252,6 +258,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                       f"tokens {entry['mean_generated_tokens']:.0f} ({entry['seconds']:.0f}s)", file=sys.stderr, flush=True)
             res["seconds"] = time.perf_counter() - t1
             res["oom_splits"] = stats["oom_splits"]  # batches halved after running out of GPU memory
+            res["batch_cap"] = stats.get("batch_cap", args.batch)
             results[name] = res
             write()  # after every model, so a later failure keeps what finished
             del model
