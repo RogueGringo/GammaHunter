@@ -289,3 +289,77 @@ def test_reader_variants_artifact_contract():
     assert art["science_open"] is False and art["self_audit_mismatches"] == []
     assert set(art["summary"]) == set(VARIANTS) and art["protocol"]["prior_weight"] == PRIOR_WEIGHT
     assert all(len(s["seeds"]) == 10 for s in art["summary"].values())
+
+
+def test_relu_slope_one_at_zero_changes_only_the_gradient():
+    from reachability_gen.models.message_passing import AnchoredMP, ReLUSlopeOneAtZero, relu_slope_one_at_zero
+
+    x = torch.tensor([-1.0, 0.0, 2.0], requires_grad=True)
+    y = ReLUSlopeOneAtZero()(x)
+    y.sum().backward()
+    assert torch.equal(y, torch.relu(x.detach())) and x.grad.tolist() == [0.0, 1.0, 1.0]
+    torch.manual_seed(0)
+    solver = AnchoredMP(8, 3).eval()
+    graph = {"feats": torch.zeros(1, 4, 2), "adj": torch.eye(4)[None].roll(1, dims=2), "node_mask": torch.ones(1, 4, dtype=torch.bool),
+             "s": torch.tensor([0]), "t": torch.tensor([2])}
+    before = solver(graph, 3)
+    assert relu_slope_one_at_zero(solver) == 2 and torch.equal(solver(graph, 3), before)
+
+
+def test_kink_free_gradient_reaches_an_edge_into_an_unreached_node():
+    """On an empty graph the default gradient on the edge s->t is exactly 0; with slope 1 at zero it is not."""
+    import torch.nn.functional as F
+
+    from reachability_gen.models.message_passing import AnchoredMP, relu_slope_one_at_zero
+
+    torch.manual_seed(3)
+    solver = AnchoredMP(8, 3).eval()
+    grads = []
+    for kink_free in (False, True):
+        if kink_free:
+            relu_slope_one_at_zero(solver)
+        adj = torch.zeros(1, 4, 4, requires_grad=True)
+        graph = {"feats": torch.zeros(1, 4, 2), "adj": adj, "node_mask": torch.ones(1, 4, dtype=torch.bool),
+                 "s": torch.tensor([0]), "t": torch.tensor([2])}
+        F.cross_entropy(solver(graph, 3), torch.tensor([1])).backward()
+        grads.append(adj.grad[0, 0, 2].item())
+    assert grads[0] == 0.0 and grads[1] != 0.0
+
+
+def test_dense_answers_labels_and_masks():
+    from reachability_gen.run_reader import Data, DenseAnswers, shortest_hops
+
+    enc = encode_instance(4, [(0, 1), (1, 2)], 0, 2)
+    rows = [{"edge_hash": "g", "encoding": enc, "s": 0, "t": 2, "y": 1, "hop_distance": 2},
+            {"edge_hash": "g", "encoding": enc, "s": 2, "t": 0, "y": 0, "hop_distance": -1}]
+    data = Data(rows, "cpu")
+    assert shortest_hops(data.graphs[0])[0] == [0, 1, 2, -1]
+    dense = DenseAnswers(data, steps=1)  # 0->2 needs two steps, so it is masked out
+    assert len(dense) == 1
+    graph, tokens, row_graph, labels, mask = dense.batch([0])
+    assert graph["s"].tolist() == [0, 1, 2, 3] and row_graph.tolist() == [0, 0, 0, 0]
+    assert labels[0].tolist() == [0, 1, 1, 0] and mask[0].tolist() == [False, True, False, True]
+    assert mask[1].tolist() == [True, False, True, True] and labels[1, 2].item() == 1
+
+
+def test_density_study_smoke_with_closure_criteria(tmp_path, monkeypatch):
+    from reachability_gen import run_reader as rr
+
+    monkeypatch.setattr(rr, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=13, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=14, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    out = tmp_path / "density.json"
+    regimes = ["answers_frozen_prior", *rr.DENSITY_STUDY]
+    assert rr.main(["--train-data", str(train_path), "--extended-data", str(ext_path), "--seeds", "0",
+                    "--reader-epochs", "1", "--solver-epochs", "1", "--out", str(out), "--criteria", "closure",
+                    "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify", "--regimes", *regimes]) == 0
+    art = json.loads(out.read_text())
+    p = art["protocol"]
+    assert p["criteria"] == "closure" and p["pass_criteria"] == rr.PASS_CLOSURE and p["dense_graphs_per_batch"] == 8
+    assert set(art["summary"]) == set(regimes) and art["self_audit_mismatches"] == []
+    for run in art["runs"]:
+        assert run["oracle"]["val"]["reader"]["closure_exact_graphs"] == 1.0
+        assert 0.0 <= run["final"]["val"]["reader"]["closure_exact_graphs"] <= 1.0

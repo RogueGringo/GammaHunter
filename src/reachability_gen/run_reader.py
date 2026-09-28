@@ -76,7 +76,17 @@ VARIANTS: dict[str, str] = {
     "answers_frozen_prior": "as answers_frozen, plus a prior on the density of the graph the solver receives",
     "answers_frozen_soft_prior": "soft graph during training and the density prior",
 }
-ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS}
+# Answer density x subgradient at zero (limitations item 17), fixed before its runs. With
+# answers_frozen_prior these form a 2 x 2, scored with --criteria closure: a reachability
+# answer cannot reveal an edge implied by another path, so the attainable target is the
+# true closure, not the exact edge set.
+DENSITY_STUDY: dict[str, str] = {
+    "answers_dense_prior": "as answers_frozen_prior, but every source of each graph with every target answered",
+    "answers_frozen_prior_kinkfree": "as answers_frozen_prior, with slope 1 at zero in the solver's message and "
+                                     "update ReLUs during reader training (the forward pass is unchanged)",
+    "answers_dense_prior_kinkfree": "dense answers and slope 1 at zero",
+}
+ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS, **DENSITY_STUDY}
 PRIOR_WEIGHT: float = 1.0  # weight of the density prior, fixed before the variant runs
 TRAIN_STEPS: int = 6
 SOLVER_EPOCHS: int = 2
@@ -87,6 +97,10 @@ LONG_STEPS: tuple[int, ...] = (16, 48, 192)
 EVAL_BATCH: int = 250
 PASS: dict[str, float] = {"exact_graphs": 0.99, "closure_agreement_long": 0.99, "long_path_accuracy": 0.99}
 PROBE_ROWS: int = 256  # fixed training rows on which the gradient probe is taken (measurement only)
+PASS_CLOSURE: dict[str, float] = {"closure_agreement_val": 0.99, "closure_agreement_long": 0.99,
+                                  "long_path_accuracy": 0.99}
+CRITERIA: dict[str, dict[str, float]] = {"exact": PASS, "closure": PASS_CLOSURE}
+DENSE_GRAPHS_PER_BATCH: int = BATCH // 4  # four question rows per graph: dense epochs take as many steps
 
 
 def anchored_width() -> int:
@@ -115,6 +129,89 @@ class Data:
 
         return (self._collate([self.graphs[i] for i in idx], self.device),
                 collate_tokens([self.tokens[i] for i in idx], self.device))
+
+
+def shortest_hops(graph) -> list[list[int]]:
+    """``[n][n]`` shortest path lengths in edges (0 on the diagonal, -1 where unreachable)."""
+    from collections import deque
+
+    out_edges: list[list[int]] = [[] for _ in range(graph.n)]
+    for u, v in zip(graph.src.tolist(), graph.dst.tolist()):
+        out_edges[u].append(v)
+    table = []
+    for s in range(graph.n):
+        dist = [-1] * graph.n
+        dist[s] = 0
+        queue = deque([s])
+        while queue:
+            u = queue.popleft()
+            for v in out_edges[u]:
+                if dist[v] < 0:
+                    dist[v] = dist[u] + 1
+                    queue.append(v)
+        table.append(dist)
+    return table
+
+
+class DenseAnswers:
+    """Every (source, target) answer of each graph in ``data``, for the dense regimes.
+
+    One entry per distinct graph; a batch of graphs expands to one solver row per
+    source, and every other node is a target. Labels are true reachability; a pair
+    reachable only in more than ``steps`` steps is masked out, since the solver
+    answers within ``steps``.
+    """
+
+    def __init__(self, data: Data, steps: int) -> None:
+        import torch
+
+        first: dict[str, int] = {}
+        for i, r in enumerate(data.rows):
+            first.setdefault(r["edge_hash"], i)
+        self.data, self.index = data, list(first.values())
+        self.labels, self.masks = [], []
+        for i in self.index:
+            dist = torch.tensor(shortest_hops(data.graphs[i]))
+            off_diagonal = ~torch.eye(len(dist), dtype=torch.bool)
+            self.labels.append((dist > 0).long())
+            self.masks.append(((dist < 0) | ((dist > 0) & (dist <= steps))) & off_diagonal)
+
+    def __len__(self) -> int:
+        return len(self.index)
+
+    def batch(self, graph_ids: Sequence[int]):
+        """Solver batch (one row per source), reader tokens (one per graph), row -> graph, labels, mask."""
+        import torch
+
+        from reachability_gen.models.message_passing import ParsedGraph
+        from reachability_gen.models.reader import collate_tokens
+
+        parsed, row_graph = [], []
+        for k, gi in enumerate(graph_ids):
+            g = self.data.graphs[self.index[gi]]
+            parsed += [ParsedGraph(g.n, g.src, g.dst, s, s, 0) for s in range(g.n)]
+            row_graph += [k] * g.n
+        graph = self.data._collate(parsed, self.data.device)
+        tokens = collate_tokens([self.data.tokens[self.index[gi]] for gi in graph_ids], self.data.device)
+        width = graph["adj"].shape[1]
+        labels = torch.zeros(len(parsed), width, dtype=torch.long)
+        mask = torch.zeros(len(parsed), width, dtype=torch.bool)
+        row = 0
+        for gi in graph_ids:
+            n = len(self.labels[gi])
+            labels[row : row + n, :n], mask[row : row + n, :n] = self.labels[gi], self.masks[gi]
+            row += n
+        device = self.data.device
+        return graph, tokens, torch.tensor(row_graph, device=device), labels.to(device), mask.to(device)
+
+
+def all_target_logits(solver, graph: dict[str, Any], steps: int):
+    """``[B, N, 2]``: the solver's answer for every node as the target (the target is never marked)."""
+    import torch
+
+    for h in solver.iter_states(graph, steps):
+        pass
+    return solver.head(torch.cat([h, h.norm(dim=-1, keepdim=True)], dim=-1))
 
 
 def build_solver():
@@ -245,7 +342,7 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
     margins: list[float] = []
     correct: list[int] = []
     reader_caused = solver_caused = 0
-    pair_agree = pair_total = query_agree = 0
+    pair_agree = pair_total = query_agree = closure_exact = 0
     bce_sum = bce_pairs = 0.0
     totals: dict[str, int] = {"edges_true": 0, "tp": 0, "fp": 0, "fn": 0, "reversed_errors": 0,
                               "exact_graphs": 0, "graphs": 0}
@@ -270,6 +367,7 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
             valid = mask[:, :, None] & mask[:, None, :]
             pair_agree += ((true_reach == read_reach) & valid).sum().item()
             pair_total += valid.sum().item()
+            closure_exact += ((true_reach == read_reach) | ~valid).flatten(1).all(dim=1).sum().item()
             rows = torch.arange(len(idx), device=adj.device)
             q_agree = true_reach[rows, graph["s"], graph["t"]] == read_reach[rows, graph["s"], graph["t"]]
             query_agree += q_agree.sum().item()
@@ -301,14 +399,49 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
             "exact_graphs": totals["exact_graphs"] / totals["graphs"],
             "closure_agreement_all_pairs": pair_agree / pair_total,
             "closure_agreement_queried_pairs": query_agree / n,
+            "closure_exact_graphs": closure_exact / n,  # rows whose read graph has the true closure
         },
         "errors": {"reader_caused": reader_caused, "solver_caused": solver_caused},
     }
 
 
+def dense_epoch(reader, solver, dense: DenseAnswers, opt, params, *, through: str,
+                density: Optional[float]) -> tuple[float, int, int]:
+    """One epoch of a dense regime: each graph once, with all its (source, target) answers.
+
+    Returns the loss summed over answers, the correct answers and the answers seen.
+    The reader reads each graph once; its graph is shared by that graph's source rows.
+    """
+    import torch
+    import torch.nn.functional as F
+    from torch.nn.utils import clip_grad_norm_
+
+    loss_sum, hits, seen = 0.0, 0, 0
+    order = torch.randperm(len(dense)).tolist()
+    for i in range(0, len(order), DENSE_GRAPHS_PER_BATCH):
+        gids = order[i : i + DENSE_GRAPHS_PER_BATCH]
+        graph, tokens, row_graph, labels, mask = dense.batch(gids)
+        adj = reader.adjacency(reader.edge_log_evidence(tokens), hard=True, through=through)  # one per graph
+        logits = all_target_logits(solver, dict(graph, adj=adj[row_graph]), TRAIN_STEPS)
+        loss = F.cross_entropy(logits[mask], labels[mask])
+        if density is not None:
+            first_rows = torch.searchsorted(row_graph, torch.arange(len(gids), device=row_graph.device))
+            loss = loss + PRIOR_WEIGHT * density_kl(adj, {"node_mask": graph["node_mask"][first_rows]}, density)
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        clip_grad_norm_(params, GRAD_CLIP)
+        opt.step()
+        answered = int(mask.sum().item())
+        loss_sum += float(loss.item()) * answered
+        hits += int(((logits.argmax(dim=-1) == labels) & mask).sum().item())
+        seen += answered
+    return loss_sum, hits, seen
+
+
 def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: str, ckpt_dir: Path,
         reader_epochs: int = READER_EPOCHS, solver_epochs: int = SOLVER_EPOCHS,
-        reader_lr: float = READER_LR, through: str = THROUGH, density: Optional[float] = None) -> dict[str, Any]:
+        reader_lr: float = READER_LR, through: str = THROUGH, density: Optional[float] = None,
+        criteria: str = "exact") -> dict[str, Any]:
     import torch
     import torch.nn.functional as F
     from torch.nn.utils import clip_grad_norm_
@@ -320,6 +453,11 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
     t0 = time.perf_counter()
     if regime != "answers_joint":
         train_solver(solver, train, epochs=solver_epochs, device=device)
+    if regime.endswith("_kinkfree"):
+        from reachability_gen.models.message_passing import relu_slope_one_at_zero
+
+        relu_slope_one_at_zero(solver)  # the gradient only: the forward pass, and so evaluation, is unchanged
+    dense = DenseAnswers(train, TRAIN_STEPS) if regime.startswith("answers_dense") else None
     probe_idx = list(range(min(PROBE_ROWS, len(train.rows))))
     out["untrained_reader"] = {
         "val": evaluate(reader, solver, val, TRAIN_STEPS),
@@ -335,40 +473,47 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
     for epoch in range(1, reader_epochs + 1):
         reader.train()
         solver.train(regime == "answers_joint")
-        order = torch.randperm(len(train.rows)).tolist()
-        loss_sum, hits, seen = 0.0, 0, 0
-        for i in range(0, len(order), BATCH):
-            idx = order[i : i + BATCH]
-            graph, tokens = train.batch(idx)
-            if regime == "supervised":
-                bce, pairs = topology_bce(reader.edge_log_evidence(tokens), graph)
-                loss = bce / pairs
-                with torch.no_grad():
-                    logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
-            else:
-                adj = reader.adjacency(reader.edge_log_evidence(tokens), hard="_soft" not in regime, through=through)
-                logits = solver(dict(graph, adj=adj), TRAIN_STEPS)
-                loss = F.cross_entropy(logits, graph["y"])
-                if regime.endswith("_prior"):
-                    loss = loss + PRIOR_WEIGHT * density_kl(adj, graph, density)
-            opt.zero_grad(set_to_none=True)
-            loss.backward()
-            clip_grad_norm_(params, GRAD_CLIP)
-            opt.step()
-            loss_sum += float(loss.item()) * len(idx)
-            hits += int((logits.argmax(dim=-1) == graph["y"]).sum().item())
-            seen += len(idx)
+        if dense is not None:
+            loss_sum, hits, seen = dense_epoch(reader, solver, dense, opt, params, through=through,
+                                               density=density if "_prior" in regime else None)
+        else:
+            loss_sum, hits, seen = 0.0, 0, 0
+            order = torch.randperm(len(train.rows)).tolist()
+            for i in range(0, len(order), BATCH):
+                idx = order[i : i + BATCH]
+                graph, tokens = train.batch(idx)
+                if regime == "supervised":
+                    bce, pairs = topology_bce(reader.edge_log_evidence(tokens), graph)
+                    loss = bce / pairs
+                    with torch.no_grad():
+                        logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
+                else:
+                    adj = reader.adjacency(reader.edge_log_evidence(tokens), hard="_soft" not in regime,
+                                           through=through)
+                    logits = solver(dict(graph, adj=adj), TRAIN_STEPS)
+                    loss = F.cross_entropy(logits, graph["y"])
+                    if "_prior" in regime:
+                        loss = loss + PRIOR_WEIGHT * density_kl(adj, graph, density)
+                opt.zero_grad(set_to_none=True)
+                loss.backward()
+                clip_grad_norm_(params, GRAD_CLIP)
+                opt.step()
+                loss_sum += float(loss.item()) * len(idx)
+                hits += int((logits.argmax(dim=-1) == graph["y"]).sum().item())
+                seen += len(idx)
         ev = evaluate(reader, solver, val, TRAIN_STEPS)
         probe = gradient_probe(reader, solver, train, probe_idx, through=through)
         history.append({"epoch": epoch, "train_loss": loss_sum / seen, "train_pipeline_acc": hits / seen,
                         "val_accuracy": ev["accuracy"], "val_auroc": ev["auroc"],
                         "val_exact_graphs": ev["reader"]["exact_graphs"], "val_edge_f1": ev["reader"]["f1"],
+                        "val_closure_agreement": ev["reader"]["closure_agreement_all_pairs"],
                         "val_topology_bce": ev["reader"]["topology_bce"],
                         "val_edges_predicted_mean": ev["reader"]["edges_predicted_mean"],
                         "gradient_probe": probe})
         print(f"[{regime}/seed{seed}] epoch {epoch}/{reader_epochs}: loss {loss_sum / seen:.4f} "
               f"val acc {ev['accuracy']:.4f} auroc {ev['auroc']:.4f} | exact graphs {ev['reader']['exact_graphs']:.4f} "
-              f"edge F1 {ev['reader']['f1']:.4f} topology BCE {ev['reader']['topology_bce']:.4f} "
+              f"edge F1 {ev['reader']['f1']:.4f} closure {ev['reader']['closure_agreement_all_pairs']:.4f} "
+              f"topology BCE {ev['reader']['topology_bce']:.4f} "
               f"edges {ev['reader']['edges_predicted_mean']:.1f}/{ev['reader']['edges_true_mean']:.1f} "
               f"| gradient {probe['abs_total']:.2e}: on query pair {probe['share_query_pair']:.2f}, "
               f"true edges {probe['share_true_edges']:.2f}",
@@ -398,9 +543,15 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
         },
     })
     f = out["final"]
-    out["passes"] = (f["val"]["reader"]["exact_graphs"] >= PASS["exact_graphs"]
-                     and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_long"]
-                     and all(f[f"long_{s}"]["accuracy"] >= PASS["long_path_accuracy"] for s in LONG_STEPS))
+    if criteria == "exact":
+        out["passes"] = (f["val"]["reader"]["exact_graphs"] >= PASS["exact_graphs"]
+                         and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_long"]
+                         and all(f[f"long_{s}"]["accuracy"] >= PASS["long_path_accuracy"] for s in LONG_STEPS))
+    else:
+        c = CRITERIA[criteria]
+        out["passes"] = (f["val"]["reader"]["closure_agreement_all_pairs"] >= c["closure_agreement_val"]
+                         and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= c["closure_agreement_long"]
+                         and all(f[f"long_{s}"]["accuracy"] >= c["long_path_accuracy"] for s in LONG_STEPS))
     return out
 
 
@@ -424,6 +575,10 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
             "val_edges_predicted_mean": mean(lambda r: r["final"]["val"]["reader"]["edges_predicted_mean"]),
             "val_edges_true_mean": mean(lambda r: r["final"]["val"]["reader"]["edges_true_mean"]),
             "long_closure_agreement": mean(lambda r: r["final"]["long_16"]["reader"]["closure_agreement_all_pairs"]),
+            "val_closure_agreement": mean(lambda r: r["final"]["val"]["reader"]["closure_agreement_all_pairs"]),
+            "val_closure_exact_graphs": mean(lambda r: r["final"]["val"]["reader"].get("closure_exact_graphs", 0.0)),
+            "long_closure_exact_graphs": mean(
+                lambda r: r["final"]["long_16"]["reader"].get("closure_exact_graphs", 0.0)),
             **{f"long_{s}_accuracy": mean(lambda r, s=s: r["final"][f"long_{s}"]["accuracy"]) for s in LONG_STEPS},
             **{f"long_{s}_auroc": mean(lambda r, s=s: r["final"][f"long_{s}"]["auroc"]) for s in LONG_STEPS},
             "untrained_val_accuracy": mean(lambda r: r["untrained_reader"]["val"]["accuracy"]),
@@ -494,6 +649,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--ckpt-dir", type=Path, default=DEFAULT_CKPT_DIR)
     p.add_argument("--no-verify", action="store_true", help="skip dataset verification (tests only)")
+    p.add_argument("--criteria", choices=tuple(CRITERIA), default="exact",
+                   help="pass criteria: exact edge set (default) or the true closure (answers-only studies)")
     p.add_argument("--merge", type=Path, nargs="+", default=None, metavar="PART",
                    help="combine result files of parallel runs into --out (no training)")
     args = p.parse_args(argv)
@@ -540,10 +697,13 @@ def main(argv: Optional[list[str]] = None) -> int:
             "straight_through_answers_regimes": args.through,
             "solver_lr": LR,
             "long_steps": list(LONG_STEPS),
-            "pass_criteria": PASS,
+            "pass_criteria": CRITERIA[args.criteria],
+            **({"criteria": args.criteria} if args.criteria != "exact" else {}),
             "gradient_probe_rows": PROBE_ROWS,
             **({"edge_density_prior": density, "prior_weight": PRIOR_WEIGHT}
-               if any(r.endswith("_prior") for r in args.regimes) else {}),
+               if any("_prior" in r for r in args.regimes) else {}),
+            **({"dense_graphs_per_batch": DENSE_GRAPHS_PER_BATCH}
+               if any(r.startswith("answers_dense") for r in args.regimes) else {}),
             "seeds": args.seeds,
             "batch_size": BATCH, "lr": LR, "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "checkpoints_versioned": False,
@@ -555,7 +715,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     t0 = time.perf_counter()
     runs = [run(regime, seed, train, val, ext, device=args.device, ckpt_dir=args.ckpt_dir,
                 reader_epochs=args.reader_epochs, solver_epochs=args.solver_epochs, reader_lr=args.reader_lr,
-                through=args.through, density=density)
+                through=args.through, density=density, criteria=args.criteria)
             for regime in args.regimes for seed in args.seeds]
     mismatches = [f"{r['regime']}/seed{r['seed']}" for r in runs if not r["rescore_matches_record"]]
     artifact.update({"runs": runs, "summary": summarise(runs), "self_audit_mismatches": mismatches,

@@ -320,6 +320,40 @@ answers can be set against its own step-by-step answers to the same
 questions. It writes `artifacts/llm_reader.json` and records every reply in
 `artifacts/llm_reader_generations.jsonl`.
 
+```bash
+python -m reachability_gen.reader_identifiability
+```
+
+Counts, per set, the edges no reachability answer can reveal (an edge u→v is
+implied when v stays reachable from u without it) and the graphs without any,
+which bounds the exact-graph rate a reader trained from answers alone could
+reach. It writes `artifacts/reader_identifiability.json`.
+
+```bash
+python -m reachability_gen.reader_noise --device cuda
+```
+
+Corrupts the true graphs at controlled rates (deleted, reversed or inserted
+edges), lets the frozen solvers answer on the corrupted graphs, and records
+the expected accuracy under deletions next to the measured one. A
+matched-noise control scores random readings with each language-model
+reader's recall, extra edges and reversal share on the same questions. It
+writes `artifacts/reader_noise.json`.
+
+```bash
+python -m reachability_gen.run_reader --device cuda --criteria closure \
+    --regimes answers_frozen_prior answers_dense_prior answers_frozen_prior_kinkfree answers_dense_prior_kinkfree \
+    --out artifacts/reader_answers_density.json
+```
+
+Answer density × subgradient at zero, for readers trained from answers alone
+(frozen solver, hard graph, density prior). The reader learns from four
+answers per graph or from every source's answer for every target, with the
+solver's message and update ReLUs keeping PyTorch's slope 0 at zero or slope 1
+there, which changes only the gradient. With `--criteria closure` a run passes
+on the true reachability closure rather than the exact edge list, since answers
+cannot reveal implied edges.
+
 ## External benchmarks
 
 ```bash

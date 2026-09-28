@@ -57,6 +57,8 @@ reachability-llm-cot-paths = "reachability_gen.llm_cot_paths:main"
 reachability-llm-int8-fidelity = "reachability_gen.llm_int8_fidelity:main"
 reachability-reader = "reachability_gen.run_reader:main"
 reachability-llm-reader = "reachability_gen.run_llm_reader:main"
+reachability-reader-identifiability = "reachability_gen.reader_identifiability:main"
+reachability-reader-noise = "reachability_gen.reader_noise:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

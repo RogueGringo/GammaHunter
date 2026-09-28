@@ -114,8 +114,11 @@ def load_solvers(study_path: Path, device: str) -> list[tuple[int, Any]]:
 
 
 def score(rows: Sequence[dict[str, Any]], read: dict[str, set[tuple[int, int]]], solvers: Sequence[tuple[int, Any]],
-          steps: Sequence[int], device: str) -> dict[str, Any]:
-    """Reader metrics, pipeline accuracy/AUROC per step count (over the solvers) and error attribution."""
+          steps: Sequence[int], device: str, *, with_true_graph: bool = True) -> dict[str, Any]:
+    """Reader metrics, pipeline accuracy/AUROC per step count (over the solvers) and error attribution.
+
+    ``with_true_graph`` also scores the solvers on the true graphs (the ceiling).
+    """
     import torch
 
     from reachability_gen.models.message_passing import collate, parse_rows
@@ -141,6 +144,7 @@ def score(rows: Sequence[dict[str, Any]], read: dict[str, set[tuple[int, int]]],
             "edges_true_mean": m["edges_true"] / m["graphs"], "edges_read_mean": (m["tp"] + m["fp"]) / m["graphs"],
             "closure_agreement_all_pairs": ((true_reach == read_reach) & valid).sum().item() / valid.sum().item(),
             "closure_agreement_queried_pairs": query_agree.float().mean().item(),
+            "closure_exact_graphs": ((true_reach == read_reach) | ~valid).flatten(1).all(dim=1).float().mean().item(),
         },
         "pipeline": {},
     }
@@ -155,14 +159,16 @@ def score(rows: Sequence[dict[str, Any]], read: dict[str, set[tuple[int, int]]],
                 aucs.append(auroc(margin.tolist(), labels))
                 reader_caused += int((wrong & ~query_agree).sum())
                 solver_caused += int((wrong & query_agree).sum())
-                truth = solver(graph, k).float()
-                oracle.append(((truth[:, 1] > truth[:, 0]).long().cpu() == torch.tensor(labels)).float().mean().item())
+                if with_true_graph:
+                    truth = solver(graph, k).float()
+                    oracle.append(((truth[:, 1] > truth[:, 0]).long().cpu() == torch.tensor(labels))
+                                  .float().mean().item())
             out["pipeline"][str(k)] = {
                 "accuracy": {"mean": statistics.fmean(accs), "min": min(accs), "max": max(accs)},
                 "accuracy_wilson95": wilson(round(statistics.fmean(accs) * len(labels)), len(labels)),
                 "auroc": {"mean": statistics.fmean(aucs), "min": min(aucs), "max": max(aucs)},
                 "errors_over_solvers": {"graph_caused": reader_caused, "solver_caused": solver_caused},
-                "true_graph_accuracy_mean": statistics.fmean(oracle),
+                **({"true_graph_accuracy_mean": statistics.fmean(oracle)} if with_true_graph else {}),
             }
     return out
 

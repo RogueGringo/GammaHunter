@@ -72,6 +72,11 @@
   density, both) and language models as the reader, feeding the reader
   study's frozen solvers; parts of either study merge with `--merge`.
   Results recorded (limitations item 16).
+- The exactness frontier: an audit of edges that reachability answers cannot
+  reveal, a noise-tolerance curve for the reader's graph with a matched-noise
+  control for the language-model readers, and an answer-density ×
+  subgradient-at-zero study for readers trained from answers alone, scored on
+  the true closure (`--criteria closure`); a closure-exact metric for readers.
 
 ## 0.1.0 (2026-09-27)
 

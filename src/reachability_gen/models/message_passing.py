@@ -208,6 +208,42 @@ def rms_cap(h: torch.Tensor) -> torch.Tensor:
     return h * torch.rsqrt(h.pow(2).mean(dim=-1, keepdim=True).clamp(min=1.0))
 
 
+class _ReLUSlopeOneAtZero(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x: torch.Tensor) -> torch.Tensor:
+        ctx.save_for_backward(x)
+        return x.clamp(min=0)
+
+    @staticmethod
+    def backward(ctx, grad: torch.Tensor) -> torch.Tensor:
+        (x,) = ctx.saved_tensors
+        return grad * (x >= 0).to(grad.dtype)
+
+
+class ReLUSlopeOneAtZero(nn.Module):
+    """``nn.ReLU`` in the forward pass; in the backward pass the slope at exactly 0 is 1, not 0.
+
+    In ``AnchoredStep`` an unreached node's message and update see an input of
+    exactly 0, where PyTorch's ReLU has slope 0, so no gradient reaches an edge
+    into that node. This choice of subgradient changes the gradient only.
+    """
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return _ReLUSlopeOneAtZero.apply(x)
+
+
+def relu_slope_one_at_zero(model: nn.Module) -> int:
+    """Swap the ReLUs of every ``AnchoredStep``'s message and update MLPs, in place; return the count."""
+    count = 0
+    for step in (m for m in model.modules() if isinstance(m, AnchoredStep)):
+        for mlp in (step.msg, step.upd):
+            for i, layer in enumerate(mlp):
+                if isinstance(layer, nn.ReLU):
+                    mlp[i] = ReLUSlopeOneAtZero()
+                    count += 1
+    return count
+
+
 class AnchoredStep(nn.Module):
     """Bias-free step ``h ← C(h + α·U([h, Σ_{u→v} M(h_u)]) + p)``: unreached nodes stay 0."""
 
@@ -305,11 +341,13 @@ __all__ = [
     "MPStep",
     "MessagePassing",
     "ParsedGraph",
+    "ReLUSlopeOneAtZero",
     "UPDATES",
     "collate",
     "match_width",
     "param_formula",
     "parse_rows",
+    "relu_slope_one_at_zero",
     "rms_cap",
     "take",
 ]
