@@ -36,6 +36,12 @@ import torch.nn as nn
 from reachability_gen.encode import parse_instance
 
 NODE, SEP = 0, 1  # token kinds the reader sees
+NO_EVIDENCE: float = -1e30  # log z of a node pair with no occurrence pair (finite, so 0 * it stays 0)
+
+
+def log_softplus(x: torch.Tensor) -> torch.Tensor:
+    """log(softplus(x)) without underflow: x itself below -20 (error below 1e-9)."""
+    return torch.where(x < -20, x, torch.log(torch.nn.functional.softplus(x.clamp(min=-20))))
 
 
 @dataclass(frozen=True)
@@ -131,42 +137,61 @@ class GraphReader(nn.Module):
         node = (batch["kinds"] == NODE) & batch["token_mask"]
         return scores.masked_fill(~(node[:, :, None] & node[:, None, :]), -1e4)
 
-    def edge_evidence(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
-        """``[B, N, N]`` evidence z ≥ 0 per node pair, with P(edge) = 1 - exp(-z).
+    def edge_log_evidence(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        """``[B, N, N]`` log z per node pair (see ``edge_evidence``), computed in log space.
 
-        A node pair is an edge unless every one of its occurrence pairs says no
-        (noisy-OR): z sums softplus(score) over the occurrence pairs of (u, v),
-        scattered into u * width + v (other pairs go to one discarded bin). Every
-        occurrence pair receives gradient, unlike a max.
+        log z is the log-sum-exp of log softplus(score) over the occurrence pairs of
+        (u, v), scattered into u * width + v (other pairs go to one discarded bin).
+        Neither log z nor its gradient underflows when every score is very negative,
+        where z itself rounds to 0 in float32 and its gradient vanishes. Pairs
+        without occurrence pairs, and the diagonal, get ``NO_EVIDENCE``.
         """
         scores = self.occurrence_scores(batch)
         bsz, width = scores.shape[0], int(batch["width"])
         slot = batch["node_slot"]
         pair = slot[:, :, None] * width + slot[:, None, :]
-        pair = pair.masked_fill((slot[:, :, None] < 0) | (slot[:, None, :] < 0), width * width)
-        flat = torch.zeros(bsz, width * width + 1, device=scores.device, dtype=scores.dtype)
-        flat = flat.scatter_add(1, pair.flatten(1), torch.nn.functional.softplus(scores).flatten(1))
-        z = flat[:, : width * width].view(bsz, width, width)
-        eye = torch.eye(width, device=z.device, dtype=torch.bool)
-        return z.masked_fill(eye[None], 0.0)  # the format lists no self-loops
+        pair = pair.masked_fill((slot[:, :, None] < 0) | (slot[:, None, :] < 0), width * width).flatten(1)
+        vals = log_softplus(scores).flatten(1)
+        bins = width * width + 1
+        top = torch.full((bsz, bins), NO_EVIDENCE, device=scores.device, dtype=scores.dtype)
+        top = top.scatter_reduce(1, pair, vals.detach(), reduce="amax", include_self=True)
+        total = torch.zeros(bsz, bins, device=scores.device, dtype=scores.dtype)
+        total = total.scatter_add(1, pair, torch.exp(vals - top.gather(1, pair)))
+        log_z = (top + torch.log(total.clamp(min=1e-38)))[:, : width * width].view(bsz, width, width)
+        empty = total[:, : width * width].view(bsz, width, width) == 0
+        eye = torch.eye(width, device=log_z.device, dtype=torch.bool)
+        return log_z.masked_fill(empty | eye[None], NO_EVIDENCE)  # the format lists no self-loops
+
+    def edge_evidence(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        """``[B, N, N]`` evidence z ≥ 0 per node pair, with P(edge) = 1 - exp(-z).
+
+        A node pair is an edge unless every one of its occurrence pairs says no
+        (noisy-OR): z sums softplus(score) over the occurrence pairs of (u, v).
+        Every occurrence pair receives gradient, unlike a max. Losses should use
+        ``edge_log_evidence``: z rounds to 0 once every score is very negative.
+        """
+        return self.edge_log_evidence(batch).exp()
 
     def forward(self, batch: dict[str, torch.Tensor], *, hard: bool = True, through: str = "probability") -> torch.Tensor:
         """``[B, N, N]`` adjacency (``adj[b, u, v]`` = edge u→v), hard 0/1 with a straight-through gradient.
 
         ``through="probability"`` passes the gradient through P(edge), which
         vanishes once P saturates at 0 or 1; ``through="logit"`` passes it
-        through the edge log-odds, which does not saturate at 1.
+        through the edge log-odds, which saturates at neither end.
         """
-        z = self.edge_evidence(batch)
+        log_z = self.edge_log_evidence(batch)
+        z = log_z.exp()
         soft = -torch.expm1(-z)  # 1 - exp(-z)
         if not hard:
             return soft
         if through == "probability":
             carrier = soft
         elif through == "logit":
-            # log-odds of the noisy-OR, log(expm1(z)); equal to z beyond 20, and the
-            # clamp keeps the unused branch finite (no inf - inf in the gradient).
-            carrier = torch.where(z > 20, z, torch.log(torch.expm1(z.clamp(min=1e-30, max=20))))
+            # log-odds of the noisy-OR, log(expm1(z)): log z + z/2 for small z (taken
+            # from log z, so it never underflows), z beyond 20; the clamp keeps the
+            # unused branch finite (no inf - inf in the gradient).
+            mid = torch.log(torch.expm1(z.clamp(min=1e-4, max=20)))
+            carrier = torch.where(log_z < -9, log_z + 0.5 * z, torch.where(z > 20, z, mid))
         else:
             raise ValueError(f"through must be 'probability' or 'logit', got {through!r}")
         # Parenthesised so the correction is exactly zero: non-edges stay exactly 0,
@@ -202,4 +227,5 @@ def closure(adj: torch.Tensor, node_mask: torch.Tensor) -> torch.Tensor:
     return reach
 
 
-__all__ = ["EdgeListTokens", "GraphReader", "closure", "collate_tokens", "edge_list_tokens", "edge_metrics"]
+__all__ = ["NO_EVIDENCE", "EdgeListTokens", "GraphReader", "closure", "collate_tokens", "edge_list_tokens",
+           "edge_metrics", "log_softplus"]

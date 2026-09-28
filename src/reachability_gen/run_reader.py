@@ -140,19 +140,22 @@ def train_solver(solver, data: Data, *, epochs: int, device: str) -> None:
     solver.eval()
 
 
-def topology_bce(z, graph: dict[str, Any]):
+def topology_bce(log_z, graph: dict[str, Any]):
     """Sum and count of the per-pair BCE of P(edge) = 1 - exp(-z) against the true edges.
 
-    Over ordered pairs of distinct nodes of each graph; written in z, so there is
-    no practical dead zone as P(edge) approaches 0 or 1.
+    Over ordered pairs of distinct nodes of each graph, from log z
+    (``GraphReader.edge_log_evidence``): -log P(edge) = -log z + z/2 for small z,
+    so neither the loss nor its gradient underflows as P(edge) approaches 0.
     """
     import torch
 
     mask = graph["node_mask"]
     valid = (mask[:, :, None] & mask[:, None, :]).float()
-    valid = valid * (1 - torch.eye(z.shape[1], device=z.device))[None]
+    valid = valid * (1 - torch.eye(log_z.shape[1], device=log_z.device))[None]
     gold = graph["adj"].float()
-    per_pair = gold * -torch.log(-torch.expm1(-z.clamp(min=1e-30))) + (1 - gold) * z
+    z = log_z.exp()
+    nll = torch.where(log_z < -9, -log_z + 0.5 * z, -torch.log(-torch.expm1(-z.clamp(min=1e-4))))
+    per_pair = gold * nll + (1 - gold) * z
     return (per_pair * valid).sum(), valid.sum()
 
 
@@ -168,9 +171,11 @@ def pipeline_logits(reader, solver, graph: dict[str, Any], tokens: dict[str, Any
 def gradient_probe(reader, solver, data: Data, idx: Sequence[int], *, through: str) -> dict[str, float]:
     """Where the answers loss pushes the reader's graph (measurement only; nothing is updated).
 
-    Shares of |dL/dA| (the answers loss's gradient on the hard adjacency) that fall
-    on each question's own (source, target) pair, on the other true edges and
-    elsewhere, and the net push towards adding edges, -sum(dL/dA) / sum|dL/dA|.
+    The total |dL/dA| (the answers loss's gradient on the hard adjacency, mean
+    loss over the rows), the shares of it that fall on each question's own
+    (source, target) pair, on the other true edges and elsewhere, and the net
+    push towards adding edges, -sum(dL/dA) / sum|dL/dA|. All are 0 when the
+    gradient is exactly zero.
     """
     import torch
     import torch.nn.functional as F
@@ -183,12 +188,13 @@ def gradient_probe(reader, solver, data: Data, idx: Sequence[int], *, through: s
     mass = grad.abs()
     total = mass.sum().item()
     if not total:
-        return {"share_query_pair": 0.0, "share_true_edges": 0.0, "share_other": 0.0, "net_push_to_add": 0.0}
+        return {"abs_total": 0.0, "share_query_pair": 0.0, "share_true_edges": 0.0, "share_other": 0.0,
+                "net_push_to_add": 0.0}
     query = torch.zeros_like(mass, dtype=torch.bool)
     query[torch.arange(len(idx), device=mass.device), graph["s"], graph["t"]] = True
     q = mass[query].sum().item() / total
     t = mass[(graph["adj"] > 0.5) & ~query].sum().item() / total
-    return {"share_query_pair": q, "share_true_edges": t, "share_other": 1.0 - q - t,
+    return {"abs_total": total, "share_query_pair": q, "share_true_edges": t, "share_other": 1.0 - q - t,
             "net_push_to_add": -grad.sum().item() / total}
 
 
@@ -214,7 +220,7 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
             graph, tokens = data.batch(idx)
             logits, adj = pipeline_logits(reader, solver, graph, tokens, steps, oracle=oracle)
             if not oracle:
-                s, c = topology_bce(reader.edge_evidence(tokens), graph)
+                s, c = topology_bce(reader.edge_log_evidence(tokens), graph)
                 bce_sum, bce_pairs = bce_sum + s.item(), bce_pairs + c.item()
             margin = (logits[:, 1] - logits[:, 0]).float()
             pred = margin > 0
@@ -300,7 +306,7 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
             idx = order[i : i + BATCH]
             graph, tokens = train.batch(idx)
             if regime == "supervised":
-                bce, pairs = topology_bce(reader.edge_evidence(tokens), graph)
+                bce, pairs = topology_bce(reader.edge_log_evidence(tokens), graph)
                 loss = bce / pairs
                 with torch.no_grad():
                     logits, _ = pipeline_logits(reader, solver, graph, tokens, TRAIN_STEPS)
@@ -326,7 +332,8 @@ def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: st
               f"val acc {ev['accuracy']:.4f} auroc {ev['auroc']:.4f} | exact graphs {ev['reader']['exact_graphs']:.4f} "
               f"edge F1 {ev['reader']['f1']:.4f} topology BCE {ev['reader']['topology_bce']:.4f} "
               f"edges {ev['reader']['edges_predicted_mean']:.1f}/{ev['reader']['edges_true_mean']:.1f} "
-              f"| gradient on query pair {probe['share_query_pair']:.2f}, true edges {probe['share_true_edges']:.2f}",
+              f"| gradient {probe['abs_total']:.2e}: on query pair {probe['share_query_pair']:.2f}, "
+              f"true edges {probe['share_true_edges']:.2f}",
               file=sys.stderr, flush=True)
     ckpt_dir.mkdir(parents=True, exist_ok=True)
     path = ckpt_dir / f"{regime}_seed{seed}.pt"
@@ -383,9 +390,9 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
             **{f"long_{s}_auroc": mean(lambda r, s=s: r["final"][f"long_{s}"]["auroc"]) for s in LONG_STEPS},
             "untrained_val_accuracy": mean(lambda r: r["untrained_reader"]["val"]["accuracy"]),
             **{f"gradient_{k}_untrained": mean(lambda r, k=k: r["untrained_reader"]["gradient_probe"][k])
-               for k in ("share_query_pair", "share_true_edges", "net_push_to_add")},
+               for k in ("abs_total", "share_query_pair", "share_true_edges", "net_push_to_add")},
             **{f"gradient_{k}_final": mean(lambda r, k=k: r["history"][-1]["gradient_probe"][k])
-               for k in ("share_query_pair", "share_true_edges", "net_push_to_add")},
+               for k in ("abs_total", "share_query_pair", "share_true_edges", "net_push_to_add")},
             "errors_reader_caused_long_16": sum(r["final"]["long_16"]["errors"]["reader_caused"] for r in rs),
             "errors_solver_caused_long_16": sum(r["final"]["long_16"]["errors"]["solver_caused"] for r in rs),
         }

@@ -1,0 +1,8 @@
+[supervised/seed0] epoch 1/5: loss 5.8123 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.7498 edges 0.0/32.5 | gradient on query pair 0.00, true edges 0.00
+[supervised/seed0] epoch 2/5: loss 5.8177 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.7498 edges 0.0/32.5 | gradient on query pair 0.00, true edges 0.00
+[supervised/seed0] epoch 3/5: loss 5.8177 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.7498 edges 0.0/32.5 | gradient on query pair 0.00, true edges 0.00
+[supervised/seed0] epoch 4/5: loss 5.8170 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.7498 edges 0.0/32.5 | gradient on query pair 0.00, true edges 0.00
+[supervised/seed0] epoch 5/5: loss 5.8175 val acc 0.5000 auroc 0.5000 | exact graphs 0.0000 edge F1 0.0000 topology BCE 5.7498 edges 0.0/32.5 | gradient on query pair 0.00, true edges 0.00
+[supervised/seed1] epoch 1/5: loss 0.4393 val acc 1.0000 auroc 1.0000 | exact graphs 1.0000 edge F1 1.0000 topology BCE 0.0212 edges 32.5/32.5 | gradient on query pair 0.61, true edges 0.05
+[supervised/seed1] epoch 2/5: loss 0.0119 val acc 1.0000 auroc 1.0000 | exact graphs 1.0000 edge F1 1.0000 topology BCE 0.0068 edges 32.5/32.5 | gradient on query pair 0.61, true edges 0.05
+[supervised/seed1] epoch 3/5: loss 0.0050 val acc 1.0000 auroc 1.0000 | exact graphs 1.0000 edge F1 1.0000 topology BCE 0.0036 edges 32.5/32.5 | gradient on query pair 0.61, true edges 0.05

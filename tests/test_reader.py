@@ -123,3 +123,54 @@ def test_merge_combines_parallel_parts(tmp_path, monkeypatch):
     assert set(art["summary"]) == {"supervised", "answers_joint"} and len(art["runs"]) == 2
     assert art["protocol"]["seeds"] == [0] and art["science_open"] is False
     assert rr.main(["--merge", str(parts[0]), str(parts[0]), "--out", str(tmp_path / "dup.json")]) == 1
+
+
+def _reference_evidence(reader, batch):
+    """The noisy-OR evidence summed directly: z = sum of softplus(score) over occurrence pairs."""
+    scores = reader.occurrence_scores(batch)
+    bsz, width = scores.shape[0], int(batch["width"])
+    slot = batch["node_slot"]
+    pair = slot[:, :, None] * width + slot[:, None, :]
+    pair = pair.masked_fill((slot[:, :, None] < 0) | (slot[:, None, :] < 0), width * width)
+    flat = torch.zeros(bsz, width * width + 1).scatter_add(1, pair.flatten(1),
+                                                           torch.nn.functional.softplus(scores).flatten(1))
+    z = flat[:, : width * width].view(bsz, width, width)
+    return z.masked_fill(torch.eye(width, dtype=torch.bool)[None], 0.0)
+
+
+def test_log_evidence_matches_the_direct_sum():
+    torch.manual_seed(2)
+    reader = GraphReader(d=16, layers=2, heads=2).eval()
+    batch = collate_tokens([edge_list_tokens(encode_instance(6, [(0, 1), (1, 2), (2, 5), (3, 4), (0, 1)], 0, 5)),
+                            edge_list_tokens(encode_instance(4, [(2, 0), (3, 1)], 2, 0))])
+    with torch.no_grad():
+        z = reader.edge_evidence(batch)
+        ref = _reference_evidence(reader, batch)
+    assert torch.allclose(z, ref, rtol=1e-5, atol=1e-7)
+    assert z[1, 4, 0] == 0 and z[0, 5, 5] == 0  # a node absent from the list / the diagonal
+
+
+def test_no_dead_zone_when_every_score_is_very_negative():
+    """Scores far below -104 make z round to 0; the loss and both carriers still get finite gradients."""
+    from reachability_gen.run_reader import topology_bce
+
+    torch.manual_seed(4)
+    reader = GraphReader(d=16, layers=1, heads=2)
+    torch.nn.init.constant_(reader.pair_offset.weight, -300.0)
+    enc = encode_instance(5, [(0, 1), (1, 2), (3, 4)], 0, 2)
+    batch = collate_tokens([edge_list_tokens(enc)])
+    assert reader.edge_evidence(batch).max() == 0  # the direct evidence has underflowed
+    gold = torch.zeros(1, 5, 5)
+    for u, v in [(0, 1), (1, 2), (3, 4)]:
+        gold[0, u, v] = 1
+    graph = {"node_mask": torch.ones(1, 5, dtype=torch.bool), "adj": gold}
+    bce, pairs = topology_bce(reader.edge_log_evidence(batch), graph)
+    bce.backward()
+    g = reader.pair_offset.weight.grad
+    assert torch.isfinite(bce) and torch.isfinite(g).all() and g.abs().sum() > 0.1
+    reader.zero_grad()
+    adj = reader(batch, hard=True, through="logit")
+    assert adj.detach().sum() == 0
+    (adj * gold).sum().backward()
+    g = reader.pair_offset.weight.grad
+    assert torch.isfinite(g).all() and g.abs().sum() > 0.1
