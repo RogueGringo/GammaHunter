@@ -41,8 +41,9 @@
   and a readout of the target's state and norm, so unreached nodes stay at
   exactly zero at any step count.
 - Take-off study: take-off rates of three looped arms under three training
-  starts over 20 seeds, with Wilson intervals, Fisher exact tests and the
-  final checkpoints' reach up to 192 steps.
+  starts over 20 seeds, with Wilson intervals, Fisher exact tests (Holm
+  adjusted, for take-off and for holding long-path answers) and the final
+  checkpoints' reach up to 192 steps. Results recorded (limitations item 13).
 
 ## 0.1.0 (2026-09-27)
 

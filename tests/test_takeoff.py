@@ -75,6 +75,14 @@ def test_wilson_and_fisher():
     assert math.isclose(fisher_exact(3, 10, 8, 10), 0.0697785186949274, rel_tol=1e-9)
 
 
+def test_holm_adjustment():
+    from reachability_gen.run_takeoff import holm
+
+    adj = holm({"a": 0.01, "b": 0.04, "c": 0.03})
+    assert adj == pytest.approx({"a": 0.03, "c": 0.06, "b": 0.06})  # step-down, monotone
+    assert holm({"x": 0.6, "y": 0.9}) == pytest.approx({"x": 1.0, "y": 1.0})
+
+
 def test_starts_select_the_intended_rows():
     from reachability_gen.run_stability import SetData
     from reachability_gen.run_takeoff import epoch_indices

@@ -147,5 +147,27 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     was before training. The range [6, 10] was added after a 3-epoch pilot
     (seed 0) in which the planned [6, 18] did not start learning.
 
-13. **Measurement-only status.** No result in this repository is presented as
+13. **Take-off study.** Over 20 seeds per cell
+    (`artifacts/takeoff_study.json`: three parameter-matched looped arms,
+    three training starts, 5 epochs), the anchored variant fitted the crossed
+    validation split in all 60 runs (58 in the first epoch) and scored 1.000
+    on the long-path set at 16, 48 and 192 steps in every run, and 1.000 on
+    the validation split at 192 steps; untrained, it scored 0.40–0.50. The
+    standard step fitted the split in 41 of 60 runs and the recurrence under
+    study in 51; 2 and 5 of their runs held the long-path answers at all three
+    step counts. For holding those answers, the anchored variant differed from
+    both other arms under every start (two-sided Fisher exact test,
+    Holm-adjusted over 15 comparisons, p ≤ 2.6×10⁻⁷). For fitting the split,
+    it differed significantly after adjustment only from the standard step
+    with the curriculum start (p = 0.018; p = 0.12 against a cold start). The
+    recurrence under study did not differ from the standard step, and neither
+    a first epoch on the paired set nor the hop curriculum changed any arm's
+    rate significantly. Seeds shared with the stability ring reproduce its
+    first epochs exactly. Like every message-passing arm, the anchored
+    variant is given the graph's edges, and its design keeps unreached nodes
+    at exactly zero, the structure breadth-first search relies on. Its result
+    therefore shows that this structure is learned reliably at this size, not
+    that it emerges from token input.
+
+14. **Measurement-only status.** No result in this repository is presented as
     an established finding.

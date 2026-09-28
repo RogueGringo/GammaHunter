@@ -236,11 +236,13 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 ),
             }
     tests: dict[str, Any] = {}
+    stable_tests: dict[str, Any] = {}
 
     def compare(a: str, b: str) -> None:
         if a in cells and b in cells:
             ca, cb = cells[a], cells[b]
             tests[f"{a} vs {b}"] = fisher_exact(ca["took_off"], ca["of"], cb["took_off"], cb["of"])
+            stable_tests[f"{a} vs {b}"] = fisher_exact(ca["stable_to_192"], ca["of"], cb["stable_to_192"], cb["of"])
 
     for start in STARTS:
         compare(f"geo/{start}", f"loop/{start}")
@@ -249,7 +251,25 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
     for kind in ARMS:
         for start in ("paired_warm", "curriculum"):
             compare(f"{kind}/{start}", f"{kind}/cold")
-    return {"cells": cells, "fisher_two_sided": tests, "comparisons": len(tests)}
+    return {
+        "cells": cells,
+        "fisher_two_sided": tests,
+        "fisher_two_sided_holm": holm(tests),
+        "stable_fisher_two_sided": stable_tests,
+        "stable_fisher_two_sided_holm": holm(stable_tests),
+        "comparisons": len(tests),
+    }
+
+
+def holm(pvalues: dict[str, float]) -> dict[str, float]:
+    """Holm step-down adjustment of a family of p-values."""
+    order = sorted(pvalues, key=pvalues.__getitem__)
+    adjusted: dict[str, float] = {}
+    running = 0.0
+    for rank, name in enumerate(order):
+        running = max(running, min(1.0, (len(order) - rank) * pvalues[name]))
+        adjusted[name] = running
+    return adjusted
 
 
 def finish(artifact: dict[str, Any], runs: list[dict[str, Any]], out: Path) -> int:
@@ -264,8 +284,11 @@ def finish(artifact: dict[str, Any], runs: list[dict[str, Any]], out: Path) -> i
         lp = " ".join(f"T{s}={v:.3f}" if v is not None else f"T{s}=-" for s, v in c["long_path_mean_among_took_off"].items())
         print(f"{name:22s} {c['took_off']:>2d}/{c['of']:<2d} [{lo:.2f}, {hi:.2f}] epochs {c['takeoff_epochs']} "
               f"| stable to 192: {c['stable_to_192']} | long paths {lp}", file=sys.stderr)
+    print("  Fisher two-sided p (Holm-adjusted) — take-off | stable to 192:", file=sys.stderr)
     for name, p in summary["fisher_two_sided"].items():
-        print(f"  p={p:.4f}  {name}", file=sys.stderr)
+        print(f"  {p:.2e} ({summary['fisher_two_sided_holm'][name]:.2e}) | "
+              f"{summary['stable_fisher_two_sided'][name]:.2e} ({summary['stable_fisher_two_sided_holm'][name]:.2e})  {name}",
+              file=sys.stderr)
     print(json.dumps({"ok": not mismatches, "out": out.as_posix(), "self_audit_mismatches": mismatches,
                       "science_open": False}, sort_keys=True))
     return 1 if mismatches else 0
