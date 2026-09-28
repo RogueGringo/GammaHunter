@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path
 
 import pytest
 
@@ -144,3 +145,43 @@ def test_scoring_batches_shrink_with_rendering_length_and_leave_scores_unchanged
     assert split["accuracy"] == whole["accuracy"]  # AUROC may move where rounding breaks tied margins
     for key in ("exact_graphs", "f1", "closure_agreement_all_pairs", "reversed_errors"):
         assert split["reader"][key] == whole["reader"][key]
+
+
+def _tiny_words_study(tmp_path, monkeypatch):
+    from reachability_gen import run_nl_reader as rn
+
+    monkeypatch.setattr(rn, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=22, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    study = tmp_path / "nl.json"
+    assert rn.main(["--reader", "words", "--train-data", str(train_path), "--extended-data", str(ext_path),
+                    "--llm-reader", str(tmp_path / "absent.json"), "--seeds", "0", "--reader-epochs", "1",
+                    "--solver-epochs", "1", "--out", str(study), "--ckpt-dir", str(tmp_path / "ckpt"),
+                    "--no-verify"]) == 0
+    return study, train_path, rows
+
+
+def test_template_audit_parses_every_edge_and_checks_checkpoints(tmp_path, monkeypatch):
+    from reachability_gen import nl_template_audit as audit
+    from reachability_gen.run_llm_reader import graphs_of
+
+    for split in ("train", "heldout"):
+        found = audit.template_of_edges(render(5, EDGES, split, "g"), TEMPLATES[split])
+        assert set(found) == set(EDGES) and set(found.values()) <= set(range(len(TEMPLATES[split])))
+    study, train_path, rows = _tiny_words_study(tmp_path, monkeypatch)
+    out = tmp_path / "templates.json"
+    argv = ["--reader", "words", "--study", str(study), "--train-data", str(train_path), "--out", str(out)]
+    assert audit.main(argv) == 0
+    art = json.loads(out.read_text())
+    edges = sum(len(e) for _, e in graphs_of([r for r in rows if r["split"] == "val"]).values())
+    assert art["post_hoc"] is True and art["science_open"] is False and len(art["seeds"]) == 1
+    for split in ("train", "heldout"):
+        s = art["seeds"][0][split]
+        assert len(s["recall"]) == len(TEMPLATES[split]) and sum(s["edges"]) == edges
+        assert all(0.0 <= r <= 1.0 for r in s["recall"]) and s["extra_edges"] >= 0
+    ckpt = Path(json.loads(study.read_text())["runs"][0]["checkpoint_path"])
+    ckpt.write_bytes(ckpt.read_bytes() + b"tampered")
+    assert audit.main(argv) == 1
