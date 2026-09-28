@@ -36,6 +36,13 @@
   scored untrained and at best and final checkpoints up to 192 steps; seeds
   run in parallel and merge. Five-seed results recorded (limitations item
   12).
+- Anchored message-passing arm: bias-free steps, an RMS cap that leaves zero
+  in place (with a finite gradient there), the source re-injected every step
+  and a readout of the target's state and norm, so unreached nodes stay at
+  exactly zero at any step count.
+- Take-off study: take-off rates of three looped arms under three training
+  starts over 20 seeds, with Wilson intervals, Fisher exact tests and the
+  final checkpoints' reach up to 192 steps.
 
 ## 0.1.0 (2026-09-27)
 

@@ -183,6 +183,27 @@ python -m reachability_gen.run_stability --device cuda --seeds 0 --out artifacts
 python -m reachability_gen.run_stability --merge artifacts/stability_ring_seed0.json artifacts/stability_ring_seed1.json
 ```
 
+## Take-off study
+
+```bash
+python -m reachability_gen.run_takeoff --device cuda
+```
+
+Measures how reliably three parameter-matched looped arms start learning on
+`data/id_crossed_20k.jsonl`: the standard step, the recurrence under study,
+and an anchored variant that combines features of both research lines (nodes
+the source has not reached keep an exactly zero state, the source is
+re-injected at every step, the answer is read from the target's state, and no
+node identities are embedded). Each arm starts cold, after one epoch on the
+paired set (`data/id_disjoint_20k.jsonl`), or on a hop curriculum, for 20
+seeds and 5 epochs. A run counts as taking off when its validation accuracy
+reaches 0.99; rates come with Wilson 95% intervals and two-sided Fisher exact
+tests, and each final checkpoint is re-scored and evaluated on
+`data/extended_crossed_2k.jsonl` at 16, 48 and 192 steps. It writes
+`artifacts/takeoff_study.json`; the checkpoints (`artifacts/takeoff/`) are
+not versioned, and their SHA-256 hashes are recorded instead. Seeds can run
+in parts and be merged with `--merge`, as for the stability ring.
+
 ## External benchmarks
 
 ```bash

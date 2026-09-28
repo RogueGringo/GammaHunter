@@ -199,6 +199,85 @@ class MessagePassing(nn.Module):
         return int(sum(p.numel() for p in self.parameters()))
 
 
+def rms_cap(h: torch.Tensor) -> torch.Tensor:
+    """Scale each node's state down to RMS 1 when above it; zero stays zero.
+
+    The mean square is clamped before the inverse square root, so no square
+    root is ever taken at zero and the gradient stays finite at zero states.
+    """
+    return h * torch.rsqrt(h.pow(2).mean(dim=-1, keepdim=True).clamp(min=1.0))
+
+
+class AnchoredStep(nn.Module):
+    """Bias-free step ``h ← C(h + α·U([h, Σ_{u→v} M(h_u)]) + p)``: unreached nodes stay 0."""
+
+    def __init__(self, d: int, *, alpha: float = 0.5) -> None:
+        super().__init__()
+        self.alpha = float(alpha)
+        self.msg = nn.Sequential(nn.Linear(d, d, bias=False), nn.ReLU(), nn.Linear(d, d, bias=False))
+        self.upd = nn.Sequential(nn.Linear(2 * d, d, bias=False), nn.ReLU(), nn.Linear(d, d, bias=False))
+
+    def forward(
+        self, h: torch.Tensor, adj: torch.Tensor, node_mask: torch.Tensor, anchor: torch.Tensor
+    ) -> torch.Tensor:
+        agg = torch.einsum("buv,bud->bvd", adj.to(h.dtype), self.msg(h))  # sum over in-neighbours
+        out = rms_cap(h + self.alpha * self.upd(torch.cat([h, agg], dim=-1)) + anchor)
+        return out * node_mask.unsqueeze(-1).to(out.dtype)
+
+
+class AnchoredMP(nn.Module):
+    """Looped message passing whose state is zero wherever the source has not reached.
+
+    The source receives a learned vector at the start and again at every step
+    (the anchor); every step weight is bias-free and the RMS cap leaves zero in
+    place, so a node's state stays exactly zero until a path from the source
+    reaches it, at any step count. The classifier reads the target's state and
+    its norm. Node identities are never embedded, and the query's target is not
+    marked in the input.
+    """
+
+    def __init__(self, d: int = 64, steps: int = 6, *, alpha: float = 0.5) -> None:
+        super().__init__()
+        if steps < 1 or d < 1:
+            raise ValueError(f"need steps >= 1 and d >= 1, got steps={steps} d={d}")
+        self.d, self.steps, self.looped = int(d), int(steps), True
+        self.source = nn.Parameter(torch.randn(d))  # unit scale, like an embedding row
+        self.layers = nn.ModuleList([AnchoredStep(d, alpha=alpha)])
+        self.head = nn.Sequential(nn.Linear(d + 1, d), nn.ReLU(), nn.Linear(d, 2))
+
+    def _anchor(self, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        feats = batch["feats"]
+        anchor = torch.zeros(*feats.shape[:2], self.d, device=feats.device, dtype=self.source.dtype)
+        anchor[torch.arange(feats.shape[0], device=feats.device), batch["s"]] = self.source
+        return anchor
+
+    def iter_states(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> Iterator[torch.Tensor]:
+        """Yield node states ``h_0, …, h_T`` (each ``[B, N, d]``) one at a time."""
+        n_steps = self.steps if steps is None else int(steps)
+        anchor = self._anchor(batch)
+        h = anchor
+        yield h
+        for _ in range(n_steps):
+            h = self.layers[0](h, batch["adj"], batch["node_mask"], anchor)
+            yield h
+
+    def node_states(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> list[torch.Tensor]:
+        return list(self.iter_states(batch, steps))
+
+    def readout(self, h: torch.Tensor, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        target = h[torch.arange(h.shape[0], device=h.device), batch["t"]]
+        return self.head(torch.cat([target, target.norm(dim=-1, keepdim=True)], dim=-1))
+
+    def forward(self, batch: dict[str, torch.Tensor], steps: Optional[int] = None) -> torch.Tensor:
+        h = batch["feats"]
+        for h in self.iter_states(batch, steps):
+            pass
+        return self.readout(h, batch)
+
+    def param_count(self) -> int:
+        return int(sum(p.numel() for p in self.parameters()))
+
+
 def param_formula(d: int, layers: int) -> int:
     """Closed-form parameter count: ``layers`` steps plus input and head."""
     return layers * (5 * d * d + 6 * d) + 2 * d * d + 6 * d + 2
@@ -220,6 +299,8 @@ def take(packed: dict[str, torch.Tensor], idx: torch.Tensor) -> dict[str, torch.
 
 
 __all__ = [
+    "AnchoredMP",
+    "AnchoredStep",
     "GeoStep",
     "MPStep",
     "MessagePassing",
@@ -229,5 +310,6 @@ __all__ = [
     "match_width",
     "param_formula",
     "parse_rows",
+    "rms_cap",
     "take",
 ]

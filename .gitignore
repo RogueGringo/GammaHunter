@@ -15,3 +15,6 @@ artifacts/*.jsonl
 
 # Third-party benchmark downloads (kept out of the repository)
 data/benchmarks/
+
+# take-off study checkpoints (hashes are recorded in artifacts/takeoff_study.json)
+artifacts/takeoff/

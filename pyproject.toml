@@ -47,6 +47,7 @@ reachability-mp-calibration = "reachability_gen.run_mp_calibration:main"
 reachability-reach-cues = "reachability_gen.reach_cues:main"
 reachability-untrained-control = "reachability_gen.untrained_control:main"
 reachability-stability = "reachability_gen.run_stability:main"
+reachability-takeoff = "reachability_gen.run_takeoff:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -28,7 +28,7 @@ and only the relation between the two endpoints decides the answer.
 | Generation | Reproducible instance sets for in-distribution and extended-step evaluation, each with a generation report |
 | Encoding and tokenization | One locked serialization shared by every arm, with a guard that reports or refuses inputs that would be truncated |
 | Model arms | A fixed-depth baseline and weight-tied recurrent variants behind a common interface; in the gated comparison runs, a parity gate holds recurrent arms within ±5% of the baseline's parameter count |
-| Message-passing arms | Arms whose state lives on the graph's nodes, in a looped (shared step) and an unlooped (distinct layers) variant matched within ±5% on parameters; used to calibrate the harness against known results. Looped variants also carry the recurrence under study, and a ported arm infers the graph from the edge list |
+| Message-passing arms | Arms whose state lives on the graph's nodes, in a looped (shared step) and an unlooped (distinct layers) variant matched within ±5% on parameters; used to calibrate the harness against known results. Looped variants also carry the recurrence under study, a ported arm infers the graph from the edge list, and an anchored variant keeps unreached nodes at exactly zero |
 | Compute accounting | Schematic inference cost per arm under the frozen specification (ADR-001) |
 | Runners | Training and evaluation with set epoch budgets, per-instance metric logging in a common schema and, in the fixed-budget runs, best-checkpoint saving |
 | Telemetry | Per-step measurements of recurrent state: drift between steps, state norms, token-level coherence and propagated perturbation gain |
