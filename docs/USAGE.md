@@ -181,6 +181,20 @@ instances and answerable instances), telemetry, breakdown flags, dataset
 composition, input-truncation accounting and, for each extended-step set
 present in `data/`, evaluation-set coverage.
 
+## Reach-cue audit
+
+```bash
+python -m reachability_gen.reach_cues
+```
+
+On the validation rows of each graph-disjoint set (by default the 2,000- and
+20,000-instance sets and the long-path set), scores rules that read only one
+endpoint's reach: how many nodes the source reaches, how many nodes reach the
+target, and how far those sets extend, within 1 hop, within 6 hops and
+without limit. Each rule's threshold is fitted on the audited rows
+themselves, so every score is a ceiling for that rule. Writes
+`artifacts/reach_cue_audit.json`.
+
 ## Utilities
 
 | Command | Purpose |

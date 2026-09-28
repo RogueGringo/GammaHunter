@@ -24,8 +24,9 @@ requires is known exactly.
   drift between steps, state norms, representation coherence and response to
   small input perturbations.
 - **Integrity controls.** Checkpoint re-scoring against recorded results,
-  input-length guards, dataset-composition and coverage checks, and automatic
-  flags for degenerate training outcomes.
+  input-length guards, dataset-composition and coverage checks, ceilings for
+  shortcut rules that need no path search, and automatic flags for degenerate
+  training outcomes.
 
 ## Why it matters
 

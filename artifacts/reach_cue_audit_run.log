@@ -1,0 +1,3 @@
+data/id_disjoint_2k.jsonl (n=400): best rule within_1=0.6200 within_6=0.7775 unlimited=0.7775
+data/id_disjoint_20k.jsonl (n=4000): best rule within_1=0.6042 within_6=0.7823 unlimited=0.7820
+data/extended_disjoint_2k.jsonl (n=2000): best rule within_1=0.5290 within_6=0.7935 unlimited=0.8555

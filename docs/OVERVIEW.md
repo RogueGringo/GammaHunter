@@ -52,6 +52,7 @@ negatives (both endpoints connected to the graph, yet mutually unreachable).
 | Input-length guard | Instances whose query would be cut off by the model's context size |
 | Dataset composition | Graph reuse across splits, measured against a query-blind baseline |
 | Endpoint-cue baseline | Negatives decidable from one endpoint without any path search |
+| Reach-cue ceilings | How far rules that read only one endpoint's reach (nodes the source reaches, nodes that reach the target) get without a path between the endpoints |
 | Evaluation coverage | Tokens or graph sizes present in evaluation data but absent from training data |
 | Breakdown flags | Representation collapse, input-independent outputs, abrupt training regressions, and final-epoch results well below the best checkpoint |
 

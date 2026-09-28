@@ -1,0 +1,113 @@
+{
+  "features": {
+    "source_reach": "nodes reachable from the source",
+    "source_reach_depth": "largest distance from the source to a node it reaches",
+    "target_ancestor_depth": "largest distance from such a node to the target",
+    "target_ancestors": "nodes from which the target is reachable"
+  },
+  "horizons": [
+    "within_1",
+    "within_6",
+    "unlimited"
+  ],
+  "method": "best single-threshold rule per feature, fitted on the audited rows themselves",
+  "missing": [],
+  "purpose": "ceilings for rules that read only one endpoint's reach (no path between the endpoints)",
+  "science_open": false,
+  "sets": {
+    "data/extended_disjoint_2k.jsonl": {
+      "max_by_horizon": {
+        "unlimited": 0.8555,
+        "within_1": 0.529,
+        "within_6": 0.7935
+      },
+      "n": 2000,
+      "positive_rate": 0.5,
+      "rules": {
+        "source_reach": {
+          "unlimited": 0.7865,
+          "within_1": 0.529,
+          "within_6": 0.7535
+        },
+        "source_reach_depth": {
+          "unlimited": 0.8555,
+          "within_1": 0.5,
+          "within_6": 0.7935
+        },
+        "target_ancestor_depth": {
+          "unlimited": 0.8505,
+          "within_1": 0.5,
+          "within_6": 0.7855
+        },
+        "target_ancestors": {
+          "unlimited": 0.7745,
+          "within_1": 0.5235000000000001,
+          "within_6": 0.7445
+        }
+      }
+    },
+    "data/id_disjoint_20k.jsonl": {
+      "max_by_horizon": {
+        "unlimited": 0.782,
+        "within_1": 0.60425,
+        "within_6": 0.78225
+      },
+      "n": 4000,
+      "positive_rate": 0.5,
+      "rules": {
+        "source_reach": {
+          "unlimited": 0.7755,
+          "within_1": 0.60425,
+          "within_6": 0.77475
+        },
+        "source_reach_depth": {
+          "unlimited": 0.76225,
+          "within_1": 0.5,
+          "within_6": 0.76225
+        },
+        "target_ancestor_depth": {
+          "unlimited": 0.7565,
+          "within_1": 0.5,
+          "within_6": 0.7565
+        },
+        "target_ancestors": {
+          "unlimited": 0.782,
+          "within_1": 0.60175,
+          "within_6": 0.78225
+        }
+      }
+    },
+    "data/id_disjoint_2k.jsonl": {
+      "max_by_horizon": {
+        "unlimited": 0.7775,
+        "within_1": 0.62,
+        "within_6": 0.7775
+      },
+      "n": 400,
+      "positive_rate": 0.5,
+      "rules": {
+        "source_reach": {
+          "unlimited": 0.77,
+          "within_1": 0.585,
+          "within_6": 0.77
+        },
+        "source_reach_depth": {
+          "unlimited": 0.7675,
+          "within_1": 0.5,
+          "within_6": 0.7675
+        },
+        "target_ancestor_depth": {
+          "unlimited": 0.75,
+          "within_1": 0.5,
+          "within_6": 0.75
+        },
+        "target_ancestors": {
+          "unlimited": 0.7775,
+          "within_1": 0.62,
+          "within_6": 0.7775
+        }
+      }
+    }
+  },
+  "split": "val"
+}

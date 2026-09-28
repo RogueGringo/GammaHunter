@@ -17,7 +17,8 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    reachability with per-graph memorization and a one-step cue. The
    graph-disjoint set (`id_disjoint_2k`) removes both: each graph appears once,
    with one reachable and one unreachable query, and no negative carries the
-   endpoint cue, so both baselines score 0.5 by construction.
+   endpoint cue, so both baselines score 0.5 by construction. Cues that read
+   one endpoint at a time remain (item 10).
 
 3. **Input truncation in the comparison runs.** The comparison runners size
    their context from the first rows of the dataset. 50 of the 2,000
@@ -71,7 +72,8 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    `artifacts/id_disjoint_20k_learnability.json`) let the fixed-depth baseline
    begin fitting its training set (training accuracy 0.59) with at most a
    faint signal on 2-hop questions (0.51–0.54, where one standard error is
-   0.018); the recurrent arms stayed at chance. Other architectures and much
+   0.018), which the cues in item 10 could also produce; the recurrent arms
+   stayed at chance. Other architectures and much
    longer training remain untested.
 
 9. **Calibration results depend on the seed.** In the message-passing
@@ -86,10 +88,23 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
    needs, the looped arm scored 0.500 in every seed. The unlooped arm reached
    1.000 in two seeds; in the third it peaked at 0.915 and ended at 0.720, and
    it scored 0.7355 on the long-path set although every path there is longer
-   than its depth. These arms receive each graph as explicit structure,
+   than its depth (see item 10). These arms receive each graph as explicit structure,
    whereas the sequence arms must recover it from tokens, so the calibration
    is a reference point for the harness, not a like-for-like comparison with
    the sequence arms.
 
-10. **Measurement-only status.** No result in this repository is presented as
+10. **Cues from one endpoint's reach.** Pairing each graph's reachable and
+    unreachable query defeats rules that ignore the query and rules that flag
+    an endpoint without edges, but not every cue. In these sparse random
+    graphs, the sources of unreachable queries tend to reach fewer nodes and
+    their targets tend to have fewer ancestors; neither feature needs a path
+    between the two endpoints. Single-threshold rules on one such feature,
+    fitted on the set itself, score up to 0.78 on the graph-disjoint
+    validation splits and up to 0.86 on the long-path set (0.79 when limited
+    to 6 hops from the endpoint); endpoint degrees alone score up to 0.62
+    (`artifacts/reach_cue_audit.json`). Accuracy between 0.5 and these levels
+    does not by itself show path search; results at 1.000, such as those of
+    the message-passing arms on the validation splits, exceed them.
+
+11. **Measurement-only status.** No result in this repository is presented as
     an established finding.

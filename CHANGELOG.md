@@ -22,6 +22,8 @@
   generator now takes a set specification.
 - Looped and unlooped message-passing arms, parameter-matched, and a
   calibration runner that trains on short paths and tests on long ones.
+- Reach-cue audit: ceilings for rules that read only one endpoint's reach,
+  on the graph-disjoint sets.
 
 ## 0.1.0 (2026-09-27)
 
