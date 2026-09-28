@@ -51,6 +51,7 @@ from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_llm_reader import graphs_of
 from reachability_gen.run_mp_calibration import BATCH, GRAD_CLIP, LR, WEIGHT_DECAY
 from reachability_gen.run_reader import (
+    EVAL_BATCH,
     LONG_STEPS,
     READER_LR,
     SOLVER_EPOCHS,
@@ -72,6 +73,11 @@ MAX_OFFSET: int = 8
 PASS: dict[str, float] = {"exact_graphs_heldout_val": 0.99, "closure_agreement_heldout_long": 0.99,
                           "long_path_accuracy_heldout": 0.99}
 NUMBER = re.compile(r"\d+")
+# Rows x tokens^2 per scoring batch: bounds the reader's attention memory on long renderings (a
+# long-path graph runs to about a thousand words). The graphs read, accuracy and edge metrics do not
+# depend on it; float32 rounding moves margins by ~1e-8, which can shift AUROC only where margins
+# tie. Set after the first words run ran out of GPU memory while scoring the long-path set (log kept).
+EVAL_PAIR_BUDGET: int = 2**24
 
 
 class NLData(Data):
@@ -88,6 +94,8 @@ class NLData(Data):
         self._collate, self._collate_tokens = collate, collate_fn
         hop = {r["edge_hash"]: int(r["hop_distance"]) for r in self.rows if int(r["y"]) == 1}
         self.graph_hop = [hop.get(r["edge_hash"], -1) for r in self.rows]
+        longest = max((len(t.kinds) for t in self.tokens), default=1)
+        self.eval_batch = max(1, min(EVAL_BATCH, EVAL_PAIR_BUDGET // longest**2))
 
     def batch(self, idx: Sequence[int]) -> tuple[dict[str, Any], dict[str, Any]]:
         return (self._collate([self.graphs[i] for i in idx], self.device),
@@ -324,6 +332,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "solver_epochs": args.solver_epochs, "reader_epochs": args.reader_epochs, "reader_lr": args.reader_lr,
             "solver_lr": LR, "batch_size": BATCH, "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,
             "pass_criteria": PASS, "seeds": args.seeds, "checkpoints_versioned": False,
+            "eval_pair_budget": EVAL_PAIR_BUDGET, "eval_batch_rows": {k: d.eval_batch for k, d in data.items()},
             "device": args.device, "gpu": torch.cuda.get_device_name(0) if args.device == "cuda" else None,
             "torch_version": torch.__version__,
         },

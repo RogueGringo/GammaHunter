@@ -122,3 +122,25 @@ def test_words_reader_smoke(tmp_path, monkeypatch):
     assert art["self_audit_mismatches"] == [] and art["protocol"]["templates"]["heldout"] == list(HELDOUT_TEMPLATES)
     assert set(run["final"]) == {"val_in", "val_out", "long_out_16"} and isinstance(run["passes"], bool)
     assert run["oracle"]["val_out"]["accuracy"] >= 0.0
+
+
+def test_scoring_batches_shrink_with_rendering_length_and_leave_scores_unchanged():
+    from reachability_gen import run_nl_reader as rn
+    from reachability_gen.models.reader import GraphReader, collate_tokens
+    from reachability_gen.run_llm_reader import graphs_of
+    from reachability_gen.run_reader import EVAL_BATCH, build_solver, evaluate
+
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    vocab = build_vocab()
+    tokens = {eh: word_tokens(render(n, e, "heldout", eh), n, vocab) for eh, (n, e) in graphs_of(rows).items()}
+    data = rn.NLData(rows, "cpu", tokens, collate_tokens)
+    longest = max(len(t.kinds) for t in tokens.values())
+    assert data.eval_batch == max(1, min(EVAL_BATCH, rn.EVAL_PAIR_BUDGET // longest**2))
+    torch.manual_seed(0)
+    reader, solver = GraphReader(vocab_size=len(vocab) + 2, max_offset=rn.MAX_OFFSET), build_solver()
+    whole = evaluate(reader, solver, data, 6)
+    data.eval_batch = 3
+    split = evaluate(reader, solver, data, 6)
+    assert split["accuracy"] == whole["accuracy"]  # AUROC may move where rounding breaks tied margins
+    for key in ("exact_graphs", "f1", "closure_agreement_all_pairs", "reversed_errors"):
+        assert split["reader"][key] == whole["reader"][key]

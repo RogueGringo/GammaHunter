@@ -126,6 +126,8 @@ def anchored_width() -> int:
 class Data:
     """Rows plus both views of each graph: the solver batch and the reader tokens."""
 
+    eval_batch: int = EVAL_BATCH  # rows per scoring batch
+
     def __init__(self, rows: Sequence[dict[str, Any]], device: str) -> None:
         from reachability_gen.models.message_passing import collate, parse_rows
         from reachability_gen.models.reader import edge_list_tokens
@@ -362,8 +364,8 @@ def evaluate(reader, solver, data: Data, steps: int, *, oracle: bool = False) ->
     totals: dict[str, int] = {"edges_true": 0, "tp": 0, "fp": 0, "fn": 0, "reversed_errors": 0,
                               "exact_graphs": 0, "graphs": 0}
     with torch.no_grad():
-        for start in range(0, len(data.rows), EVAL_BATCH):
-            idx = list(range(start, min(start + EVAL_BATCH, len(data.rows))))
+        for start in range(0, len(data.rows), data.eval_batch):
+            idx = list(range(start, min(start + data.eval_batch, len(data.rows))))
             graph, tokens = data.batch(idx)
             logits, adj = pipeline_logits(reader, solver, graph, tokens, steps, oracle=oracle)
             if not oracle:
