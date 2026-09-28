@@ -97,6 +97,9 @@ ESTIMATOR_STUDY: dict[str, str] = {
 }
 ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS, **DENSITY_STUDY, **ESTIMATOR_STUDY}
 REINFORCE_SAMPLES: int = 4  # graphs sampled per reading; each sample's baseline is the others' mean (RLOO)
+# log z is capped here before exponentiating: P(edge) is already exactly 1 in float32 far below it,
+# and an uncapped exp overflows once the reader's scores run away (inf, then 0 * inf = NaN).
+LOG_Z_CAP: float = 40.0
 PRIOR_WEIGHT: float = 1.0  # weight of the density prior, fixed before the variant runs
 TRAIN_STEPS: int = 6
 SOLVER_EPOCHS: int = 2
@@ -271,6 +274,7 @@ def topology_bce(log_z, graph: dict[str, Any]):
     valid = (mask[:, :, None] & mask[:, None, :]).float()
     valid = valid * (1 - torch.eye(log_z.shape[1], device=log_z.device))[None]
     gold = graph["adj"].float()
+    log_z = log_z.clamp(max=LOG_Z_CAP)
     z = log_z.exp()
     nll = torch.where(log_z < -9, -log_z + 0.5 * z, -torch.log(-torch.expm1(-z.clamp(min=1e-4))))
     per_pair = gold * nll + (1 - gold) * z
@@ -425,6 +429,7 @@ def sample_log_prob(log_z, samples, node_mask):
 
     eye = torch.eye(log_z.shape[1], dtype=torch.bool, device=log_z.device)
     valid = (node_mask[:, :, None] & node_mask[:, None, :] & ~eye[None]).to(log_z.dtype)
+    log_z = log_z.clamp(max=LOG_Z_CAP)
     z = log_z.exp()
     log_p = -torch.where(log_z < -9, -log_z + 0.5 * z, -torch.log(-torch.expm1(-z.clamp(min=1e-4))))
     terms = samples * log_p[:, None] + (1 - samples) * (-z)[:, None]
@@ -443,6 +448,15 @@ def pair_counts(node_mask):
     return n * (n - 1)
 
 
+def finite_or_raise(value, what: str):
+    """Stop with a clear error, rather than a device fault later, when a tensor is not finite."""
+    import torch
+
+    if not torch.isfinite(value).all():
+        raise FloatingPointError(f"{what} is not finite")
+    return value
+
+
 def reinforce_rows(reader, solver, graph: dict[str, Any], tokens: dict[str, Any], *, density: Optional[float]):
     """Score-function loss for question rows: each row's graph sampled K times, rewarded by the answer.
 
@@ -453,8 +467,8 @@ def reinforce_rows(reader, solver, graph: dict[str, Any], tokens: dict[str, Any]
     import torch
     import torch.nn.functional as F
 
-    log_z = reader.edge_log_evidence(tokens)
-    prob = -torch.expm1(-log_z.exp())
+    log_z = reader.edge_log_evidence(tokens).clamp(max=LOG_Z_CAP)
+    prob = finite_or_raise(-torch.expm1(-log_z.exp()), "P(edge)")
     rows, k = prob.shape[0], REINFORCE_SAMPLES
     with torch.no_grad():
         samples = torch.bernoulli(prob.detach()[:, None].expand(-1, k, -1, -1).contiguous())
@@ -467,7 +481,7 @@ def reinforce_rows(reader, solver, graph: dict[str, Any], tokens: dict[str, Any]
     loss = -(adv * log_prob).mean()
     if density is not None:
         loss = loss + PRIOR_WEIGHT * density_kl(prob, graph, density)
-    return loss
+    return finite_or_raise(loss, "the score-function loss")
 
 
 def dense_epoch(reader, solver, dense: DenseAnswers, opt, params, *, through: str,
@@ -518,8 +532,8 @@ def dense_reinforce_loss(reader, solver, graph: dict[str, Any], tokens: dict[str
     import torch
     import torch.nn.functional as F
 
-    log_z = reader.edge_log_evidence(tokens)
-    prob = -torch.expm1(-log_z.exp())
+    log_z = reader.edge_log_evidence(tokens).clamp(max=LOG_Z_CAP)
+    prob = finite_or_raise(-torch.expm1(-log_z.exp()), "P(edge)")
     graphs, k = prob.shape[0], REINFORCE_SAMPLES
     answers = torch.zeros(graphs, device=prob.device).index_add(0, row_graph, mask.sum(dim=1).float()).clamp(min=1)
     with torch.no_grad():
@@ -537,7 +551,7 @@ def dense_reinforce_loss(reader, solver, graph: dict[str, Any], tokens: dict[str
     loss = -(adv * log_prob).mean()
     if density is not None:
         loss = loss + PRIOR_WEIGHT * density_kl(prob, {"node_mask": node_mask}, density)
-    return loss, own
+    return finite_or_raise(loss, "the score-function loss"), own
 
 
 def run(regime: str, seed: int, train: Data, val: Data, ext: Data, *, device: str, ckpt_dir: Path,
@@ -815,7 +829,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             **({"dense_graphs_per_batch": DENSE_GRAPHS_PER_BATCH}
                if any(r.startswith("answers_dense") for r in args.regimes) else {}),
             **({"reinforce_samples": REINFORCE_SAMPLES, "reinforce_baseline": "leave-one-out (RLOO), "
-                "advantages normalised per batch; log-probability per node pair"}
+                "advantages normalised per batch; log-probability per node pair; log z capped at "
+                f"{LOG_Z_CAP:g}"}
                if any(r.endswith("_reinforce") for r in args.regimes) else {}),
             "seeds": args.seeds,
             "batch_size": BATCH, "lr": LR, "weight_decay": WEIGHT_DECAY, "grad_clip": GRAD_CLIP,

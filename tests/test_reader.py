@@ -459,3 +459,21 @@ def test_reinforce_regimes_smoke_and_merge(tmp_path, monkeypatch):
     assert art["protocol"]["reinforce_samples"] == rr.REINFORCE_SAMPLES and art["self_audit_mismatches"] == []
     assert set(art["summary"]) == set(rr.ESTIMATOR_STUDY)
     assert rr.main(["--merge", str(est), str(plain), "--out", str(tmp_path / "merged.json")]) == 0
+
+
+def test_reinforce_stays_finite_when_the_evidence_runs_away():
+    """Very large scores give finite losses and gradients (log z grows only logarithmically with them)."""
+    from reachability_gen.run_reader import reinforce_rows
+
+    torch.manual_seed(8)
+    reader = GraphReader(d=16, layers=1, heads=2)
+    torch.nn.init.constant_(reader.pair_offset.weight, 300.0)
+    from reachability_gen.models.message_passing import AnchoredMP, collate, parse_rows
+
+    enc = encode_instance(5, [(0, 1), (1, 2), (3, 4)], 0, 2)
+    rows = [{"encoding": enc, "y": 1}]
+    graph = collate(parse_rows(rows))
+    tokens = collate_tokens([edge_list_tokens(enc)])
+    loss = reinforce_rows(reader, AnchoredMP(8, 3).eval(), graph, tokens, density=0.1)
+    loss.backward()
+    assert torch.isfinite(loss) and all(torch.isfinite(p.grad).all() for p in reader.parameters() if p.grad is not None)
