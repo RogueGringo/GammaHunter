@@ -23,6 +23,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 import re
 import sys
@@ -137,6 +138,7 @@ def generate(model, tokenizer, prompts: Sequence[str], device: str, *, batch: in
             out = None  # recover outside the handler, once the failed attempt's tensors are released
         if out is None:
             del enc
+            gc.collect()  # the failed attempt's tensors can sit in reference cycles until collected
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
             limit = min(limit, max(1, len(idx) // 2))
