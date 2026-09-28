@@ -97,8 +97,9 @@ ESTIMATOR_STUDY: dict[str, str] = {
 }
 ALL_REGIMES: dict[str, str] = {**REGIMES, **VARIANTS, **DENSITY_STUDY, **ESTIMATOR_STUDY}
 REINFORCE_SAMPLES: int = 4  # graphs sampled per reading; each sample's baseline is the others' mean (RLOO)
-# log z is capped here before exponentiating: P(edge) is already exactly 1 in float32 far below it,
-# and an uncapped exp overflows once the reader's scores run away (inf, then 0 * inf = NaN).
+# log z is capped here before exponentiating (P(edge) is exactly 1 in float32 far below it). log z
+# grows only logarithmically with the reader's scores, so this matters only if a score is itself
+# infinite; it keeps 0 * inf out of the sampled-graph log-probability in that case.
 LOG_Z_CAP: float = 40.0
 PRIOR_WEIGHT: float = 1.0  # weight of the density prior, fixed before the variant runs
 TRAIN_STEPS: int = 6
