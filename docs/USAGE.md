@@ -235,6 +235,16 @@ same graphs), with the same scoring, to separate reading the edge list from
 searching it. It writes `artifacts/llm_edge_probe.json`.
 
 ```bash
+python -m reachability_gen.llm_cot_paths
+```
+
+The path audit reads the recorded step-by-step generations and checks every
+written path (the last chain of three or more nodes joined by arrows in a
+generation) against the edges shown: each step is a listed edge, a listed
+edge followed backwards, or a pair that is not listed. Results are grouped by
+label and answer, per model and set, in `artifacts/llm_cot_path_audit.json`.
+
+```bash
 python -m reachability_gen.llm_cue_conflict --enriched --device cuda
 ```
 
