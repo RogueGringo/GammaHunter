@@ -1,0 +1,4408 @@
+{
+  "elapsed_seconds": 2007.729781300004,
+  "feature_seconds": 1.6544017000123858,
+  "protocol": {
+    "batch_size": 32,
+    "checkpoints_versioned": false,
+    "device": "cuda",
+    "encoder": null,
+    "eval_batch_rows": {
+      "long_out": 13,
+      "sample_long": 13,
+      "sample_val": 61,
+      "train": 54,
+      "val_in": 74,
+      "val_out": 56
+    },
+    "eval_pair_budget": 16777216,
+    "gpu": "NVIDIA GeForce RTX 5070",
+    "grad_clip": 1.0,
+    "long_steps": [
+      16,
+      48,
+      192
+    ],
+    "max_offset": 8,
+    "pass_criteria": {
+      "closure_agreement_heldout_long": 0.99,
+      "exact_graphs_heldout_val": 0.99,
+      "long_path_accuracy_heldout": 0.99
+    },
+    "reader_epochs": 5,
+    "reader_lr": 0.01,
+    "reader_params": 110059,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "solver_epochs": 2,
+    "solver_lr": 0.001,
+    "templates": {
+      "heldout": [
+        "{u} leads to {v}.",
+        "A link runs from {u} to {v}.",
+        "Starting at {u}, one step takes you to {v}.",
+        "{v} can be entered straight from {u}."
+      ],
+      "train": [
+        "{u} -> {v}.",
+        "There is an edge from {u} to {v}.",
+        "{u} points to {v}.",
+        "From {u} you can go directly to {v}.",
+        "{v} is directly reachable from {u}."
+      ]
+    },
+    "torch_version": "2.14.0+cu130",
+    "train_steps": 6,
+    "weight_decay": 0.01
+  },
+  "purpose": "reading graphs from natural language, including phrasings never seen in training",
+  "reader": "words",
+  "runs": [
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed0.pt",
+      "checkpoint_sha256": "bf737b52cfec0fb744024173fc3587ec022628066e85db1ae2def386c8277b6f",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7851640915523086,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.71,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5843402711878704,
+            "precision": 1.0,
+            "recall": 0.412768873264613,
+            "reversed_errors": 0,
+            "topology_bce": 0.24498253705773512
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7851640915523086,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.71,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5843402711878704,
+            "precision": 1.0,
+            "recall": 0.412768873264613,
+            "reversed_errors": 0,
+            "topology_bce": 0.24498253692929306
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7851640915523086,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.71,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5843402711878704,
+            "precision": 1.0,
+            "recall": 0.412768873264613,
+            "reversed_errors": 0,
+            "topology_bce": 0.24498253718617718
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7861297936335534,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.29,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5885270649126589,
+            "precision": 1.0,
+            "recall": 0.4169595110771581,
+            "reversed_errors": 0,
+            "topology_bce": 0.2441256652877692
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7861297936335534,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.29,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5885270649126589,
+            "precision": 1.0,
+            "recall": 0.4169595110771581,
+            "reversed_errors": 0,
+            "topology_bce": 0.2441256652877692
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7861297936335534,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.29,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5885270649126589,
+            "precision": 1.0,
+            "recall": 0.4169595110771581,
+            "reversed_errors": 0,
+            "topology_bce": 0.24412566594006324
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5475,
+          "accuracy_by_graph_hop": {
+            "2": 0.675,
+            "3": 0.5375,
+            "4": 0.5125,
+            "5": 0.5125,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4985002204356925,
+            0.5955960787073378
+          ],
+          "auroc": 0.5475,
+          "errors": {
+            "reader_caused": 181,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.808715727341965,
+            "closure_agreement_queried_pairs": 0.5475,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.37,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.6616814874696847,
+            "precision": 1.0,
+            "recall": 0.49441256418000606,
+            "reversed_errors": 0,
+            "topology_bce": 0.4786381929480777
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.99925,
+          "accuracy_by_graph_hop": {
+            "2": 0.99875,
+            "3": 0.99875,
+            "4": 0.99875,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9977970558125356,
+            0.999744904888407
+          ],
+          "auroc": 0.999287125,
+          "errors": {
+            "reader_caused": 3,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9998414463991258,
+            "closure_agreement_queried_pairs": 0.99925,
+            "closure_exact_graphs": 0.993,
+            "edges_predicted_mean": 32.462,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.992,
+            "f1": 0.9998767638178568,
+            "precision": 0.9997535580062843,
+            "recall": 1.0,
+            "reversed_errors": 4,
+            "topology_bce": 0.0015597187362171752
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.54875,
+          "accuracy_by_graph_hop": {
+            "2": 0.63,
+            "3": 0.56375,
+            "4": 0.52625,
+            "5": 0.51625,
+            "6": 0.5075
+          },
+          "accuracy_wilson95": [
+            0.5332892202190301,
+            0.5641172306255787
+          ],
+          "auroc": 0.54875,
+          "errors": {
+            "reader_caused": 1805,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.8092770931514601,
+            "closure_agreement_queried_pairs": 0.54875,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.201,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.6659541670948516,
+            "precision": 1.0,
+            "recall": 0.49919886608738523,
+            "reversed_errors": 0,
+            "topology_bce": 0.48181411291781734
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 2.326395093113184,
+          "val_accuracy": 0.5105,
+          "val_closure_agreement": 0.7600547375815941,
+          "val_edge_f1": 0.41401554024336606,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 68.77692520061973,
+          "val_accuracy": 0.5,
+          "val_closure_agreement": 0.2797178233761672,
+          "val_edge_f1": 0.1551846565438492,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 2.6428033966757356,
+          "val_accuracy": 0.5225,
+          "val_closure_agreement": 0.7790226268184879,
+          "val_edge_f1": 0.543030303030303,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.004338321236893534,
+          "val_accuracy": 0.5465,
+          "val_closure_agreement": 0.807001239157373,
+          "val_edge_f1": 0.6594241810896774,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.002001541123725474,
+          "val_accuracy": 0.54875,
+          "val_closure_agreement": 0.8092770931514601,
+          "val_edge_f1": 0.6659541670948516,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 210.452470899967,
+      "seed": 0,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.5045,
+          "accuracy_by_graph_hop": {
+            "2": 0.50125,
+            "3": 0.51625,
+            "4": 0.50875,
+            "5": 0.49625,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4890085838963423,
+            0.5199827807970061
+          ],
+          "auroc": 0.50471725,
+          "errors": {
+            "reader_caused": 1982,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.6847783664588395,
+            "closure_agreement_queried_pairs": 0.5045,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 28.001,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.17795054172525018,
+            "precision": 0.19210028213278096,
+            "recall": 0.16574228138288039,
+            "reversed_errors": 19544,
+            "topology_bce": 0.3817803533704463
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed1.pt",
+      "checkpoint_sha256": "f9b566e4c116069a2a4313d8475049025884bbb8c7b0c77967735c5ed2eb9c93",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7617330190542008,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.786,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.1586988123645739,
+            "precision": 1.0,
+            "recall": 0.08618840493356372,
+            "reversed_errors": 0,
+            "topology_bce": 0.31488937706612935
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7617330190542008,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.786,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.1586988123645739,
+            "precision": 1.0,
+            "recall": 0.08618840493356372,
+            "reversed_errors": 0,
+            "topology_bce": 0.3148893769376873
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7617330190542008,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.786,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.1586988123645739,
+            "precision": 1.0,
+            "recall": 0.08618840493356372,
+            "reversed_errors": 0,
+            "topology_bce": 0.3148893765523611
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.762856128331523,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.59,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.15737612612612611,
+            "precision": 1.0,
+            "recall": 0.0854087089381207,
+            "reversed_errors": 0,
+            "topology_bce": 0.31312436088226897
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.762856128331523,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.59,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.15737612612612611,
+            "precision": 1.0,
+            "recall": 0.0854087089381207,
+            "reversed_errors": 0,
+            "topology_bce": 0.31312436022997486
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.762856128331523,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 5.59,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.15737612612612611,
+            "precision": 1.0,
+            "recall": 0.0854087089381207,
+            "reversed_errors": 0,
+            "topology_bce": 0.31312436022997486
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.5,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7421458492003047,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 2.94,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.16310679611650486,
+            "precision": 1.0,
+            "recall": 0.08879492600422834,
+            "reversed_errors": 0,
+            "topology_bce": 0.7236772028147196
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.9995,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 0.99875,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 0.99875
+          },
+          "accuracy_wilson95": [
+            0.9981786068361692,
+            0.9998628741255152
+          ],
+          "auroc": 0.999403875,
+          "errors": {
+            "reader_caused": 2,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9998731571193006,
+            "closure_agreement_queried_pairs": 0.9995,
+            "closure_exact_graphs": 0.994,
+            "edges_predicted_mean": 32.459,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.989,
+            "f1": 0.9998305424183137,
+            "precision": 0.9997535352290582,
+            "recall": 0.9999075614716214,
+            "reversed_errors": 0,
+            "topology_bce": 0.0010810314262339076
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.50125,
+          "accuracy_by_graph_hop": {
+            "2": 0.50625,
+            "3": 0.5,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.48576112389059106,
+            0.5167364774131168
+          ],
+          "auroc": 0.50125,
+          "errors": {
+            "reader_caused": 1995,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7391110265491907,
+            "closure_agreement_queried_pairs": 0.50125,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 3.159,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.177407126611069,
+            "precision": 1.0,
+            "recall": 0.0973377703826955,
+            "reversed_errors": 0,
+            "topology_bce": 0.7224490652759379
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.4470584488287568,
+          "val_accuracy": 0.5395,
+          "val_closure_agreement": 0.7955414727434164,
+          "val_edge_f1": 0.6156208676363947,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.011139124130830168,
+          "val_accuracy": 0.5205,
+          "val_closure_agreement": 0.7788494375006099,
+          "val_edge_f1": 0.5394239423942394,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.6677769579472952,
+          "val_accuracy": 0.5185,
+          "val_closure_agreement": 0.7731561435861409,
+          "val_edge_f1": 0.5067635962087053,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.0031480773210059852,
+          "val_accuracy": 0.52725,
+          "val_closure_agreement": 0.7844744314023944,
+          "val_edge_f1": 0.567531779661017,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0015772152439458295,
+          "val_accuracy": 0.50125,
+          "val_closure_agreement": 0.7391110265491907,
+          "val_edge_f1": 0.177407126611069,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 200.47518080001464,
+      "seed": 1,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.499,
+          "accuracy_by_graph_hop": {
+            "2": 0.5025,
+            "3": 0.5025,
+            "4": 0.49625,
+            "5": 0.49375,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.48351326531023625,
+            0.5144886536467973
+          ],
+          "auroc": 0.496821125,
+          "errors": {
+            "reader_caused": 2004,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.44406960747006996,
+            "closure_agreement_queried_pairs": 0.499,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 159.48,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.21346921337543115,
+            "precision": 0.12845497868071232,
+            "recall": 0.6312318974548592,
+            "reversed_errors": 79048,
+            "topology_bce": 0.7062507159501378
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed2.pt",
+      "checkpoint_sha256": "fd27dffde599ad8e75cf908918ff7a6f8299d20867f4819fa57987b117a810d9",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7855209464573666,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.874,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5867839925899417,
+            "precision": 1.0,
+            "recall": 0.41521182148602753,
+            "reversed_errors": 0,
+            "topology_bce": 0.21208111052691778
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7855209464573666,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.874,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5867839925899417,
+            "precision": 1.0,
+            "recall": 0.41521182148602753,
+            "reversed_errors": 0,
+            "topology_bce": 0.21208111039847571
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7855209464573666,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.874,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.5867839925899417,
+            "precision": 1.0,
+            "recall": 0.41521182148602753,
+            "reversed_errors": 0,
+            "topology_bce": 0.21208111052691778
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7864483248391678,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.27,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5882226056945643,
+            "precision": 1.0,
+            "recall": 0.4166539343009931,
+            "reversed_errors": 0,
+            "topology_bce": 0.2113604846565823
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7864483248391678,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.27,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5882226056945643,
+            "precision": 1.0,
+            "recall": 0.4166539343009931,
+            "reversed_errors": 0,
+            "topology_bce": 0.21136048400428822
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7864483248391678,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 27.27,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.5882226056945643,
+            "precision": 1.0,
+            "recall": 0.4166539343009931,
+            "reversed_errors": 0,
+            "topology_bce": 0.2113604846565823
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.54,
+          "accuracy_by_graph_hop": {
+            "2": 0.6375,
+            "3": 0.5375,
+            "4": 0.5125,
+            "5": 0.5125,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4910079246678604,
+            0.5882310640841653
+          ],
+          "auroc": 0.54,
+          "errors": {
+            "reader_caused": 184,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.8009805788271135,
+            "closure_agreement_queried_pairs": 0.54,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.19,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.6289855072463767,
+            "precision": 1.0,
+            "recall": 0.4587737843551797,
+            "reversed_errors": 0,
+            "topology_bce": 0.446312909319001
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.99825,
+          "accuracy_by_graph_hop": {
+            "2": 0.99875,
+            "3": 0.99625,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 0.99625
+          },
+          "accuracy_wilson95": [
+            0.9963918345690146,
+            0.9991520450889617
+          ],
+          "auroc": 0.998643375,
+          "errors": {
+            "reader_caused": 7,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9996755749397497,
+            "closure_agreement_queried_pairs": 0.99825,
+            "closure_exact_graphs": 0.985,
+            "edges_predicted_mean": 32.476,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.981,
+            "f1": 0.9996611735715386,
+            "precision": 0.999322576672004,
+            "recall": 1.0,
+            "reversed_errors": 16,
+            "topology_bce": 0.0012897890251062966
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.543,
+          "accuracy_by_graph_hop": {
+            "2": 0.62,
+            "3": 0.55625,
+            "4": 0.51875,
+            "5": 0.51375,
+            "6": 0.50625
+          },
+          "accuracy_wilson95": [
+            0.5275283420524935,
+            0.558389142795059
+          ],
+          "auroc": 0.543,
+          "errors": {
+            "reader_caused": 1828,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.8016030988691469,
+            "closure_agreement_queried_pairs": 0.543,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.213,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.6383032286487508,
+            "precision": 1.0,
+            "recall": 0.46875577740802366,
+            "reversed_errors": 0,
+            "topology_bce": 0.44881983634619643
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 15.49653597890213,
+          "val_accuracy": 0.51175,
+          "val_closure_agreement": 0.7617719950433705,
+          "val_edge_f1": 0.4659906226147639,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.025368489229120314,
+          "val_accuracy": 0.52775,
+          "val_closure_agreement": 0.7852989101269404,
+          "val_edge_f1": 0.571360526543691,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.041620773418806496,
+          "val_accuracy": 0.53725,
+          "val_closure_agreement": 0.7955243977402453,
+          "val_edge_f1": 0.6131268875749714,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 1.9265740321208722,
+          "val_accuracy": 0.5495,
+          "val_closure_agreement": 0.8089575466635444,
+          "val_edge_f1": 0.6640888523241464,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0018356222407892345,
+          "val_accuracy": 0.543,
+          "val_closure_agreement": 0.8016030988691469,
+          "val_edge_f1": 0.6383032286487508,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 195.88329700002214,
+      "seed": 2,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.502,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.50125,
+            "4": 0.5025,
+            "5": 0.505,
+            "6": 0.50125
+          },
+          "accuracy_wilson95": [
+            0.48651047971233935,
+            0.5174856823735933
+          ],
+          "auroc": 0.502373375,
+          "errors": {
+            "reader_caused": 1992,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.343417342348935,
+            "closure_agreement_queried_pairs": 0.502,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 285.498,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.1820966686795491,
+            "precision": 0.10139825848167063,
+            "recall": 0.8920009860109693,
+            "reversed_errors": 112656,
+            "topology_bce": 1.2064938403191698
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed3.pt",
+      "checkpoint_sha256": "c7457014ba3159f2d6c17da33fba4cf7991343b30d98367f412a9f8100c62e8f",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7583701500641722,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4434781541129871
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7583701500641722,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4434781541129871
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7583701500641722,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4434781543698712
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7595089397610494,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4404348262726936
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7595089397610494,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4404348262726936
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7595089397610494,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.4404348275772817
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.5,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7344821020563594,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.9599239231825543
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.999,
+          "accuracy_by_graph_hop": {
+            "2": 0.9975,
+            "3": 0.9975,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9974313811879697,
+            0.9996110592522315
+          ],
+          "auroc": 0.99876325,
+          "errors": {
+            "reader_caused": 4,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9997170428045936,
+            "closure_agreement_queried_pairs": 0.999,
+            "closure_exact_graphs": 0.988,
+            "edges_predicted_mean": 32.451,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.984,
+            "f1": 0.9997072644634466,
+            "precision": 0.9997534744691997,
+            "recall": 0.9996610587292784,
+            "reversed_errors": 12,
+            "topology_bce": 0.0017223713984098753
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.5,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4845122748859586,
+            0.5154877251140414
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 2000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7303856999287729,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 0.0,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.0,
+            "precision": 1.0,
+            "recall": 0.0,
+            "reversed_errors": 0,
+            "topology_bce": 0.9662447956674048
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 18.06403699864447,
+          "val_accuracy": 0.5,
+          "val_closure_agreement": 0.7303686249256017,
+          "val_edge_f1": 0.0006149872390147904,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.014278621010482311,
+          "val_accuracy": 0.5,
+          "val_closure_agreement": 0.7303856999287729,
+          "val_edge_f1": 0.0,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.003083510626340285,
+          "val_accuracy": 0.50025,
+          "val_closure_agreement": 0.7302539784757388,
+          "val_edge_f1": 0.0013494448874440288,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 426.1120123602303,
+          "val_accuracy": 0.5005,
+          "val_closure_agreement": 0.7338543648586677,
+          "val_edge_f1": 0.07793899911163754,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.002596956166671589,
+          "val_accuracy": 0.5,
+          "val_closure_agreement": 0.7303856999287729,
+          "val_edge_f1": 0.0,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 200.1185272000148,
+      "seed": 3,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.499,
+          "accuracy_by_graph_hop": {
+            "2": 0.5025,
+            "3": 0.5025,
+            "4": 0.49625,
+            "5": 0.49375,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.48351326531023625,
+            0.5144886536467973
+          ],
+          "auroc": 0.501385,
+          "errors": {
+            "reader_caused": 2004,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.44406960747006996,
+            "closure_agreement_queried_pairs": 0.499,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 159.48,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.21346921337543115,
+            "precision": 0.12845497868071232,
+            "recall": 0.6312318974548592,
+            "reversed_errors": 79048,
+            "topology_bce": 0.7184341929791012
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed4.pt",
+      "checkpoint_sha256": "0fe6d3839b2c8303bcd6aafc7cedd94cfb91bf6a18347098e3ab1a37503c866e",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.76984504064238,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.954,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.38403581830874034,
+            "precision": 1.0,
+            "recall": 0.2376511946612644,
+            "reversed_errors": 0,
+            "topology_bce": 0.29873392404709714
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.76984504064238,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.954,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.38403581830874034,
+            "precision": 1.0,
+            "recall": 0.2376511946612644,
+            "reversed_errors": 0,
+            "topology_bce": 0.29873392430398127
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.76984504064238,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.954,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.38403581830874034,
+            "precision": 1.0,
+            "recall": 0.2376511946612644,
+            "reversed_errors": 0,
+            "topology_bce": 0.29873392417553923
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7706731974266856,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.35,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.37995049504950495,
+            "precision": 1.0,
+            "recall": 0.2345301757066463,
+            "reversed_errors": 0,
+            "topology_bce": 0.2965009726226438
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7706731974266856,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.35,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.37995049504950495,
+            "precision": 1.0,
+            "recall": 0.2345301757066463,
+            "reversed_errors": 0,
+            "topology_bce": 0.2965009732749379
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7706731974266856,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 15.35,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.37995049504950495,
+            "precision": 1.0,
+            "recall": 0.2345301757066463,
+            "reversed_errors": 0,
+            "topology_bce": 0.2965009732749379
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.51,
+          "accuracy_by_graph_hop": {
+            "2": 0.5375,
+            "3": 0.5125,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4611481516482723,
+            0.558661595539734
+          ],
+          "auroc": 0.51,
+          "errors": {
+            "reader_caused": 196,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7638042650418888,
+            "closure_agreement_queried_pairs": 0.51,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 8.75,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.41806020066889626,
+            "precision": 1.0,
+            "recall": 0.2642706131078224,
+            "reversed_errors": 0,
+            "topology_bce": 0.5500084555306498
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.9995,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 0.99875,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 0.99875
+          },
+          "accuracy_wilson95": [
+            0.9981786068361692,
+            0.9998628741255152
+          ],
+          "auroc": 0.999688125,
+          "errors": {
+            "reader_caused": 2,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9998463249714603,
+            "closure_agreement_queried_pairs": 0.9995,
+            "closure_exact_graphs": 0.995,
+            "edges_predicted_mean": 32.449,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.991,
+            "f1": 0.9998613315255073,
+            "precision": 0.9999383648186385,
+            "recall": 0.9997843101004499,
+            "reversed_errors": 4,
+            "topology_bce": 0.0014912678578955464
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.51075,
+          "accuracy_by_graph_hop": {
+            "2": 0.54375,
+            "3": 0.50875,
+            "4": 0.50125,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4952555370707894,
+            0.5262238341410987
+          ],
+          "auroc": 0.51075,
+          "errors": {
+            "reader_caused": 1957,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7603084233429929,
+            "closure_agreement_queried_pairs": 0.51075,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 8.578,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.4181126925326574,
+            "precision": 1.0,
+            "recall": 0.26431256547729093,
+            "reversed_errors": 0,
+            "topology_bce": 0.5550429566576185
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 2.3735565307475626,
+          "val_accuracy": 0.548,
+          "val_closure_agreement": 0.8081964893793481,
+          "val_edge_f1": 0.6621045037617231,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 12.130510611065663,
+          "val_accuracy": 0.535,
+          "val_closure_agreement": 0.7920215828040083,
+          "val_edge_f1": 0.6010000862143289,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.0132075498807244,
+          "val_accuracy": 0.54875,
+          "val_closure_agreement": 0.8090307252485632,
+          "val_edge_f1": 0.6642520527648016,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.003466625497210771,
+          "val_accuracy": 0.51025,
+          "val_closure_agreement": 0.7584643230005171,
+          "val_edge_f1": 0.4015563819045977,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0018879866036586464,
+          "val_accuracy": 0.51075,
+          "val_closure_agreement": 0.7603084233429929,
+          "val_edge_f1": 0.4181126925326574,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 199.62774160003755,
+      "seed": 4,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.49875,
+          "accuracy_by_graph_hop": {
+            "2": 0.5025,
+            "3": 0.5025,
+            "4": 0.49625,
+            "5": 0.4925,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4832635225868831,
+            0.5142388761094089
+          ],
+          "auroc": 0.4965755,
+          "errors": {
+            "reader_caused": 2005,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.4404984925211486,
+            "closure_agreement_queried_pairs": 0.49875,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 162.147,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.21254772585957935,
+            "precision": 0.12754475876827817,
+            "recall": 0.6372404017994701,
+            "reversed_errors": 80000,
+            "topology_bce": 0.7416664358853515
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed5.pt",
+      "checkpoint_sha256": "702d6a55973bee002fb0911cd8b60fbe9a0c8ee1770abcd918a9ac41c4534c1d",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7938036824958041,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 32.222,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6486301507740001,
+            "precision": 1.0,
+            "recall": 0.47997974140499317,
+            "reversed_errors": 0,
+            "topology_bce": 0.24858523208692276
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7938036824958041,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 32.222,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6486301507740001,
+            "precision": 1.0,
+            "recall": 0.47997974140499317,
+            "reversed_errors": 0,
+            "topology_bce": 0.24858523221536483
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7938036824958041,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 32.222,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6486301507740001,
+            "precision": 1.0,
+            "recall": 0.47997974140499317,
+            "reversed_errors": 0,
+            "topology_bce": 0.24858523247224895
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7940565210126159,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 31.56,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.6506545716936398,
+            "precision": 1.0,
+            "recall": 0.48220015278838807,
+            "reversed_errors": 0,
+            "topology_bce": 0.24774679950609338
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7940565210126159,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 31.56,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.6506545716936398,
+            "precision": 1.0,
+            "recall": 0.48220015278838807,
+            "reversed_errors": 0,
+            "topology_bce": 0.24774680015838743
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7940565210126159,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 31.56,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.6506545716936398,
+            "precision": 1.0,
+            "recall": 0.48220015278838807,
+            "reversed_errors": 0,
+            "topology_bce": 0.24774680015838743
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5475,
+          "accuracy_by_graph_hop": {
+            "2": 0.675,
+            "3": 0.5375,
+            "4": 0.5125,
+            "5": 0.5125,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4985002204356925,
+            0.5955960787073378
+          ],
+          "auroc": 0.5475,
+          "errors": {
+            "reader_caused": 181,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.8093821401370906,
+            "closure_agreement_queried_pairs": 0.5475,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.44,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.6635721493440968,
+            "precision": 1.0,
+            "recall": 0.4965267290848686,
+            "reversed_errors": 0,
+            "topology_bce": 0.5031996593803537
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.999,
+          "accuracy_by_graph_hop": {
+            "2": 0.99875,
+            "3": 0.99875,
+            "4": 0.99875,
+            "5": 1.0,
+            "6": 0.99875
+          },
+          "accuracy_wilson95": [
+            0.9974313811879697,
+            0.9996110592522315
+          ],
+          "auroc": 0.99895325,
+          "errors": {
+            "reader_caused": 4,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9998194928236201,
+            "closure_agreement_queried_pairs": 0.999,
+            "closure_exact_graphs": 0.994,
+            "edges_predicted_mean": 32.451,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.991,
+            "f1": 0.9998613357984747,
+            "precision": 0.9999075529259499,
+            "recall": 0.9998151229432427,
+            "reversed_errors": 4,
+            "topology_bce": 0.0010842293214726063
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.54975,
+          "accuracy_by_graph_hop": {
+            "2": 0.63125,
+            "3": 0.565,
+            "4": 0.5275,
+            "5": 0.5175,
+            "6": 0.5075
+          },
+          "accuracy_wilson95": [
+            0.5342913237775323,
+            0.5651132081100428
+          ],
+          "auroc": 0.54975,
+          "errors": {
+            "reader_caused": 1801,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.8099064289826226,
+            "closure_agreement_queried_pairs": 0.54975,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.249,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.667268956737778,
+            "precision": 1.0,
+            "recall": 0.5006778825414433,
+            "reversed_errors": 0,
+            "topology_bce": 0.5017863106216033
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 7.46314316066727,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099308218442954,
+          "val_edge_f1": 0.6674057649667405,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.010780966616235673,
+          "val_accuracy": 0.52975,
+          "val_closure_agreement": 0.7854867351618222,
+          "val_edge_f1": 0.5742965712654029,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.033041463741101326,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099308218442954,
+          "val_edge_f1": 0.6674057649667405,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.0034691831532400103,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099259432719609,
+          "val_edge_f1": 0.6673784055679882,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0014155111890286208,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099064289826226,
+          "val_edge_f1": 0.667268956737778,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 199.87350390001666,
+      "seed": 5,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.49825,
+          "accuracy_by_graph_hop": {
+            "2": 0.48125,
+            "3": 0.50875,
+            "4": 0.49875,
+            "5": 0.50125,
+            "6": 0.50125
+          },
+          "accuracy_wilson95": [
+            0.48276404874495094,
+            0.5137393094298579
+          ],
+          "auroc": 0.4983635,
+          "errors": {
+            "reader_caused": 2007,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7096493282205896,
+            "closure_agreement_queried_pairs": 0.49825,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.021,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.1223529411764706,
+            "precision": 0.21365486521772523,
+            "recall": 0.08572132864978123,
+            "reversed_errors": 10188,
+            "topology_bce": 0.3475954609242154
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed6.pt",
+      "checkpoint_sha256": "43045bde93eb5177ddc0c9b81bdec7ae6e7c7d57c4948f371902d9c837b4f476",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7893095731727383,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 30.014,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6179153027402055,
+            "precision": 1.0,
+            "recall": 0.447089316570339,
+            "reversed_errors": 0,
+            "topology_bce": 0.19635119018446795
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7893095731727383,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 30.014,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6179153027402055,
+            "precision": 1.0,
+            "recall": 0.447089316570339,
+            "reversed_errors": 0,
+            "topology_bce": 0.19635119018446795
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5005,
+          "accuracy_by_graph_hop": {
+            "10": 0.5025,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.47860660160988655,
+            0.5223914812725129
+          ],
+          "auroc": 0.5005,
+          "errors": {
+            "reader_caused": 999,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7893095731727383,
+            "closure_agreement_queried_pairs": 0.5005,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 30.014,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.6179153027402055,
+            "precision": 1.0,
+            "recall": 0.447089316570339,
+            "reversed_errors": 0,
+            "topology_bce": 0.1963511900560259
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7892785529283983,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 29.22,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.617302207668744,
+            "precision": 1.0,
+            "recall": 0.44644766997708174,
+            "reversed_errors": 0,
+            "topology_bce": 0.19704677218540848
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7892785529283983,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 29.22,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.617302207668744,
+            "precision": 1.0,
+            "recall": 0.44644766997708174,
+            "reversed_errors": 0,
+            "topology_bce": 0.19704677218540848
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7892785529283983,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 29.22,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.617302207668744,
+            "precision": 1.0,
+            "recall": 0.44644766997708174,
+            "reversed_errors": 0,
+            "topology_bce": 0.19704677218540848
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5325,
+          "accuracy_by_graph_hop": {
+            "2": 0.6375,
+            "3": 0.5125,
+            "4": 0.5125,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.48352660176021306,
+            0.5808550766008076
+          ],
+          "auroc": 0.5325,
+          "errors": {
+            "reader_caused": 187,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7969583015993907,
+            "closure_agreement_queried_pairs": 0.5325,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 14.87,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.6198416006669445,
+            "precision": 1.0,
+            "recall": 0.44910903050437934,
+            "reversed_errors": 0,
+            "topology_bce": 0.4093649605838429
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.9985,
+          "accuracy_by_graph_hop": {
+            "2": 0.9975,
+            "3": 0.9975,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 0.9975
+          },
+          "accuracy_wilson95": [
+            0.9967310296383775,
+            0.9993123702803407
+          ],
+          "auroc": 0.99875075,
+          "errors": {
+            "reader_caused": 6,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9995828820653924,
+            "closure_agreement_queried_pairs": 0.9985,
+            "closure_exact_graphs": 0.985,
+            "edges_predicted_mean": 32.468,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.983,
+            "f1": 0.9996919380179292,
+            "precision": 0.9994764075397314,
+            "recall": 0.9999075614716214,
+            "reversed_errors": 12,
+            "topology_bce": 0.0015385825909836708
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.537,
+          "accuracy_by_graph_hop": {
+            "2": 0.6075,
+            "3": 0.54375,
+            "4": 0.5175,
+            "5": 0.51375,
+            "6": 0.5025
+          },
+          "accuracy_wilson95": [
+            0.5215191969858051,
+            0.5524098016039494
+          ],
+          "auroc": 0.537,
+          "errors": {
+            "reader_caused": 1852,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7982539589614496,
+            "closure_agreement_queried_pairs": 0.537,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 14.751,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.6249761677788369,
+            "precision": 1.0,
+            "recall": 0.4545202440377149,
+            "reversed_errors": 0,
+            "topology_bce": 0.41326976649541103
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 8.625592732325197,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099308218442954,
+          "val_edge_f1": 0.6674057649667405,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 85.13185046889075,
+          "val_accuracy": 0.5,
+          "val_closure_agreement": 0.2797178233761672,
+          "val_edge_f1": 0.15516573674321202,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 2.7937098445035518,
+          "val_accuracy": 0.5485,
+          "val_closure_agreement": 0.8078574286020939,
+          "val_edge_f1": 0.6613319033967867,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.003348944419529289,
+          "val_accuracy": 0.54325,
+          "val_closure_agreement": 0.8017909239040287,
+          "val_edge_f1": 0.6403284595081487,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.001953207266982645,
+          "val_accuracy": 0.537,
+          "val_closure_agreement": 0.7982539589614496,
+          "val_edge_f1": 0.6249761677788369,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 199.7022367999889,
+      "seed": 6,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.50075,
+          "accuracy_by_graph_hop": {
+            "2": 0.50125,
+            "3": 0.50125,
+            "4": 0.50125,
+            "5": 0.495,
+            "6": 0.505
+          },
+          "accuracy_wilson95": [
+            0.4852615726840539,
+            0.516236988098171
+          ],
+          "auroc": 0.498888375,
+          "errors": {
+            "reader_caused": 1997,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.3940861946160076,
+            "closure_agreement_queried_pairs": 0.50075,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 210.762,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.2007269258601408,
+            "precision": 0.11581784192596388,
+            "recall": 0.7521414925741049,
+            "reversed_errors": 94608,
+            "topology_bce": 0.8007741092833904
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed7.pt",
+      "checkpoint_sha256": "f8b2876c29e832783a49b6d68d651c6d038fb24a2b24fc6540b55ea92ad7eb81",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7678900516668312,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.776,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.3405349285608345,
+            "precision": 1.0,
+            "recall": 0.20520765059882023,
+            "reversed_errors": 0,
+            "topology_bce": 0.22801163335863156
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7678900516668312,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.776,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.3405349285608345,
+            "precision": 1.0,
+            "recall": 0.20520765059882023,
+            "reversed_errors": 0,
+            "topology_bce": 0.2280116332301895
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7678900516668312,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.776,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.3405349285608345,
+            "precision": 1.0,
+            "recall": 0.20520765059882023,
+            "reversed_errors": 0,
+            "topology_bce": 0.2280116332301895
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.768861224830813,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.68,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.34576014153923923,
+            "precision": 1.0,
+            "recall": 0.20901451489686784,
+            "reversed_errors": 0,
+            "topology_bce": 0.22642263673597057
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.768861224830813,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.68,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.34576014153923923,
+            "precision": 1.0,
+            "recall": 0.20901451489686784,
+            "reversed_errors": 0,
+            "topology_bce": 0.2264226360836765
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.768861224830813,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 13.68,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.34576014153923923,
+            "precision": 1.0,
+            "recall": 0.20901451489686784,
+            "reversed_errors": 0,
+            "topology_bce": 0.22642263673597057
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.505,
+          "accuracy_by_graph_hop": {
+            "2": 0.525,
+            "3": 0.5,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4561884685810796,
+            0.5537164050129236
+          ],
+          "auroc": 0.505,
+          "errors": {
+            "reader_caused": 198,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7588061690784463,
+            "closure_agreement_queried_pairs": 0.505,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 7.69,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.3769607843137255,
+            "precision": 1.0,
+            "recall": 0.2322561159770462,
+            "reversed_errors": 0,
+            "topology_bce": 0.504939426942652
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.99525,
+          "accuracy_by_graph_hop": {
+            "2": 0.99625,
+            "3": 0.9925,
+            "4": 0.995,
+            "5": 0.99625,
+            "6": 0.99625
+          },
+          "accuracy_wilson95": [
+            0.9925926926030255,
+            0.9969569439260517
+          ],
+          "auroc": 0.994287375,
+          "errors": {
+            "reader_caused": 19,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9983876318434174,
+            "closure_agreement_queried_pairs": 0.99325,
+            "closure_exact_graphs": 0.944,
+            "edges_predicted_mean": 32.533,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.925,
+            "f1": 0.9987535968732209,
+            "precision": 0.9975409584114592,
+            "recall": 0.9999691871572072,
+            "reversed_errors": 28,
+            "topology_bce": 0.0035921053531361886
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.50675,
+          "accuracy_by_graph_hop": {
+            "2": 0.525,
+            "3": 0.5075,
+            "4": 0.50125,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.49125720843497656,
+            0.5222298386050462
+          ],
+          "auroc": 0.50675,
+          "errors": {
+            "reader_caused": 1973,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7581618515157724,
+            "closure_agreement_queried_pairs": 0.50675,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 7.988,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.3950348647445725,
+            "precision": 1.0,
+            "recall": 0.24613298822949406,
+            "reversed_errors": 0,
+            "topology_bce": 0.502849149997247
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 3.3605073849335314,
+          "val_accuracy": 0.51025,
+          "val_closure_agreement": 0.7585716515918781,
+          "val_edge_f1": 0.40900066181336864,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.140553239941597,
+          "val_accuracy": 0.53625,
+          "val_closure_agreement": 0.7937656724136248,
+          "val_edge_f1": 0.6052088705518308,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.004738870550412685,
+          "val_accuracy": 0.535,
+          "val_closure_agreement": 0.7960415264077121,
+          "val_edge_f1": 0.6182908928457463,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.0021750821699388326,
+          "val_accuracy": 0.522,
+          "val_closure_agreement": 0.7821790631189689,
+          "val_edge_f1": 0.5476622043633028,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 149.74097149598225,
+          "val_accuracy": 0.50675,
+          "val_closure_agreement": 0.7581618515157724,
+          "val_edge_f1": 0.3950348647445725,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 202.0449637999991,
+      "seed": 7,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.49925,
+          "accuracy_by_graph_hop": {
+            "2": 0.50125,
+            "3": 0.50375,
+            "4": 0.4975,
+            "5": 0.49375,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4837630119018291,
+            0.5147384273159461
+          ],
+          "auroc": 0.501324375,
+          "errors": {
+            "reader_caused": 2003,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.43387583057693996,
+            "closure_agreement_queried_pairs": 0.49925,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 168.129,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.21124422308969354,
+            "precision": 0.12601038488303623,
+            "recall": 0.6528008874098724,
+            "reversed_errors": 81784,
+            "topology_bce": 0.7437804815426777
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed8.pt",
+      "checkpoint_sha256": "d1a9ef116be9c37db4db310d6c04bfeb2dc48094435ff5fe517ac1be3f54e190",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7705176144403857,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.77,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.39975209172606135,
+            "precision": 1.0,
+            "recall": 0.24980635166537568,
+            "reversed_errors": 0,
+            "topology_bce": 0.2398308368713334
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7705176144403857,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.77,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.39975209172606135,
+            "precision": 1.0,
+            "recall": 0.24980635166537568,
+            "reversed_errors": 0,
+            "topology_bce": 0.23983083712821757
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7705176144403857,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.77,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.39975209172606135,
+            "precision": 1.0,
+            "recall": 0.24980635166537568,
+            "reversed_errors": 0,
+            "topology_bce": 0.23983083712821757
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7717645584426435,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.71,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.40676728334956186,
+            "precision": 1.0,
+            "recall": 0.2553093964858671,
+            "reversed_errors": 0,
+            "topology_bce": 0.24025968335767173
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7717645584426435,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.71,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.40676728334956186,
+            "precision": 1.0,
+            "recall": 0.2553093964858671,
+            "reversed_errors": 0,
+            "topology_bce": 0.2402596840099658
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7717645584426435,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 16.71,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.40676728334956186,
+            "precision": 1.0,
+            "recall": 0.2553093964858671,
+            "reversed_errors": 0,
+            "topology_bce": 0.24025968466225986
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.515,
+          "accuracy_by_graph_hop": {
+            "2": 0.5625,
+            "3": 0.5125,
+            "4": 0.5,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.46611266795606887,
+            0.5636019528259407
+          ],
+          "auroc": 0.515,
+          "errors": {
+            "reader_caused": 194,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7701113861386139,
+            "closure_agreement_queried_pairs": 0.515,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 10.11,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.4678389634428505,
+            "precision": 1.0,
+            "recall": 0.3053458169737239,
+            "reversed_errors": 0,
+            "topology_bce": 0.496300662599024
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.99975,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 0.99875
+          },
+          "accuracy_wilson95": [
+            0.9985851325891636,
+            0.9999558686332625
+          ],
+          "auroc": 0.999750375,
+          "errors": {
+            "reader_caused": 1,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9999438964181522,
+            "closure_agreement_queried_pairs": 0.99975,
+            "closure_exact_graphs": 0.997,
+            "edges_predicted_mean": 32.453,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.997,
+            "f1": 0.9999537800237261,
+            "precision": 0.9999691862077466,
+            "recall": 0.9999383743144142,
+            "reversed_errors": 0,
+            "topology_bce": 0.0010475693010444796
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.516,
+          "accuracy_by_graph_hop": {
+            "2": 0.5575,
+            "3": 0.52,
+            "4": 0.5025,
+            "5": 0.5,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.5005048473637068,
+            0.5314644493237546
+          ],
+          "auroc": 0.516,
+          "errors": {
+            "reader_caused": 1936,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7688971499380421,
+            "closure_agreement_queried_pairs": 0.516,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 10.224,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.4790758704719059,
+            "precision": 0.9999021909233177,
+            "recall": 0.31499969187157206,
+            "reversed_errors": 0,
+            "topology_bce": 0.5029436264242761
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.1375073060058056,
+          "val_accuracy": 0.54375,
+          "val_closure_agreement": 0.8036228278156681,
+          "val_edge_f1": 0.6507904822740339,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.019262862054631114,
+          "val_accuracy": 0.5295,
+          "val_closure_agreement": 0.7867941925474929,
+          "val_edge_f1": 0.5777953066456321,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.04605153420008719,
+          "val_accuracy": 0.54975,
+          "val_closure_agreement": 0.8099308218442954,
+          "val_edge_f1": 0.6674057649667405,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.0022941586188971997,
+          "val_accuracy": 0.54325,
+          "val_closure_agreement": 0.8013469738215808,
+          "val_edge_f1": 0.63810342297776,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0013425723901018501,
+          "val_accuracy": 0.516,
+          "val_closure_agreement": 0.7688971499380421,
+          "val_edge_f1": 0.4790758704719059,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 197.72859359998256,
+      "seed": 8,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.502,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.50125,
+            "4": 0.5025,
+            "5": 0.50375,
+            "6": 0.5025
+          },
+          "accuracy_wilson95": [
+            0.48651047971233935,
+            0.5174856823735933
+          ],
+          "auroc": 0.502330125,
+          "errors": {
+            "reader_caused": 1992,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.3450272712193504,
+            "closure_agreement_queried_pairs": 0.502,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 283.78,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.18247247291562574,
+            "precision": 0.10167030798505884,
+            "recall": 0.8890121402600604,
+            "reversed_errors": 112292,
+            "topology_bce": 1.0929217119381922
+          },
+          "steps": 6
+        }
+      }
+    },
+    {
+      "checkpoint_path": "artifacts/nl_reader/words_seed9.pt",
+      "checkpoint_sha256": "7d9f5a7abb85941e0b2440f3e7f5128f8c95495eb9f44c787de5450d3850981b",
+      "final": {
+        "long_out_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7753099598512522,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.99,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.47638501168834113,
+            "precision": 1.0,
+            "recall": 0.31266758028957875,
+            "reversed_errors": 0,
+            "topology_bce": 0.25214961837067135
+          },
+          "steps": 16
+        },
+        "long_out_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7753099598512522,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.99,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.47638501168834113,
+            "precision": 1.0,
+            "recall": 0.31266758028957875,
+            "reversed_errors": 0,
+            "topology_bce": 0.25214961811378717
+          },
+          "steps": 192
+        },
+        "long_out_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4781075492434439,
+            0.5218924507565561
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 1000,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7753099598512522,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.99,
+            "edges_true_mean": 67.132,
+            "exact_graphs": 0.0,
+            "f1": 0.47638501168834113,
+            "precision": 1.0,
+            "recall": 0.31266758028957875,
+            "reversed_errors": 0,
+            "topology_bce": 0.25214961811378717
+          },
+          "steps": 48
+        },
+        "sample_long_16": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7764119809507896,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.46,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.47631241997439183,
+            "precision": 1.0,
+            "recall": 0.3126050420168067,
+            "reversed_errors": 0,
+            "topology_bce": 0.25124850650749436
+          },
+          "steps": 16
+        },
+        "sample_long_192": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7764119809507896,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.46,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.47631241997439183,
+            "precision": 1.0,
+            "recall": 0.3126050420168067,
+            "reversed_errors": 0,
+            "topology_bce": 0.25124850715978847
+          },
+          "steps": 192
+        },
+        "sample_long_48": {
+          "accuracy": 0.5,
+          "accuracy_by_graph_hop": {
+            "10": 0.5,
+            "12": 0.5,
+            "14": 0.5,
+            "16": 0.5,
+            "8": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4512336165999552,
+            0.5487663834000448
+          ],
+          "auroc": 0.5,
+          "errors": {
+            "reader_caused": 200,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7764119809507896,
+            "closure_agreement_queried_pairs": 0.5,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 20.46,
+            "edges_true_mean": 65.45,
+            "exact_graphs": 0.0,
+            "f1": 0.47631241997439183,
+            "precision": 1.0,
+            "recall": 0.3126050420168067,
+            "reversed_errors": 0,
+            "topology_bce": 0.25124850650749436
+          },
+          "steps": 48
+        },
+        "sample_val": {
+          "accuracy": 0.5225,
+          "accuracy_by_graph_hop": {
+            "2": 0.5875,
+            "3": 0.5125,
+            "4": 0.5,
+            "5": 0.5125,
+            "6": 0.5
+          },
+          "accuracy_wilson95": [
+            0.4735685130017636,
+            0.5710034181712508
+          ],
+          "auroc": 0.5225,
+          "errors": {
+            "reader_caused": 191,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.784510662604722,
+            "closure_agreement_queried_pairs": 0.5225,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 12.66,
+            "edges_true_mean": 33.11,
+            "exact_graphs": 0.0,
+            "f1": 0.5532007865414027,
+            "precision": 1.0,
+            "recall": 0.3823618242222893,
+            "reversed_errors": 0,
+            "topology_bce": 0.5284791651035414
+          },
+          "steps": 6
+        },
+        "val_in": {
+          "accuracy": 0.99925,
+          "accuracy_by_graph_hop": {
+            "2": 0.99875,
+            "3": 0.99875,
+            "4": 0.99875,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9977970558125356,
+            0.999744904888407
+          ],
+          "auroc": 0.999494375,
+          "errors": {
+            "reader_caused": 3,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.9998707178331333,
+            "closure_agreement_queried_pairs": 0.99925,
+            "closure_exact_graphs": 0.992,
+            "edges_predicted_mean": 32.464,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.99,
+            "f1": 0.9998459595181614,
+            "precision": 0.9996919664859537,
+            "recall": 1.0,
+            "reversed_errors": 4,
+            "topology_bce": 0.002029974622241314
+          },
+          "steps": 6
+        },
+        "val_out": {
+          "accuracy": 0.52475,
+          "accuracy_by_graph_hop": {
+            "2": 0.58,
+            "3": 0.5275,
+            "4": 0.50625,
+            "5": 0.50625,
+            "6": 0.50375
+          },
+          "accuracy_wilson95": [
+            0.5092574956013015,
+            0.5401950102121155
+          ],
+          "auroc": 0.52475,
+          "errors": {
+            "reader_caused": 1901,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.7829596346925036,
+            "closure_agreement_queried_pairs": 0.52475,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 12.664,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.5611950884347711,
+            "precision": 0.9996841440303221,
+            "recall": 0.3900905897578111,
+            "reversed_errors": 16,
+            "topology_bce": 0.5272157468314955
+          },
+          "steps": 6
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 18.823476717893033,
+          "val_accuracy": 0.51525,
+          "val_closure_agreement": 0.7164915259198548,
+          "val_edge_f1": 0.5771307570142933,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.026121466572396456,
+          "val_accuracy": 0.54125,
+          "val_closure_agreement": 0.7947779761730527,
+          "val_edge_f1": 0.6439939821046797,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.003499902249779552,
+          "val_accuracy": 0.51525,
+          "val_closure_agreement": 0.7640015026002791,
+          "val_edge_f1": 0.45140117307513267,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 4,
+          "train_loss": 1434.189036500194,
+          "val_accuracy": 0.51325,
+          "val_closure_agreement": 0.767833621169101,
+          "val_edge_f1": 0.4732088253281272,
+          "val_exact_graphs": 0.0
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.0033048235152382402,
+          "val_accuracy": 0.52475,
+          "val_closure_agreement": 0.7829596346925036,
+          "val_edge_f1": 0.5611950884347711,
+          "val_exact_graphs": 0.0
+        }
+      ],
+      "oracle": {
+        "val_out": {
+          "accuracy": 1.0,
+          "accuracy_by_graph_hop": {
+            "2": 1.0,
+            "3": 1.0,
+            "4": 1.0,
+            "5": 1.0,
+            "6": 1.0
+          },
+          "accuracy_wilson95": [
+            0.9990405214831674,
+            0.9999999999999999
+          ],
+          "auroc": 1.0,
+          "errors": {
+            "reader_caused": 0,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 1.0,
+            "closure_agreement_queried_pairs": 1.0,
+            "closure_exact_graphs": 1.0,
+            "edges_predicted_mean": 32.454,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 1.0,
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "reversed_errors": 0,
+            "topology_bce": null
+          },
+          "steps": 6
+        }
+      },
+      "passes": false,
+      "rescore_matches_record": true,
+      "science_open": false,
+      "seconds": 198.55897839996032,
+      "seed": 9,
+      "untrained_reader": {
+        "val_out": {
+          "accuracy": 0.50225,
+          "accuracy_by_graph_hop": {
+            "2": 0.5,
+            "3": 0.50125,
+            "4": 0.50375,
+            "5": 0.5025,
+            "6": 0.50375
+          },
+          "accuracy_wilson95": [
+            0.48676027272284594,
+            0.5177354096238282
+          ],
+          "auroc": 0.501662125,
+          "errors": {
+            "reader_caused": 1991,
+            "solver_caused": 0
+          },
+          "reader": {
+            "closure_agreement_all_pairs": 0.3604630740859995,
+            "closure_agreement_queried_pairs": 0.50225,
+            "closure_exact_graphs": 0.0,
+            "edges_predicted_mean": 254.19,
+            "edges_true_mean": 32.454,
+            "exact_graphs": 0.0,
+            "f1": 0.18966383388453972,
+            "precision": 0.10693969078248554,
+            "recall": 0.8375855056387502,
+            "reversed_errors": 105628,
+            "topology_bce": 1.0424746692658509
+          },
+          "steps": 6
+        }
+      }
+    }
+  ],
+  "science_open": false,
+  "self_audit_mismatches": [],
+  "summary": {
+    "long_out": {
+      "accuracy_16": {
+        "max": 0.5005,
+        "mean": 0.50015,
+        "min": 0.5
+      },
+      "accuracy_192": {
+        "max": 0.5005,
+        "mean": 0.50015,
+        "min": 0.5
+      },
+      "accuracy_48": {
+        "max": 0.5005,
+        "mean": 0.50015,
+        "min": 0.5
+      },
+      "closure_agreement": {
+        "max": 0.7938036824958041,
+        "mean": 0.775746412939744,
+        "min": 0.7583701500641722
+      },
+      "edge_f1": {
+        "max": 0.6486301507740001,
+        "mean": 0.41970763799405686,
+        "min": 0.0
+      }
+    },
+    "passes": 0,
+    "sample_long": {
+      "accuracy_16": {
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5
+      },
+      "accuracy_192": {
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5
+      },
+      "accuracy_48": {
+        "max": 0.5,
+        "mean": 0.5,
+        "min": 0.5
+      },
+      "closure_agreement": {
+        "max": 0.7940565210126159,
+        "mean": 0.7765989222157239,
+        "min": 0.7595089397610494
+      },
+      "edge_f1": {
+        "max": 0.6506545716936398,
+        "mean": 0.4210872916008431,
+        "min": 0.0
+      }
+    },
+    "sample_val": {
+      "accuracy": {
+        "max": 0.5475,
+        "mean": 0.522,
+        "min": 0.5
+      },
+      "auroc": {
+        "max": 0.5475,
+        "mean": 0.522,
+        "min": 0.5
+      },
+      "edge_f1": {
+        "max": 0.6635721493440968,
+        "mean": 0.4553248275810483,
+        "min": 0.0
+      },
+      "exact_graphs": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0
+      }
+    },
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "val_in": {
+      "accuracy": {
+        "max": 0.99975,
+        "mean": 0.998725,
+        "min": 0.99525
+      },
+      "auroc": {
+        "max": 0.999750375,
+        "mean": 0.9987021875,
+        "min": 0.994287375
+      },
+      "edge_f1": {
+        "max": 0.9999537800237261,
+        "mean": 0.9997043686028174,
+        "min": 0.9987535968732209
+      },
+      "exact_graphs": {
+        "max": 0.997,
+        "mean": 0.9823000000000001,
+        "min": 0.925
+      }
+    },
+    "val_out": {
+      "accuracy": {
+        "max": 0.54975,
+        "mean": 0.5238,
+        "min": 0.5
+      },
+      "auroc": {
+        "max": 0.54975,
+        "mean": 0.5238,
+        "min": 0.5
+      },
+      "edge_f1": {
+        "max": 0.667268956737778,
+        "mean": 0.46273281630551927,
+        "min": 0.0
+      },
+      "exact_graphs": {
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0
+      }
+    }
+  }
+}

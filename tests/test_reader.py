@@ -479,3 +479,29 @@ def test_reinforce_stays_finite_when_the_evidence_runs_away():
     loss = reinforce_rows(reader, AnchoredMP(8, 3).eval(), graph, tokens, density=0.1)
     loss.backward()
     assert torch.isfinite(loss) and all(torch.isfinite(p.grad).all() for p in reader.parameters() if p.grad is not None)
+
+
+ESTIMATOR_ARTIFACTS = {
+    Path(__file__).resolve().parents[1] / "artifacts" / "reader_estimator.json": 1e-2,
+    Path(__file__).resolve().parents[1] / "artifacts" / "reader_estimator_lr1e-3.json": 1e-3,
+}
+
+
+@pytest.mark.skipif(not all(p.exists() for p in ESTIMATOR_ARTIFACTS), reason="estimator artifacts not present")
+def test_estimator_artifact_contract():
+    from reachability_gen.run_reader import ESTIMATOR_STUDY, LONG_STEPS, PASS_CLOSURE, REINFORCE_SAMPLES
+
+    for path, lr in ESTIMATOR_ARTIFACTS.items():
+        art = json.loads(path.read_text(encoding="utf-8"))
+        pr = art["protocol"]
+        assert art["science_open"] is False and art["self_audit_mismatches"] == []
+        assert pr["criteria"] == "closure" and pr["pass_criteria"] == PASS_CLOSURE and pr["reader_lr"] == lr
+        assert pr["reinforce_samples"] == REINFORCE_SAMPLES and "leave-one-out" in pr["reinforce_baseline"]
+        assert set(art["summary"]) <= set(ESTIMATOR_STUDY) and len(art["runs"]) == 10 * len(art["summary"])
+        for run in art["runs"]:
+            f = run["final"]
+            passes = (f["val"]["reader"]["closure_agreement_all_pairs"] >= PASS_CLOSURE["closure_agreement_val"]
+                      and f["long_16"]["reader"]["closure_agreement_all_pairs"] >= PASS_CLOSURE["closure_agreement_long"]
+                      and all(f[f"long_{s}"]["accuracy"] >= PASS_CLOSURE["long_path_accuracy"] for s in LONG_STEPS))
+            assert run["passes"] == passes and run["rescore_matches_record"]
+            assert run["oracle"]["val"]["accuracy"] == 1.0

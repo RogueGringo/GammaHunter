@@ -186,3 +186,91 @@ def test_template_audit_parses_every_edge_and_checks_checkpoints(tmp_path, monke
     ckpt = Path(json.loads(study.read_text())["runs"][0]["checkpoint_path"])
     ckpt.write_bytes(ckpt.read_bytes() + b"tampered")
     assert audit.main(argv) == 1
+
+
+def test_template_audit_of_language_model_replies(tmp_path):
+    """Replies that list the source-first templates' edges and read the target-first one backwards."""
+    from reachability_gen import nl_template_audit as audit
+    from reachability_gen.run_llm_reader import graphs_of
+
+    rows = [e.to_dict() for e in generate_crossed(seed=23, n_total=20, n_val=20)[0]]
+    lines, read_total, true_total = [], 0, 0
+    for eh, (n, edges) in graphs_of(rows).items():
+        which = audit.template_of_edges(render(n, edges, "heldout", eh), HELDOUT_TEMPLATES)
+        read = {(u, v) for (u, v), k in which.items() if k < 3} | {(v, u) for (u, v), k in which.items() if k == 3}
+        lines += [json.dumps({"model": "m", "set": "crossed_val", "edge_hash": eh, "node": u,
+                              "successors": sorted(v for a, v in read if a == u)}) for u in range(n)]
+        read_total += len(read & set(which))
+        true_total += len(which)
+    (tmp_path / "gen.jsonl").write_text("\n".join(lines) + "\n")
+    data = tmp_path / "rows.jsonl"
+    data.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    study = {"protocol": {"rendering": "nl", "generations_file": str(tmp_path / "gen.jsonl")}, "complete": True,
+             "sets": {"crossed_val": rows},
+             "models": {"m": {"sets": {"crossed_val": {"reader": {"recall": read_total / true_total}}}}}}
+    (tmp_path / "study.json").write_text(json.dumps(study))
+    out = tmp_path / "llm.json"
+    assert audit.main(["--reader", "llm", "--study", str(tmp_path / "study.json"), "--train-data", str(data),
+                       "--extended-data", str(data), "--out", str(out)]) == 0
+    res = json.loads(out.read_text())["models"]["m"]["crossed_val"]
+    assert res["recall"][:3] == [1.0, 1.0, 1.0] and res["recall"][3] < 0.1 and res["read_backwards"][3] > 0.9
+    assert res["read_backwards"][:3] == [0.0, 0.0, 0.0] and res["matches_study"]
+    study["protocol"]["rendering"] = "edges"
+    (tmp_path / "study.json").write_text(json.dumps(study))
+    assert audit.main(["--reader", "llm", "--study", str(tmp_path / "study.json"), "--train-data", str(data),
+                       "--extended-data", str(data), "--out", str(out)]) == 1
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.mark.parametrize("reader", ["words", "lm"])
+def test_nl_reader_artifact_contract(reader):
+    from reachability_gen.nl_render import TRAIN_TEMPLATES
+    from reachability_gen.run_nl_reader import EVAL_PAIR_BUDGET, PASS
+    from reachability_gen.run_reader import LONG_STEPS
+
+    path = ROOT / "artifacts" / f"nl_reader_{reader}.json"
+    if not path.exists():
+        pytest.skip(f"{path.name} not present")
+    art = json.loads(path.read_text(encoding="utf-8"))
+    pr = art["protocol"]
+    assert art["science_open"] is False and art["self_audit_mismatches"] == [] and art["reader"] == reader
+    assert pr["pass_criteria"] == PASS and pr["eval_pair_budget"] == EVAL_PAIR_BUDGET
+    assert pr["templates"] == {"train": list(TRAIN_TEMPLATES), "heldout": list(HELDOUT_TEMPLATES)}
+    assert (pr["encoder"] is None) == (reader == "words") and len(art["runs"]) == 10
+    assert art["summary"]["passes"] == sum(r["passes"] for r in art["runs"])
+    for run in art["runs"]:
+        f = run["final"]
+        passes = (f["val_out"]["reader"]["exact_graphs"] >= PASS["exact_graphs_heldout_val"]
+                  and f["long_out_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_heldout_long"]
+                  and all(f[f"long_out_{s}"]["accuracy"] >= PASS["long_path_accuracy_heldout"] for s in LONG_STEPS))
+        assert run["passes"] == passes and run["rescore_matches_record"]
+        assert run["oracle"]["val_out"]["accuracy"] == 1.0
+
+
+@pytest.mark.parametrize("reader", ["words", "lm"])
+def test_template_audit_artifact_contract(reader):
+    path = ROOT / "artifacts" / f"nl_templates_{reader}.json"
+    if not path.exists():
+        pytest.skip(f"{path.name} not present")
+    art = json.loads(path.read_text(encoding="utf-8"))
+    study = json.loads((ROOT / art["study"]).read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["post_hoc"] is True and art["reader"] == reader
+    assert art["templates"] == {split: list(TEMPLATES[split]) for split in ("train", "heldout")}
+    assert [s["checkpoint_sha256"] for s in art["seeds"]] == [r["checkpoint_sha256"] for r in study["runs"]]
+    for split, s in art["summary"].items():
+        assert s["seeds_matching_study_recall"] == len(art["seeds"])
+        assert all(0.0 <= r <= 1.0 for r in s["recall_mean"])
+
+
+def test_template_audit_of_language_models_artifact_contract():
+    path = ROOT / "artifacts" / "nl_templates_llm.json"
+    if not path.exists():
+        pytest.skip(f"{path.name} not present")
+    art = json.loads(path.read_text(encoding="utf-8"))
+    study = json.loads((ROOT / art["study"]).read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["post_hoc"] is True and art["reader"] == "llm"
+    assert art["templates"] == {"heldout": list(HELDOUT_TEMPLATES)} and set(art["models"]) == set(study["models"])
+    for sets in art["models"].values():
+        assert set(sets) == set(study["sets"]) and all(s["matches_study"] for s in sets.values())

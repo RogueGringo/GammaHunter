@@ -122,3 +122,22 @@ def test_llm_reader_artifact_contract():
             assert set(entry["pipeline"]) == {str(k) for k in SETS[name][1]}
             for p in entry["pipeline"].values():
                 assert p["true_graph_accuracy_mean"] == 1.0 and 0.0 <= p["accuracy"]["mean"] <= 1.0
+
+
+NL_STUDY = Path(__file__).resolve().parents[1] / "artifacts" / "llm_reader_nl.json"
+
+
+@pytest.mark.skipif(not NL_STUDY.exists(), reason="natural-language LLM-reader artifact not present")
+def test_llm_reader_nl_artifact_contract():
+    from reachability_gen.nl_render import HELDOUT_TEMPLATES
+    from reachability_gen.run_llm_reader import SETS
+
+    art = json.loads(NL_STUDY.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and art["complete"] is True
+    assert art["protocol"]["rendering"] == "nl" and art["protocol"]["templates"] == list(HELDOUT_TEMPLATES)
+    for res in art["models"].values():
+        assert set(res["sets"]) == set(SETS)
+        for name, entry in res["sets"].items():
+            assert set(entry["pipeline"]) == {str(k) for k in SETS[name][1]}
+            for p in entry["pipeline"].values():
+                assert p["true_graph_accuracy_mean"] == 1.0 and 0.0 <= p["accuracy"]["mean"] <= 1.0

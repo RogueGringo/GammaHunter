@@ -1,0 +1,48 @@
+[words/seed0] epoch 1/5: loss 2.8151 held-out val acc 0.5072 exact graphs 0.0000 edge F1 0.3682
+[words/seed0] epoch 2/5: loss 3.1538 held-out val acc 0.5152 exact graphs 0.0000 edge F1 0.4813
+[words/seed0] epoch 3/5: loss 0.0036 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0519
+[words/seed0] epoch 4/5: loss 0.0021 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0183
+[words/seed0] epoch 5/5: loss 54.1167 held-out val acc 0.5208 exact graphs 0.0000 edge F1 0.5216
+[W928 17:08:04.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 4120903680 bytes (free: 0, total: 12792037376).
+[W928 17:08:09.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 4120903680 bytes (free: 0, total: 12792037376).
+[W928 17:08:09.000000000 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 4120903680 bytes (free: 0, total: 12792037376).
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_nl_reader.py", line 344, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_nl_reader.py", line 298, in main
+    final.update({f"{name}_{s}": evaluate(fresh_reader, fresh_solver, data[name], s) for s in LONG_STEPS})
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_reader.py", line 368, in evaluate
+    logits, adj = pipeline_logits(reader, solver, graph, tokens, steps, oracle=oracle)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\run_reader.py", line 290, in pipeline_logits
+    adj = reader(tokens, hard=True, through=through)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\models\reader.py", line 188, in forward
+    return self.adjacency(self.edge_log_evidence(batch), hard=hard, through=through)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\models\reader.py", line 155, in edge_log_evidence
+    scores = self.occurrence_scores(batch)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\models\reader.py", line 137, in occurrence_scores
+    h = layer(h, batch["token_mask"])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\JT-DEV1\Desktop\weee taded\GammaHunter\src\reachability_gen\models\reader.py", line 107, in forward
+    att = att.masked_fill(~mask[:, None, None, :], float("-inf")).softmax(dim=-1)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 3.84 GiB. GPU 0 has a total capacity of 11.91 GiB of which 0 bytes is free. Process 20364 has 17179869184.00 GiB memory in use. Process 25680 has 17179869184.00 GiB memory in use. Process 23636 has 17179869184.00 GiB memory in use. Including non-PyTorch memory, this process has 17179869184.00 GiB memory in use. Process 15720 has 17179869184.00 GiB memory in use. Of the allocated memory 8.05 GiB is allocated by PyTorch, and 740.72 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

@@ -1,0 +1,5 @@
+[words/seed0] epoch 1/5: loss 2.2904 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[words/seed0] epoch 2/5: loss 267.3571 held-out val acc 0.5022 exact graphs 0.0000 edge F1 0.3258
+[words/seed0] epoch 3/5: loss 0.0101 held-out val acc 0.5140 exact graphs 0.0000 edge F1 0.4669
+[words/seed0] epoch 4/5: loss 0.3358 held-out val acc 0.5255 exact graphs 0.0000 edge F1 0.5656
+[words/seed0] epoch 5/5: loss 0.0027 held-out val acc 0.5423 exact graphs 0.0000 edge F1 0.6421

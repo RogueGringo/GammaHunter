@@ -77,12 +77,18 @@
   control for the language-model readers, and an answer-density ×
   subgradient-at-zero study for readers trained from answers alone, scored on
   the true closure (`--criteria closure`); a closure-exact metric for readers.
+  Results recorded (limitations item 17).
 - A score-function (REINFORCE) estimator for answers-only readers: sampled
-  graphs scored by the frozen solver, leave-one-out baselines.
+  graphs scored by the frozen solver, leave-one-out baselines. Results
+  recorded (limitations item 18).
 - Natural-language renderings of the graphs (training and held-out templates,
   distractor sentences) and readers for them: a word reader trained from
   scratch, a reader on frozen language-model features, and language models
-  listing successors (`run_llm_reader --rendering nl`).
+  listing successors (`run_llm_reader --rendering nl`), with a post-hoc audit
+  of recall per template (`nl_template_audit`). Results recorded (limitations
+  item 19).
+- Scoring batches of the natural-language readers sized by rendering length;
+  checkpoints of the reader runners kept in one directory per result file.
 
 ## 0.1.0 (2026-09-27)
 

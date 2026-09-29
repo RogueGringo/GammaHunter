@@ -1,0 +1,162 @@
+{
+  "generations": "artifacts/llm_reader_nl_generations.jsonl",
+  "models": {
+    "Qwen/Qwen2.5-3B-Instruct": {
+      "crossed_long": {
+        "edges": [
+          1629,
+          1630,
+          1609,
+          1677
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.1172498465316145,
+          0.07484662576687116,
+          0.07333747669359851,
+          0.2671437090041741
+        ],
+        "recall": [
+          0.5494168201350522,
+          0.4601226993865031,
+          0.5767557489123679,
+          0.1252236135957066
+        ],
+        "recall_all_templates": 0.42521008403361343,
+        "study_recall": 0.42521008403361343
+      },
+      "crossed_val": {
+        "edges": [
+          843,
+          801,
+          851,
+          816
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.13997627520759193,
+          0.09987515605493133,
+          0.06345475910693302,
+          0.28921568627450983
+        ],
+        "recall": [
+          0.6215895610913404,
+          0.5980024968789014,
+          0.6333725029377203,
+          0.14705882352941177
+        ],
+        "recall_all_templates": 0.5019631531259439,
+        "study_recall": 0.5019631531259439
+      }
+    },
+    "microsoft/Phi-3.5-mini-instruct": {
+      "crossed_long": {
+        "edges": [
+          1629,
+          1630,
+          1609,
+          1677
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.2823818293431553,
+          0.22392638036809817,
+          0.22063393412057178,
+          0.6332737030411449
+        ],
+        "recall": [
+          0.8256599140577041,
+          0.7012269938650306,
+          0.814791796146675,
+          0.26535480023852115
+        ],
+        "recall_all_templates": 0.6484339190221543,
+        "study_recall": 0.6484339190221543
+      },
+      "crossed_val": {
+        "edges": [
+          843,
+          801,
+          851,
+          816
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.30604982206405695,
+          0.22846441947565543,
+          0.23266745005875442,
+          0.5796568627450981
+        ],
+        "recall": [
+          0.8517200474495848,
+          0.7615480649188514,
+          0.863689776733255,
+          0.3235294117647059
+        ],
+        "recall_all_templates": 0.7028088190878888,
+        "study_recall": 0.7028088190878888
+      }
+    },
+    "tiiuae/Falcon3-3B-Instruct": {
+      "crossed_long": {
+        "edges": [
+          1629,
+          1630,
+          1609,
+          1677
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.1553100061387354,
+          0.13190184049079753,
+          0.08949658172778123,
+          0.4669051878354204
+        ],
+        "recall": [
+          0.5260896255371393,
+          0.349079754601227,
+          0.39651957737725296,
+          0.14072748956469885
+        ],
+        "recall_all_templates": 0.35141329258976317,
+        "study_recall": 0.35141329258976317
+      },
+      "crossed_val": {
+        "edges": [
+          843,
+          801,
+          851,
+          816
+        ],
+        "matches_study": true,
+        "read_backwards": [
+          0.16132858837485173,
+          0.16853932584269662,
+          0.10340775558166862,
+          0.4681372549019608
+        ],
+        "recall": [
+          0.5788849347568209,
+          0.4019975031210986,
+          0.48413631022326675,
+          0.17769607843137256
+        ],
+        "recall_all_templates": 0.412866203563878,
+        "study_recall": 0.412866203563878
+      }
+    }
+  },
+  "post_hoc": true,
+  "purpose": "which phrasings language models read when listing successors: recall per held-out template",
+  "reader": "llm",
+  "science_open": false,
+  "study": "artifacts/llm_reader_nl.json",
+  "templates": {
+    "heldout": [
+      "{u} leads to {v}.",
+      "A link runs from {u} to {v}.",
+      "Starting at {u}, one step takes you to {v}.",
+      "{v} can be entered straight from {u}."
+    ]
+  }
+}

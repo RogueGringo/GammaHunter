@@ -1,0 +1,507 @@
+{
+  "graphs": 1000,
+  "post_hoc": true,
+  "purpose": "which phrasings a natural-language reader reads: recall per template on the validation graphs",
+  "reader": "words",
+  "science_open": false,
+  "seeds": [
+    {
+      "checkpoint_sha256": "bf737b52cfec0fb744024173fc3587ec022628066e85db1ae2def386c8277b6f",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.9963194700036805,
+          0.9971615451067506,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.49919886608738523,
+        "study_recall": 0.49919886608738523
+      },
+      "seed": 0,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 8,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "recall_all_templates": 1.0,
+        "study_recall": 1.0
+      }
+    },
+    {
+      "checkpoint_sha256": "f9b566e4c116069a2a4313d8475049025884bbb8c7b0c77967735c5ed2eb9c93",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.1989939884676727,
+          0.18968283351844994,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0973377703826955,
+        "study_recall": 0.0973377703826955
+      },
+      "seed": 1,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 8,
+        "matches_study": true,
+        "recall": [
+          0.9998481166464156,
+          1.0,
+          1.0,
+          1.0,
+          0.9996902586340406
+        ],
+        "recall_all_templates": 0.9999075614716214,
+        "study_recall": 0.9999075614716214
+      }
+    },
+    {
+      "checkpoint_sha256": "fd27dffde599ad8e75cf908918ff7a6f8299d20867f4819fa57987b117a810d9",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.8733897681266102,
+          0.9988893002591632,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.46875577740802366,
+        "study_recall": 0.46875577740802366
+      },
+      "seed": 2,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 22,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "recall_all_templates": 1.0,
+        "study_recall": 1.0
+      }
+    },
+    {
+      "checkpoint_sha256": "c7457014ba3159f2d6c17da33fba4cf7991343b30d98367f412a9f8100c62e8f",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": 0.0
+      },
+      "seed": 3,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 8,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9982964224872232
+        ],
+        "recall_all_templates": 0.9996610587292784,
+        "study_recall": 0.9996610587292784
+      }
+    },
+    {
+      "checkpoint_sha256": "0fe6d3839b2c8303bcd6aafc7cedd94cfb91bf6a18347098e3ab1a37503c866e",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.9995092626671574,
+          0.05319017647784771,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.26431256547729093,
+        "study_recall": 0.26431256547729093
+      },
+      "seed": 4,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 2,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.998915905219142
+        ],
+        "recall_all_templates": 0.9997843101004499,
+        "study_recall": 0.9997843101004499
+      }
+    },
+    {
+      "checkpoint_sha256": "702d6a55973bee002fb0911cd8b60fbe9a0c8ee1770abcd918a9ac41c4534c1d",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          0.999382944588424,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.5006778825414433,
+        "study_recall": 0.5006778825414433
+      },
+      "seed": 5,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 3,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9990707759021217
+        ],
+        "recall_all_templates": 0.9998151229432427,
+        "study_recall": 0.9998151229432427
+      }
+    },
+    {
+      "checkpoint_sha256": "43045bde93eb5177ddc0c9b81bdec7ae6e7c7d57c4948f371902d9c837b4f476",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          0.8145131432802666,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.4545202440377149,
+        "study_recall": 0.4545202440377149
+      },
+      "seed": 6,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 17,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9995353879510609
+        ],
+        "recall_all_templates": 0.9999075614716214,
+        "study_recall": 0.9999075614716214
+      }
+    },
+    {
+      "checkpoint_sha256": "f8b2876c29e832783a49b6d68d651c6d038fb24a2b24fc6540b55ea92ad7eb81",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 0,
+        "matches_study": true,
+        "recall": [
+          0.2501533554165133,
+          0.7341725286930766,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.24613298822949406,
+        "study_recall": 0.24613298822949406
+      },
+      "seed": 7,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 80,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9998451293170203
+        ],
+        "recall_all_templates": 0.9999691871572072,
+        "study_recall": 0.9999691871572072
+      }
+    },
+    {
+      "checkpoint_sha256": "d1a9ef116be9c37db4db310d6c04bfeb2dc48094435ff5fe517ac1be3f54e190",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 1,
+        "matches_study": true,
+        "recall": [
+          0.7515642252484358,
+          0.5056152042453412,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.31499969187157206,
+        "study_recall": 0.31499969187157206
+      },
+      "seed": 8,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 1,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9996902586340406
+        ],
+        "recall_all_templates": 0.9999383743144142,
+        "study_recall": 0.9999383743144142
+      }
+    },
+    {
+      "checkpoint_sha256": "7d9f5a7abb85941e0b2440f3e7f5128f8c95495eb9f44c787de5450d3850981b",
+      "heldout": {
+        "edges": [
+          8151,
+          8103,
+          8146,
+          8054
+        ],
+        "extra_edges": 4,
+        "matches_study": true,
+        "recall": [
+          0.7477610109189057,
+          0.8101937553992349,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.3900905897578111,
+        "study_recall": 0.3900905897578111
+      },
+      "seed": 9,
+      "train": {
+        "edges": [
+          6584,
+          6455,
+          6452,
+          6506,
+          6457
+        ],
+        "extra_edges": 10,
+        "matches_study": true,
+        "recall": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "recall_all_templates": 1.0,
+        "study_recall": 1.0
+      }
+    }
+  ],
+  "study": "artifacts/nl_reader_words.json",
+  "summary": {
+    "heldout": {
+      "extra_edges_total": 5,
+      "recall_max": [
+        1.0,
+        0.999382944588424,
+        0.0,
+        0.0
+      ],
+      "recall_mean": [
+        0.6817691080848975,
+        0.6102801431568554,
+        0.0,
+        0.0
+      ],
+      "recall_min": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seeds_matching_study_recall": 10,
+      "seeds_reading_template_at_0_99": [
+        4,
+        3,
+        0,
+        0
+      ]
+    },
+    "train": {
+      "extra_edges_total": 159,
+      "recall_max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "recall_mean": [
+        0.9999848116646415,
+        1.0,
+        1.0,
+        1.0,
+        0.999504413814465
+      ],
+      "recall_min": [
+        0.9998481166464156,
+        1.0,
+        1.0,
+        1.0,
+        0.9982964224872232
+      ],
+      "seeds_matching_study_recall": 10,
+      "seeds_reading_template_at_0_99": [
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    }
+  },
+  "templates": {
+    "heldout": [
+      "{u} leads to {v}.",
+      "A link runs from {u} to {v}.",
+      "Starting at {u}, one step takes you to {v}.",
+      "{v} can be entered straight from {u}."
+    ],
+    "train": [
+      "{u} -> {v}.",
+      "There is an edge from {u} to {v}.",
+      "{u} points to {v}.",
+      "From {u} you can go directly to {v}.",
+      "{v} is directly reachable from {u}."
+    ]
+  }
+}

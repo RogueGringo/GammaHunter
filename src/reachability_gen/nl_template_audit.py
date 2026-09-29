@@ -13,12 +13,18 @@ training templates (in distribution) and the held-out ones. Each reader's recall
 over all templates is checked against the recall its study recorded on the same
 graphs (``val_in`` and ``val_out``), so the audit reads the graphs the study scored.
 
+For the language models of ``run_llm_reader --rendering nl`` (``--reader llm``),
+the recorded replies are grouped the same way, per model and question set, with
+the share of each template's edges that a model listed backwards (the target's
+successor given as the source); each model's recall is checked against its study.
+
 ``science_open=false`` always.
 
 Usage::
 
     python -m reachability_gen.nl_template_audit --reader words
     python -m reachability_gen.nl_template_audit --reader lm --device cuda
+    python -m reachability_gen.nl_template_audit --reader llm
 """
 
 from __future__ import annotations
@@ -35,7 +41,7 @@ from typing import Any, Optional, Sequence
 from reachability_gen.nl_render import TEMPLATES, build_vocab, render, word_tokens
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_llm_reader import graphs_of
-from reachability_gen.run_nl_reader import DEFAULT_TRAIN, MAX_OFFSET, lm_features
+from reachability_gen.run_nl_reader import DEFAULT_EXTENDED, DEFAULT_TRAIN, MAX_OFFSET, lm_features
 
 SENTENCE = re.compile(r"(?<=\.)\s+")
 GRAPHS_PER_BATCH: int = 16
@@ -72,20 +78,80 @@ def recall_by_template(adj, which: Sequence[dict[tuple[int, int], int]], ns: Seq
     return hits, totals, extra
 
 
+def audit_replies(study: dict[str, Any], rows: Sequence[dict[str, Any]], generations: Path) -> dict[str, Any]:
+    """Per model and question set: recall per held-out template, and the share of its edges listed backwards."""
+    by_key = {(r["edge_hash"], int(r["s"]), int(r["t"])): r for r in rows}
+    graphs = {name: graphs_of([by_key[(r["edge_hash"], int(r["s"]), int(r["t"]))] for r in sample])
+              for name, sample in study["sets"].items()}
+    listed: dict[tuple[str, str, str], set[tuple[int, int]]] = {}
+    for line in generations.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            g = json.loads(line)
+            listed.setdefault((g["model"], g["set"], g["edge_hash"]), set()).update((g["node"], v) for v in g["successors"])
+    templates = TEMPLATES["heldout"]
+    out: dict[str, Any] = {}
+    for model, res in study["models"].items():
+        out[model] = {}
+        for name, gs in graphs.items():
+            hits, totals, backwards = [0] * len(templates), [0] * len(templates), [0] * len(templates)
+            for eh, (n, edges) in gs.items():
+                which = template_of_edges(render(n, edges, "heldout", eh), templates)
+                read = listed.get((model, name, eh), set())
+                for (u, v), k in which.items():
+                    totals[k] += 1
+                    hits[k] += (u, v) in read
+                    backwards[k] += (v, u) in read and (v, u) not in which
+            overall = sum(hits) / sum(totals)
+            recorded = res["sets"][name]["reader"]["recall"]
+            out[model][name] = {"recall": [h / t for h, t in zip(hits, totals)],
+                                "read_backwards": [b / t for b, t in zip(backwards, totals)], "edges": totals,
+                                "recall_all_templates": overall, "study_recall": recorded,
+                                "matches_study": abs(overall - recorded) < 1e-9}
+    return out
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Recall of a natural-language reader per template (MEASURE, post-hoc).")
-    p.add_argument("--reader", choices=("words", "lm"), required=True)
-    p.add_argument("--study", type=Path, default=None, help="the run_nl_reader artifact whose checkpoints are audited")
+    p.add_argument("--reader", choices=("words", "lm", "llm"), required=True)
+    p.add_argument("--study", type=Path, default=None,
+                   help="the run_nl_reader artifact whose checkpoints are audited (llm: the run_llm_reader artifact)")
     p.add_argument("--train-data", type=Path, default=DEFAULT_TRAIN)
+    p.add_argument("--extended-data", type=Path, default=DEFAULT_EXTENDED, help="long-path graphs (llm only)")
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args(argv)
+    out_path = args.out or Path(f"artifacts/nl_templates_{args.reader}.json")
+    if args.reader == "llm":
+        study_path = args.study or Path("artifacts/llm_reader_nl.json")
+        study = json.loads(study_path.read_text(encoding="utf-8"))
+        if study["protocol"].get("rendering") != "nl" or not study.get("complete", True):
+            print(f"FAIL: {study_path} is not a complete natural-language run", file=sys.stderr)
+            return 1
+        generations = Path(study["protocol"]["generations_file"])
+        models = audit_replies(study, load_jsonl(args.train_data) + load_jsonl(args.extended_data), generations)
+        for model, sets in models.items():
+            for name, s in sets.items():
+                print(f"[{model}] {name}: recall by held-out template {[round(r, 3) for r in s['recall']]}, "
+                      f"read backwards {[round(r, 3) for r in s['read_backwards']]}", file=sys.stderr, flush=True)
+        artifact = {
+            "science_open": False,
+            "post_hoc": True,
+            "purpose": "which phrasings language models read when listing successors: recall per held-out template",
+            "reader": "llm",
+            "study": study_path.as_posix(),
+            "generations": generations.as_posix(),
+            "templates": {"heldout": list(TEMPLATES["heldout"])},
+            "models": models,
+        }
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
+        print(json.dumps({"ok": True, "out": out_path.as_posix(), "science_open": False}, sort_keys=True))
+        return 0
     import torch
 
     from reachability_gen.models.reader import FeatureReader, GraphReader, collate_features, collate_tokens
 
     study_path = args.study or Path(f"artifacts/nl_reader_{args.reader}.json")
-    out_path = args.out or Path(f"artifacts/nl_templates_{args.reader}.json")
     study = json.loads(study_path.read_text(encoding="utf-8"))
     for run in study["runs"]:
         digest = hashlib.sha256(Path(run["checkpoint_path"]).read_bytes()).hexdigest()

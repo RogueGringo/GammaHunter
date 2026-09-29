@@ -392,5 +392,138 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       failure; what does (for example, learning a discrete graph through
       straight-through gradients at all) these studies do not isolate.
 
-18. **Measurement-only status.** No result in this repository is presented as
+18. **An unbiased estimator for answers-only reading.** Fixed in code before
+    it ran (`artifacts/reader_estimator.json`,
+    `artifacts/reader_estimator_lr1e-3.json`; the frozen solvers of item 15,
+    hard graph, density prior, 10 seeds per arm, scored on the true closure).
+    Items 15–17 trained the reader from answers through straight-through
+    gradients, which are biased. Here the same readers learned through a
+    score-function (REINFORCE) estimator instead: for each graph, four graphs
+    were sampled edge by edge from the reader's probabilities, the frozen
+    solver's answers scored each sample (the log-likelihood of the correct
+    answers), and each sample's baseline was the mean score of the other
+    three. No gradient passed through the solver, so its zero-gradient kink
+    played no part. No seed passed, and accuracy stayed at 0.50 throughout.
+    - *At the reader rate of every earlier study (1e-2)* each reader's graph
+      became deterministic within its first epoch and stayed so: empty in 17
+      of the 20 readers (9 of 10 with four answers per graph, 8 of 10 with
+      every source's answer for every target), complete in the other 3. Once
+      every sample is the same graph, each sample's score equals the others'
+      mean and the estimator's gradient is exactly zero; the density prior's
+      gradient also vanishes when every probability is 0 or 1 in float32.
+      From then on, weight decay kept shrinking the readers' scores, but
+      within five epochs not far enough to change a single edge.
+    - *At a tenth of that rate (1e-3)*, fixed in advance so that a failure
+      could not be put down to the step size (every answer, 10 seeds), the
+      readers stayed stochastic, but the graph they asserted stayed nearly
+      empty: 0.3–3.4 edges per graph against 32.5 true. Of those edges 52–63%
+      were true, against 8.5% for a random graph of that size and 12–35% for
+      the same readers untrained (the architecture alone already favours
+      true edges). Edge F1 was 0.01–0.10, and closure agreement
+      on the long-path graphs 0.759–0.763, against 0.758 for an empty graph.
+      The topology loss fell in every seed (0.226–0.231 per pair after the
+      first epoch, 0.211–0.216 after the fifth); whether that reflects the
+      answers, or only the density prior and weight decay recalibrating the
+      untrained readers' bias, these runs do not separate.
+
+    By the reading fixed in advance, failure at both rates places the
+    obstacle in credit assignment from answers alone rather than in the bias
+    of straight-through gradients: one score per sampled graph must
+    apportion credit among some 380 candidate edges. The estimator stalled in
+    two distinct ways, so this reading holds at this budget only; more
+    samples per graph, an entropy bonus or longer training remain untested.
+
+    The study's first launch was stopped when the dense arm at 1e-2 raised a
+    CUDA illegal-memory-access error in its first epoch. Its cause is unknown
+    (an overflow in the sampling code was tested and ruled out); the code was
+    hardened (log evidence capped, finiteness checks) and the relaunch, with
+    synchronous kernel launches in the dense arms, raised none. The first
+    launch's logs were overwritten by the relaunch. The two dense arms saved
+    their checkpoints under the same names: each run re-scored its own
+    checkpoint right after saving, and every re-score matched, but only the
+    later file of each seed was kept.
+
+19. **Reading natural language.** Three readers, fixed in code before they
+    ran, read each graph from sentences instead of an edge list
+    (`nl_render`): one sentence per edge in a seeded shuffled order, worded
+    by one of five training templates or one of four held-out templates
+    whose wording never appears in training (in each set, one template names
+    the target first), with a quarter as many distractor sentences that name
+    a single node. The question never appears. Every reader feeds the frozen
+    solvers of item 15 and is scored on the held-out wording; the training
+    wording of the same validation graphs is the in-distribution control.
+    - *A word reader trained from scratch* (`artifacts/nl_reader_words.json`:
+      the reader of item 15 over words, node numbers sharing one
+      identity-free kind and unseen words mapped to a single unknown word;
+      supervised on the true edges; 10 seeds). In distribution it read
+      almost exactly: edge F1 0.999–1.000, exact graphs 0.93–1.00, pipeline
+      accuracy 0.995–1.000. On the held-out wording no seed passed. Almost
+      every edge it listed exists (precision 1.000), but it found at most
+      half of them (recall 0–0.50) and read no graph exactly; the pipeline
+      scored 0.50–0.55 on the validation questions and 0.50 on the long
+      paths. A post-hoc breakdown from the saved readers
+      (`artifacts/nl_templates_words.json`, which reproduces each reader's
+      recorded recall exactly) shows which half. The two held-out templates
+      that keep the training templates' "{u} … to {v}." order were read
+      almost completely (recall ≥ 0.99) by 4 and 3 of the seeds. The other
+      two, one naming the target first and one a longer clause, were read by
+      none.
+    - *A reader on frozen language-model features*
+      (`artifacts/nl_reader_lm.json`: the hidden states at layer 12 of 24
+      of Qwen2.5-0.5B from the local cache, frozen, with each node number
+      marked at its last token, and the same reader on top; 10 seeds). In
+      distribution 9 of the 10 seeds read almost exactly (edge F1 1.000,
+      exact graphs 0.97–1.00). The tenth diverged in its last epoch (mean
+      training loss 100, after 0.001) and ended listing 88 edges per graph
+      against 32.5, with precision 0.15. On the held-out wording the
+      features carried more across: for the nine, edge F1 0.68–0.91,
+      precision 0.85–1.00, recall 0.55–0.83. Still no seed passed. The best
+      read 2.3% of the validation graphs exactly. The nine pipelines scored
+      0.55–0.76 on the validation questions, and all ten scored 0.50 on the
+      long paths (0.4975–0.5040), where a path runs through 8–16 edges. The
+      same breakdown (`artifacts/nl_templates_lm.json`, again reproducing
+      the recorded recall exactly) shows where: 7 of the 10 seeds read both
+      "{u} … to {v}." templates almost completely, but no seed read more
+      than 51% of the longer clause (19–51%) or 85% of the sentences naming
+      the target first (3–85%, mean 27%).
+    - *Language models listing successors* (`artifacts/llm_reader_nl.json`:
+      the three models of item 16, prompted as there but shown the held-out
+      rendering instead of the edge list, on the same 400 + 400 questions;
+      19,188 replies, all recorded). Every model read the sentences worse
+      than it had read the edge list: edge F1 0.41–0.50 on the validation
+      graphs (edge list: 0.55–0.77) and 0.31–0.40 on the long-path graphs
+      (0.53–0.67). No model read a graph exactly, and the pipeline scored
+      0.51–0.52 on the validation questions and 0.495–0.500 on the long
+      paths. The same breakdown of the recorded replies
+      (`artifacts/nl_templates_llm.json`, reproducing each model's recorded
+      recall exactly) places much of the loss in the template that names the
+      target first: the models found 13–32% of its edges, against 35–86% for
+      the other templates, and listed 27–63% of them backwards, against
+      6–31%.
+
+    Only the trained readers came close to exact, and only in the wording
+    they were trained on. On the held-out wording no reader read the graphs
+    exactly enough for the search, and every pipeline stayed at chance on
+    the long paths. A small language model's frozen features carried more of
+    the reading to new wording than words learned from scratch, while the
+    language models read the sentences worse than the edge list. The
+    sentence that names the target first was the hardest for all three.
+    These results cover five training and four held-out templates, one
+    small encoder at one layer and three models of 3–4 billion parameters;
+    other renderings, encoders, prompts and larger models remain untested.
+
+    Training on sentences at the reader rate of the earlier studies (1e-2)
+    was unstable: in 12 of the 20 runs the mean training loss of some epoch
+    rose above 10, against about 0.002 at the end of most runs, and one run
+    (the language-model reader above) did not recover. The first words run
+    ran out of GPU memory while scoring the long-path set, rendered as
+    sentences of up to 1,127 words. Scoring batches were then sized by
+    rendering length, which leaves the graphs read, accuracy and edge
+    metrics unchanged (tested). A second run was stopped when four
+    concurrent runs had filled the machine's memory; the third ran to
+    completion. Both earlier logs are kept
+    (`artifacts/nl_reader_words_oom_run.log`,
+    `artifacts/nl_reader_words_stopped_run.log`).
+
+20. **Measurement-only status.** No result in this repository is presented as
     an established finding.

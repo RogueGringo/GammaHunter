@@ -22,6 +22,8 @@ result files cited, and every GammaHunter result keeps the scope stated in
 | The same LLMs read single edges of those graphs almost perfectly (AUROC up to 0.99, from 3 to 7.6 billion parameters alike) | Compositionality gap: sub-questions answered, their composition not; in the cited work the gap did not narrow as models grew | 2210.03350 | Limitations item 14 |
 | A question-blind reader trained on the edges supplies the graph from text; the anchored arm then keeps every answer up to 192 steps | Encode–process–decode around an algorithmic processor; here the encoder must emit the structure itself | Neural algorithmic reasoning (2105.02761); TransNAR (2406.09308) gives its processor the graph in structured form and lets a transformer read the text alongside it | Limitations item 15 |
 | Trained from the answers alone, the reader ends with an empty or a complete graph; no gradient reaches edges into nodes the source has not reached | Learning a discrete graph from a downstream objective | Interaction graphs inferred as the latent code of a variational autoencoder (1802.04687); graph structure and network learned by bilevel optimisation (1903.11960); straight-through estimation (1308.3432) | Limitations item 15 |
+| Trained from the answers alone with an unbiased score-function estimator (sampled graphs, leave-one-out baselines), the reader's graph turned deterministic, empty or complete, within an epoch at the study's rate, and stayed nearly empty at a tenth of it | Score-function (REINFORCE) gradients for discrete latent structure; variance reduction with several samples per input and leave-one-out baselines | REINFORCE (Williams, Machine Learning 8, 1992; not on arXiv); Monte Carlo gradient estimation surveyed (1906.10652); leave-one-out baselines from several samples per input (Kool, van Hoof and Welling, ICLR 2019 workshop; OpenReview r1lgTGL5DE); REINFORCE-style optimisation revisited for language models (2402.14740) | Limitations item 18 |
+| Reading the graph from sentences worded unlike any in training: a word reader trained from scratch read only the held-out wordings that keep the training word order; frozen features of a small language model read more of them (edge F1 up to 0.91) but at most 2.3% of the graphs exactly; language models listing successors read the sentences worse than the edge list, and most often read backwards the sentence that names the target first | Sensitivity of graph reasoning to how the graph is written as text; probing frozen representations, with controls for what the probe itself learns | How a graph is encoded as text changes LLM graph-reasoning accuracy (2310.04560); linear probes (1610.01644); control tasks for probes (1909.03368) | Limitations item 19 |
 
 ## Direction
 
@@ -72,3 +74,19 @@ exactly as a single-path model predicts, so a reader must be nearly exact.
 About a quarter of the listed edges are implied by other paths and cannot be
 revealed by any answer. And even with every answer given and the zero-gradient
 kink removed, answers alone did not teach the reader the closure here.
+
+The last two studies (limitations items 18–19) measured the routes still
+open. An unbiased score-function estimator, which never differentiates
+through the solver, did not teach the reader from answers either: at the rate
+of the earlier studies the reader's graph turned deterministic within an
+epoch, which leaves the estimator no gradient, and at a tenth of it the
+reader stayed nearly empty. And no reader read graphs worded unlike its
+training sentences exactly enough for the processor: words learned from
+scratch carried only the wordings that keep the training word order, frozen
+features of a small language model carried more but read at most 2.3% of the
+graphs exactly, and language models read the sentences worse than they had
+read the edge list. On this task the processor searches exactly whatever
+graph it is given, and the reading came close to exact only where it was
+supervised on the same wording. Hybrid designs such as TransNAR, which hand
+the processor the graph in structured form, leave out the step these studies
+found hardest.

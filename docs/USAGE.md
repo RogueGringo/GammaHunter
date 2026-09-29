@@ -292,9 +292,9 @@ pipeline (accuracy and AUROC on the crossed validation split and on the
 long-path set at 16, 48 and 192 steps), and the attribution of every wrong
 answer to the reader or the solver. Controls: the untrained reader, and the
 solver on the true graph. The pass criteria are fixed in the runner. It
-writes `artifacts/reader_pipeline.json`; the checkpoints
-(`artifacts/reader_pipeline/`) are not versioned, and their SHA-256 hashes are
-recorded instead. Regimes can run as separate processes
+writes `artifacts/reader_pipeline.json`; the checkpoints (under
+`artifacts/reader_pipeline/`, one directory per result file) are not
+versioned, and their SHA-256 hashes are recorded instead. Regimes can run as separate processes
 (`--regimes ... --out PART.json`) and be merged with `--merge`.
 
 ```bash
@@ -357,13 +357,17 @@ cannot reveal implied edges.
 ```bash
 python -m reachability_gen.run_reader --device cuda --criteria closure \
     --regimes answers_frozen_prior_reinforce answers_dense_prior_reinforce --out artifacts/reader_estimator.json
+python -m reachability_gen.run_reader --device cuda --criteria closure --reader-lr 1e-3 \
+    --regimes answers_dense_prior_reinforce --out artifacts/reader_estimator_lr1e-3.json
 ```
 
 The same answers-only readers trained with a score-function (REINFORCE)
 estimator instead of the straight-through gradient: graphs are sampled edge by
 edge from the reader's probabilities, the frozen solver's answers score each
 sample, and each sample's baseline is the mean of the other samples of the
-same reading. Nothing is differentiated through the solver.
+same reading. Nothing is differentiated through the solver. The second command
+repeats the dense regime at a tenth of the reader's rate, fixed in advance so
+that a failure could not be put down to the step size.
 
 ```bash
 python -m reachability_gen.run_nl_reader --reader words --device cuda
@@ -382,6 +386,21 @@ the held-out rendering. All feed the frozen solvers and are scored on held-out
 phrasings, with in-distribution phrasings reported alongside. They write
 `artifacts/nl_reader_words.json`, `artifacts/nl_reader_lm.json` and
 `artifacts/llm_reader_nl.json`.
+
+```bash
+python -m reachability_gen.nl_template_audit --reader words
+python -m reachability_gen.nl_template_audit --reader lm --device cuda
+python -m reachability_gen.nl_template_audit --reader llm
+```
+
+A post-hoc audit of the saved natural-language readers (checked against their
+recorded SHA-256): recall per template on the validation graphs, for the
+training and the held-out wording, with each reader's recall over all
+templates checked against the recall its study recorded. With `--reader llm`
+it groups the recorded replies of the language models the same way, per model
+and question set, with the share of each template's edges listed backwards.
+It writes `artifacts/nl_templates_words.json`, `artifacts/nl_templates_lm.json`
+and `artifacts/nl_templates_llm.json`.
 
 ## External benchmarks
 
