@@ -24,12 +24,21 @@ long-path accuracy ≥ 0.99 at 16, 48 and 192 steps. The questions of the
 language-model reader samples (``artifacts/llm_reader.json``) are scored too,
 for a comparison on identical questions.
 
+``--train-wording diverse`` trains on the 51 wordings of ``nl_render``'s diverse
+split instead of the five training templates; only the training and
+in-distribution renderings and the word vocabulary change. Every run is also
+scored on the novel split (constructions the diverse wordings lack) with the
+same criteria, recorded as ``passes_novel``: a stress test reported separately,
+never a substitute for the pass criteria above.
+
 ``science_open=false`` always.
 
 Usage::
 
     python -m reachability_gen.run_nl_reader --reader words --device cuda
     python -m reachability_gen.run_nl_reader --reader lm --device cuda
+    python -m reachability_gen.run_nl_reader --reader words --train-wording diverse --device cuda
+    python -m reachability_gen.run_nl_reader --reader lm --train-wording diverse --device cuda
 """
 
 from __future__ import annotations
@@ -46,7 +55,18 @@ from pathlib import Path
 from typing import Any, Callable, Optional, Sequence
 
 from reachability_gen.gen_crossed import CROSSED_EXTENDED_SPEC, CROSSED_ID_SPEC, verify_crossed
-from reachability_gen.nl_render import HELDOUT_TEMPLATES, TRAIN_TEMPLATES, build_vocab, render, word_tokens
+from reachability_gen.nl_render import (
+    DISTRACTOR_RATE,
+    DISTRACTORS,
+    FORBIDDEN_WORDS,
+    HELDOUT_TEMPLATES,
+    NOVEL_TEMPLATES,
+    TEMPLATES,
+    build_vocab,
+    render,
+    skeleton,
+    word_tokens,
+)
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_llm_reader import graphs_of
 from reachability_gen.run_mp_calibration import BATCH, GRAD_CLIP, LR, WEIGHT_DECAY
@@ -120,6 +140,20 @@ def node_token_marks(text: str, offsets: Sequence[tuple[int, int]]) -> tuple[lis
     return kinds, symbol
 
 
+def renderings(wording: str, train_rows: Sequence[dict[str, Any]], val_rows: Sequence[dict[str, Any]],
+               ext_rows: Sequence[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Every rendering a run reads: ``wording`` for training and in distribution, held-out and novel otherwise."""
+    val, ext = graphs_of(val_rows), graphs_of(ext_rows)
+    return {
+        "train": {eh: render(n, e, wording, eh) for eh, (n, e) in graphs_of(train_rows).items()},
+        "val_in": {eh: render(n, e, wording, eh) for eh, (n, e) in val.items()},
+        "val_out": {eh: render(n, e, "heldout", eh) for eh, (n, e) in val.items()},
+        "long_out": {eh: render(n, e, "heldout", eh) for eh, (n, e) in ext.items()},
+        "val_novel": {eh: render(n, e, "novel", eh) for eh, (n, e) in val.items()},
+        "long_novel": {eh: render(n, e, "novel", eh) for eh, (n, e) in ext.items()},
+    }
+
+
 def lm_features(texts: Sequence[str], ns: Sequence[int], name: str, layer: int, device: str,
                 batch: int = 16) -> list[Any]:
     """Frozen hidden states (layer ``layer``) of each rendering, with its node tokens marked."""
@@ -144,8 +178,9 @@ def lm_features(texts: Sequence[str], ns: Sequence[int], name: str, layer: int, 
             for b, text in enumerate(chunk):
                 length = int(enc["attention_mask"][b].sum())
                 kinds, symbol = node_token_marks(text, [tuple(map(int, o)) for o in offsets[b, :length]])
-                out.append(FeatureTokens(states[b, :length].clone(), torch.tensor(kinds), torch.tensor(symbol),
-                                         ns[i + b]))
+                # held in CPU memory; each batch copies them to the device (the same values)
+                out.append(FeatureTokens(states[b, :length].to("cpu", copy=True), torch.tensor(kinds),
+                                         torch.tensor(symbol), ns[i + b]))
     del model
     gc.collect()
     if device == "cuda":
@@ -191,13 +226,14 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
         vals = [fn(r) for r in runs]
         return {"mean": statistics.fmean(vals), "min": min(vals), "max": max(vals)}
 
-    out: dict[str, Any] = {"seeds": [r["seed"] for r in runs], "passes": sum(r["passes"] for r in runs)}
-    for name in ("val_in", "val_out", "sample_val"):
+    out: dict[str, Any] = {"seeds": [r["seed"] for r in runs], "passes": sum(r["passes"] for r in runs),
+                           "passes_novel": sum(r["passes_novel"] for r in runs)}
+    for name in ("val_in", "val_out", "sample_val", "val_novel"):
         out[name] = {"accuracy": stat(lambda r, n=name: r["final"][n]["accuracy"]),
                      "auroc": stat(lambda r, n=name: r["final"][n]["auroc"]),
                      "exact_graphs": stat(lambda r, n=name: r["final"][n]["reader"]["exact_graphs"]),
                      "edge_f1": stat(lambda r, n=name: r["final"][n]["reader"]["f1"])}
-    for name in ("long_out", "sample_long"):
+    for name in ("long_out", "sample_long", "long_novel"):
         out[name] = {**{f"accuracy_{s}": stat(lambda r, n=name, s=s: r["final"][f"{n}_{s}"]["accuracy"])
                         for s in LONG_STEPS},
                      "closure_agreement": stat(lambda r, n=name: r["final"][f"{n}_{LONG_STEPS[0]}"]["reader"][
@@ -209,6 +245,8 @@ def summarise(runs: Sequence[dict[str, Any]]) -> dict[str, Any]:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Reading graphs from natural language (MEASURE).")
     p.add_argument("--reader", choices=("words", "lm"), required=True)
+    p.add_argument("--train-wording", choices=("train", "diverse"), default="train",
+                   help="template split for the training and in-distribution renderings")
     p.add_argument("--encoder", default=DEFAULT_ENCODER)
     p.add_argument("--layer", type=int, default=ENCODER_LAYER)
     p.add_argument("--train-data", type=Path, default=DEFAULT_TRAIN)
@@ -227,7 +265,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     from reachability_gen.models.reader import FeatureReader, GraphReader, collate_features, collate_tokens
 
-    out_path = args.out or Path(f"artifacts/nl_reader_{args.reader}.json")
+    wording = args.train_wording
+    out_path = args.out or Path(f"artifacts/nl_reader_{args.reader}{'' if wording == 'train' else '_' + wording}.json")
     rows, ext_rows = load_jsonl(args.train_data), load_jsonl(args.extended_data)
     if not args.no_verify:
         n_val = sum(1 for r in rows if r["split"] == "val")
@@ -240,16 +279,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             return 1
     train_rows = [r for r in rows if r["split"] == "train"]
     val_rows = [r for r in rows if r["split"] == "val"]
-    texts = {
-        "train": {eh: render(n, e, "train", eh) for eh, (n, e) in graphs_of(train_rows).items()},
-        "val_in": {eh: render(n, e, "train", eh) for eh, (n, e) in graphs_of(val_rows).items()},
-        "val_out": {eh: render(n, e, "heldout", eh) for eh, (n, e) in graphs_of(val_rows).items()},
-        "long_out": {eh: render(n, e, "heldout", eh) for eh, (n, e) in graphs_of(ext_rows).items()},
-    }
+    texts = renderings(wording, train_rows, val_rows, ext_rows)
     sizes = {**graphs_of(train_rows), **graphs_of(val_rows), **graphs_of(ext_rows)}
     t0 = time.perf_counter()
     if args.reader == "words":
-        vocab = build_vocab()
+        vocab = build_vocab(TEMPLATES[wording] + DISTRACTORS)
         tokens = {name: {eh: word_tokens(t, sizes[eh][0], vocab) for eh, t in d.items()} for name, d in texts.items()}
         collate_fn = collate_tokens
 
@@ -275,6 +309,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "val_in": NLData(val_rows, args.device, tokens["val_in"], collate_fn),
         "val_out": NLData(val_rows, args.device, tokens["val_out"], collate_fn),
         "long_out": NLData(ext_rows, args.device, tokens["long_out"], collate_fn),
+        "val_novel": NLData(val_rows, args.device, tokens["val_novel"], collate_fn),
+        "long_novel": NLData(ext_rows, args.device, tokens["long_novel"], collate_fn),
     }
     if args.llm_reader.exists():
         llm = json.loads(args.llm_reader.read_text(encoding="utf-8"))
@@ -300,8 +336,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         fresh_reader.load_state_dict(state["reader"])
         fresh_solver.load_state_dict(state["solver"])
         final = {name: evaluate(fresh_reader, fresh_solver, d, TRAIN_STEPS)
-                 for name, d in data.items() if name in ("val_in", "val_out", "sample_val")}
-        for name in ("long_out", "sample_long"):
+                 for name, d in data.items() if name in ("val_in", "val_out", "sample_val", "val_novel")}
+        for name in ("long_out", "sample_long", "long_novel"):
             if name in data:
                 final.update({f"{name}_{s}": evaluate(fresh_reader, fresh_solver, data[name], s) for s in LONG_STEPS})
         run = {
@@ -318,6 +354,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                          >= PASS["closure_agreement_heldout_long"]
                          and all(final[f"long_out_{s}"]["accuracy"] >= PASS["long_path_accuracy_heldout"]
                                  for s in LONG_STEPS))
+        run["passes_novel"] = (final["val_novel"]["reader"]["exact_graphs"] >= PASS["exact_graphs_heldout_val"]
+                               and final[f"long_novel_{LONG_STEPS[0]}"]["reader"]["closure_agreement_all_pairs"]
+                               >= PASS["closure_agreement_heldout_long"]
+                               and all(final[f"long_novel_{s}"]["accuracy"] >= PASS["long_path_accuracy_heldout"]
+                                       for s in LONG_STEPS))
         runs.append(run)
     mismatches = [f"seed{r['seed']}" for r in runs if not r["rescore_matches_record"]]
     artifact = {
@@ -325,7 +366,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "purpose": "reading graphs from natural language, including phrasings never seen in training",
         "reader": args.reader,
         "protocol": {
-            "templates": {"train": list(TRAIN_TEMPLATES), "heldout": list(HELDOUT_TEMPLATES)},
+            "train_wording": wording,
+            "templates": {"train": list(TEMPLATES[wording]), "heldout": list(HELDOUT_TEMPLATES),
+                          "novel": list(NOVEL_TEMPLATES)},
+            "distractors": list(DISTRACTORS), "distractor_rate": DISTRACTOR_RATE,
+            "forbidden_words": sorted(FORBIDDEN_WORDS),
+            "skeleton_in_training": {split: [any(skeleton(t).fullmatch(g) for g in TEMPLATES[wording])
+                                             for t in TEMPLATES[split]] for split in ("heldout", "novel")},
+            "novel": "scored with the pass criteria as a stress test; passes_novel is never a substitute for passes",
             "encoder": encoder,
             "reader_params": sum(p.numel() for p in make_reader().parameters()),
             "max_offset": MAX_OFFSET, "train_steps": TRAIN_STEPS, "long_steps": list(LONG_STEPS),

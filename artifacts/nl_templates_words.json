@@ -25,6 +25,24 @@
         "recall_all_templates": 0.49919886608738523,
         "study_recall": 0.49919886608738523
       },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
+      },
       "seed": 0,
       "train": {
         "edges": [
@@ -66,6 +84,24 @@
         ],
         "recall_all_templates": 0.0973377703826955,
         "study_recall": 0.0973377703826955
+      },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 3,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.00012489072061945796,
+          0.0
+        ],
+        "recall_all_templates": 3.081284279287607e-05,
+        "study_recall": null
       },
       "seed": 1,
       "train": {
@@ -109,6 +145,24 @@
         "recall_all_templates": 0.46875577740802366,
         "study_recall": 0.46875577740802366
       },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
+      },
       "seed": 2,
       "train": {
         "edges": [
@@ -150,6 +204,24 @@
         ],
         "recall_all_templates": 0.0,
         "study_recall": 0.0
+      },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
       },
       "seed": 3,
       "train": {
@@ -193,6 +265,24 @@
         "recall_all_templates": 0.26431256547729093,
         "study_recall": 0.26431256547729093
       },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
+      },
       "seed": 4,
       "train": {
         "edges": [
@@ -234,6 +324,24 @@
         ],
         "recall_all_templates": 0.5006778825414433,
         "study_recall": 0.5006778825414433
+      },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 1351,
+        "matches_study": null,
+        "recall": [
+          0.02039061540351308,
+          0.004323656578134651,
+          0.0029973772948669914,
+          0.0037754232127633664
+        ],
+        "recall_all_templates": 0.007888087754976274,
+        "study_recall": null
       },
       "seed": 5,
       "train": {
@@ -277,6 +385,24 @@
         "recall_all_templates": 0.4545202440377149,
         "study_recall": 0.4545202440377149
       },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
+      },
       "seed": 6,
       "train": {
         "edges": [
@@ -318,6 +444,24 @@
         ],
         "recall_all_templates": 0.24613298822949406,
         "study_recall": 0.24613298822949406
+      },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "recall_all_templates": 0.0,
+        "study_recall": null
       },
       "seed": 7,
       "train": {
@@ -361,6 +505,24 @@
         "recall_all_templates": 0.31499969187157206,
         "study_recall": 0.31499969187157206
       },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 0,
+        "matches_study": null,
+        "recall": [
+          0.0,
+          0.0,
+          0.031347570875483954,
+          0.0
+        ],
+        "recall_all_templates": 0.007734023541011894,
+        "study_recall": null
+      },
       "seed": 8,
       "train": {
         "edges": [
@@ -402,6 +564,24 @@
         ],
         "recall_all_templates": 0.3900905897578111,
         "study_recall": 0.3900905897578111
+      },
+      "novel": {
+        "edges": [
+          8141,
+          8095,
+          8007,
+          8211
+        ],
+        "extra_edges": 1015,
+        "matches_study": null,
+        "recall": [
+          0.008721287311141137,
+          0.0022235948116121063,
+          0.0021231422505307855,
+          0.001948605529168189
+        ],
+        "recall_all_templates": 0.003759166820730881,
+        "study_recall": null
       },
       "seed": 9,
       "train": {
@@ -454,7 +634,37 @@
         3,
         0,
         0
-      ]
+      ],
+      "seeds_with_study_record": 10
+    },
+    "novel": {
+      "extra_edges_total": 2369,
+      "recall_max": [
+        0.02039061540351308,
+        0.004323656578134651,
+        0.031347570875483954,
+        0.0037754232127633664
+      ],
+      "recall_mean": [
+        0.002911190271465422,
+        0.0006547251389746757,
+        0.003659298114150119,
+        0.0005724028741931555
+      ],
+      "recall_min": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "seeds_matching_study_recall": 0,
+      "seeds_reading_template_at_0_99": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seeds_with_study_record": 0
     },
     "train": {
       "extra_edges_total": 159,
@@ -486,7 +696,8 @@
         10,
         10,
         10
-      ]
+      ],
+      "seeds_with_study_record": 10
     }
   },
   "templates": {
@@ -496,6 +707,12 @@
       "Starting at {u}, one step takes you to {v}.",
       "{v} can be entered straight from {u}."
     ],
+    "novel": [
+      "Hop out of {u} and you land on {v}.",
+      "If you are at {u}, {v} is one hop away.",
+      "Into {v} flows a current from {u}.",
+      "{v} is the endpoint of a wire out of {u}."
+    ],
     "train": [
       "{u} -> {v}.",
       "There is an edge from {u} to {v}.",
@@ -503,5 +720,6 @@
       "From {u} you can go directly to {v}.",
       "{v} is directly reachable from {u}."
     ]
-  }
+  },
+  "train_wording": "train"
 }

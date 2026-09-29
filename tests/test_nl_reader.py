@@ -55,12 +55,43 @@ def parse(text: str, split: str) -> tuple[list[tuple[int, int]], int]:
     return edges, distractors
 
 
-@pytest.mark.parametrize("split", ["train", "heldout"])
+@pytest.mark.parametrize("split", ["train", "heldout", "diverse", "novel"])
 def test_rendering_keeps_every_edge_and_its_direction(split):
     text = render(5, EDGES, split, "g")
     assert text == render(5, EDGES, split, "g") and text != render(5, EDGES, split, "h")
     edges, distractors = parse(text, split)
     assert sorted(edges) == sorted(EDGES) and distractors == round(0.25 * len(EDGES))
+
+
+def test_diverse_wordings_never_use_the_held_out_or_novel_wording():
+    from reachability_gen.nl_render import (
+        DIVERSE_TEMPLATES,
+        FORBIDDEN_WORDS,
+        NOVEL_TEMPLATES,
+        TRAIN_TEMPLATES,
+        WORD,
+        skeleton,
+    )
+
+    def words(t):
+        return {w.lower() for w in WORD.findall(t.replace("{u}", "0").replace("{v}", "0")) if w.isalpha()}
+
+    assert set(TRAIN_TEMPLATES) <= set(DIVERSE_TEMPLATES) and len(set(DIVERSE_TEMPLATES)) == len(DIVERSE_TEMPLATES) >= 40
+    target_first = [t for t in DIVERSE_TEMPLATES if t.index("{v}") < t.index("{u}")]
+    assert 0.2 <= len(target_first) / len(DIVERSE_TEMPLATES) <= 0.3
+    assert not set(DIVERSE_TEMPLATES) & set(HELDOUT_TEMPLATES + NOVEL_TEMPLATES)
+    assert all(not words(t) & FORBIDDEN_WORDS for t in DIVERSE_TEMPLATES)
+    assert all(words(t) & FORBIDDEN_WORDS for t in HELDOUT_TEMPLATES + NOVEL_TEMPLATES)  # each has unseen wording
+    for t in DIVERSE_TEMPLATES:  # one source, one target, and nothing the word tokenizer would drop
+        assert t.count("{u}") == 1 and t.count("{v}") == 1
+        assert not re.sub(r"\{u\}|\{v\}|->|[A-Za-z ,.]", "", t)
+    # no diverse wording is a novel construction with only its unseen words swapped
+    assert not any(skeleton(nv).fullmatch(t) for nv in NOVEL_TEMPLATES for t in DIVERSE_TEMPLATES)
+    # "by" introduces the source in some templates and the target in another
+    by = [t for t in DIVERSE_TEMPLATES if " by " in t]
+    assert any(t.index("{u}") > t.index(" by ") for t in by) and any(t.index("{v}") > t.index(" by ") for t in by)
+    vocab = build_vocab(DIVERSE_TEMPLATES + DISTRACTORS)
+    assert all(w not in vocab for t in HELDOUT_TEMPLATES + NOVEL_TEMPLATES for w in words(t) & FORBIDDEN_WORDS)
 
 
 def test_word_tokens_group_numbers_and_map_unseen_words_to_unk():
@@ -121,8 +152,51 @@ def test_words_reader_smoke(tmp_path, monkeypatch):
     art = json.loads(out.read_text())
     run = art["runs"][0]
     assert art["self_audit_mismatches"] == [] and art["protocol"]["templates"]["heldout"] == list(HELDOUT_TEMPLATES)
-    assert set(run["final"]) == {"val_in", "val_out", "long_out_16"} and isinstance(run["passes"], bool)
+    assert set(run["final"]) == {"val_in", "val_out", "long_out_16", "val_novel", "long_novel_16"}
+    assert isinstance(run["passes"], bool) and isinstance(run["passes_novel"], bool)
+    assert art["protocol"]["train_wording"] == "train" and art["protocol"]["templates"]["train"] == list(TEMPLATES["train"])
     assert run["oracle"]["val_out"]["accuracy"] >= 0.0
+
+
+def test_words_reader_smoke_with_diverse_wording(tmp_path, monkeypatch):
+    from reachability_gen import run_nl_reader as rn
+    from reachability_gen.nl_render import DIVERSE_TEMPLATES, FORBIDDEN_WORDS, NOVEL_TEMPLATES, skeleton
+
+    monkeypatch.setattr(rn, "LONG_STEPS", (16,))
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=22, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
+    train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+    ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
+    common = ["--reader", "words", "--train-data", str(train_path), "--extended-data", str(ext_path),
+              "--llm-reader", str(tmp_path / "absent.json"), "--seeds", "0", "--reader-epochs", "1",
+              "--solver-epochs", "1", "--ckpt-dir", str(tmp_path / "ckpt"), "--no-verify"]
+    monkeypatch.chdir(tmp_path)  # the default result paths are relative to the working directory
+    assert rn.main(common) == 0 and rn.main(common + ["--train-wording", "diverse"]) == 0
+    five, diverse = (json.loads((tmp_path / "artifacts" / f"nl_reader_{n}.json").read_text())
+                     for n in ("words", "words_diverse"))
+    pr = diverse["protocol"]
+    assert five["protocol"]["train_wording"] == "train" and pr["train_wording"] == "diverse"
+    assert pr["templates"]["train"] == list(DIVERSE_TEMPLATES) and pr["templates"]["novel"] == list(NOVEL_TEMPLATES)
+    assert pr["forbidden_words"] == sorted(FORBIDDEN_WORDS) and pr["distractors"] == list(DISTRACTORS)
+    # construction coverage is recorded as computed; only the novel set's disjointness is required
+    assert pr["skeleton_in_training"] == {split: [any(skeleton(t).fullmatch(g) for g in DIVERSE_TEMPLATES)
+                                                  for t in TEMPLATES[split]] for split in ("heldout", "novel")}
+    assert pr["skeleton_in_training"]["novel"] == [False] * len(NOVEL_TEMPLATES)
+    assert pr["reader_params"] > five["protocol"]["reader_params"]  # the larger vocabulary
+    assert Path(diverse["runs"][0]["checkpoint_path"]).parent.name == "nl_reader_words_diverse"
+
+
+def test_only_the_training_wording_changes_with_train_wording():
+    from reachability_gen.run_nl_reader import renderings
+
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=22, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    train_rows, val_rows = [r for r in rows if r["split"] == "train"], [r for r in rows if r["split"] == "val"]
+    five, diverse = (renderings(w, train_rows, val_rows, ext) for w in ("train", "diverse"))
+    for name in ("val_out", "long_out", "val_novel", "long_novel"):
+        assert five[name] == diverse[name] and len(five[name]) > 0
+    assert five["train"] != diverse["train"] and five["val_in"] != diverse["val_in"]
 
 
 def test_scoring_batches_shrink_with_rendering_length_and_leave_scores_unchanged():
@@ -147,7 +221,7 @@ def test_scoring_batches_shrink_with_rendering_length_and_leave_scores_unchanged
         assert split["reader"][key] == whole["reader"][key]
 
 
-def _tiny_words_study(tmp_path, monkeypatch):
+def _tiny_words_study(tmp_path, monkeypatch, wording="train"):
     from reachability_gen import run_nl_reader as rn
 
     monkeypatch.setattr(rn, "LONG_STEPS", (16,))
@@ -156,19 +230,33 @@ def _tiny_words_study(tmp_path, monkeypatch):
     train_path, ext_path = tmp_path / "train.jsonl", tmp_path / "ext.jsonl"
     train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
     ext_path.write_text("".join(json.dumps(r) + "\n" for r in ext))
-    study = tmp_path / "nl.json"
+    study = tmp_path / f"nl_{wording}.json"
     assert rn.main(["--reader", "words", "--train-data", str(train_path), "--extended-data", str(ext_path),
                     "--llm-reader", str(tmp_path / "absent.json"), "--seeds", "0", "--reader-epochs", "1",
                     "--solver-epochs", "1", "--out", str(study), "--ckpt-dir", str(tmp_path / "ckpt"),
-                    "--no-verify"]) == 0
+                    "--train-wording", wording, "--no-verify"]) == 0
     return study, train_path, rows
+
+
+def test_template_audit_of_a_diverse_study(tmp_path, monkeypatch):
+    from reachability_gen import nl_template_audit as audit
+
+    study, train_path, _ = _tiny_words_study(tmp_path, monkeypatch, wording="diverse")
+    out = tmp_path / "templates_diverse.json"
+    assert audit.main(["--reader", "words", "--study", str(study), "--train-data", str(train_path),
+                       "--out", str(out)]) == 0
+    art = json.loads(out.read_text())
+    assert art["train_wording"] == "diverse" and set(art["templates"]) == {"diverse", "heldout", "novel"}
+    for split in ("diverse", "heldout", "novel"):
+        s = art["seeds"][0][split]
+        assert len(s["recall"]) == len(TEMPLATES[split]) and s["matches_study"] is True
 
 
 def test_template_audit_parses_every_edge_and_checks_checkpoints(tmp_path, monkeypatch):
     from reachability_gen import nl_template_audit as audit
     from reachability_gen.run_llm_reader import graphs_of
 
-    for split in ("train", "heldout"):
+    for split in ("train", "heldout", "diverse", "novel"):
         found = audit.template_of_edges(render(5, EDGES, split, "g"), TEMPLATES[split])
         assert set(found) == set(EDGES) and set(found.values()) <= set(range(len(TEMPLATES[split])))
     study, train_path, rows = _tiny_words_study(tmp_path, monkeypatch)
@@ -178,7 +266,8 @@ def test_template_audit_parses_every_edge_and_checks_checkpoints(tmp_path, monke
     art = json.loads(out.read_text())
     edges = sum(len(e) for _, e in graphs_of([r for r in rows if r["split"] == "val"]).values())
     assert art["post_hoc"] is True and art["science_open"] is False and len(art["seeds"]) == 1
-    for split in ("train", "heldout"):
+    assert art["train_wording"] == "train" and set(art["templates"]) == {"train", "heldout", "novel"}
+    for split in ("train", "heldout", "novel"):
         s = art["seeds"][0][split]
         assert len(s["recall"]) == len(TEMPLATES[split]) and sum(s["edges"]) == edges
         assert all(0.0 <= r <= 1.0 for r in s["recall"]) and s["extra_edges"] >= 0
@@ -224,44 +313,53 @@ def test_template_audit_of_language_model_replies(tmp_path):
 ROOT = Path(__file__).resolve().parents[1]
 
 
-@pytest.mark.parametrize("reader", ["words", "lm"])
-def test_nl_reader_artifact_contract(reader):
-    from reachability_gen.nl_render import TRAIN_TEMPLATES
+@pytest.mark.parametrize("name", ["words", "lm", "words_diverse", "lm_diverse"])
+def test_nl_reader_artifact_contract(name):
     from reachability_gen.run_nl_reader import EVAL_PAIR_BUDGET, PASS
     from reachability_gen.run_reader import LONG_STEPS
 
-    path = ROOT / "artifacts" / f"nl_reader_{reader}.json"
+    path = ROOT / "artifacts" / f"nl_reader_{name}.json"
     if not path.exists():
         pytest.skip(f"{path.name} not present")
     art = json.loads(path.read_text(encoding="utf-8"))
     pr = art["protocol"]
+    reader, wording = name.split("_")[0], pr.get("train_wording", "train")  # item 19 predates the field
     assert art["science_open"] is False and art["self_audit_mismatches"] == [] and art["reader"] == reader
     assert pr["pass_criteria"] == PASS and pr["eval_pair_budget"] == EVAL_PAIR_BUDGET
-    assert pr["templates"] == {"train": list(TRAIN_TEMPLATES), "heldout": list(HELDOUT_TEMPLATES)}
+    assert wording == ("diverse" if name.endswith("_diverse") else "train")
+    assert pr["templates"]["train"] == list(TEMPLATES[wording]) and pr["templates"]["heldout"] == list(HELDOUT_TEMPLATES)
     assert (pr["encoder"] is None) == (reader == "words") and len(art["runs"]) == 10
     assert art["summary"]["passes"] == sum(r["passes"] for r in art["runs"])
+
+    def meets(f, held):
+        return (f[f"val_{held}"]["reader"]["exact_graphs"] >= PASS["exact_graphs_heldout_val"]
+                and f[f"long_{held}_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_heldout_long"]
+                and all(f[f"long_{held}_{s}"]["accuracy"] >= PASS["long_path_accuracy_heldout"] for s in LONG_STEPS))
+
     for run in art["runs"]:
-        f = run["final"]
-        passes = (f["val_out"]["reader"]["exact_graphs"] >= PASS["exact_graphs_heldout_val"]
-                  and f["long_out_16"]["reader"]["closure_agreement_all_pairs"] >= PASS["closure_agreement_heldout_long"]
-                  and all(f[f"long_out_{s}"]["accuracy"] >= PASS["long_path_accuracy_heldout"] for s in LONG_STEPS))
-        assert run["passes"] == passes and run["rescore_matches_record"]
+        assert run["passes"] == meets(run["final"], "out") and run["rescore_matches_record"]
         assert run["oracle"]["val_out"]["accuracy"] == 1.0
+        if "passes_novel" in run:  # scored from this leg on, reported apart from the pass criteria
+            assert run["passes_novel"] == meets(run["final"], "novel")
 
 
-@pytest.mark.parametrize("reader", ["words", "lm"])
-def test_template_audit_artifact_contract(reader):
-    path = ROOT / "artifacts" / f"nl_templates_{reader}.json"
+@pytest.mark.parametrize("name", ["words", "lm", "words_diverse", "lm_diverse"])
+def test_template_audit_artifact_contract(name):
+    path = ROOT / "artifacts" / f"nl_templates_{name}.json"
     if not path.exists():
         pytest.skip(f"{path.name} not present")
     art = json.loads(path.read_text(encoding="utf-8"))
     study = json.loads((ROOT / art["study"]).read_text(encoding="utf-8"))
-    assert art["science_open"] is False and art["post_hoc"] is True and art["reader"] == reader
-    assert art["templates"] == {split: list(TEMPLATES[split]) for split in ("train", "heldout")}
+    wording = study["protocol"].get("train_wording", "train")
+    assert art["science_open"] is False and art["post_hoc"] is True and art["reader"] == name.split("_")[0]
+    assert art["train_wording"] == wording and set(art["templates"]) == {wording, "heldout", "novel"}
+    assert all(art["templates"][split] == list(TEMPLATES[split]) for split in art["templates"])
     assert [s["checkpoint_sha256"] for s in art["seeds"]] == [r["checkpoint_sha256"] for r in study["runs"]]
+    scored_novel = "val_novel" in study["runs"][0]["final"]  # studies before the novel set did not score it
     for split, s in art["summary"].items():
-        assert s["seeds_matching_study_recall"] == len(art["seeds"])
-        assert all(0.0 <= r <= 1.0 for r in s["recall_mean"])
+        assert s["seeds_matching_study_recall"] == s["seeds_with_study_record"]  # every recorded recall reproduced
+        assert s["seeds_with_study_record"] == (len(art["seeds"]) if split != "novel" or scored_novel else 0)
+        assert all(r is not None and 0.0 <= r <= 1.0 for r in s["recall_mean"])  # every template rendered some edge
 
 
 def test_template_audit_of_language_models_artifact_contract():

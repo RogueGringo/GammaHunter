@@ -8,10 +8,11 @@ Added after the natural-language reader runs; not fixed before them. For each
 reader saved by ``run_nl_reader`` (checked against the SHA-256 its study
 recorded), the edges of the validation graphs are grouped by the template that
 rendered them, and the reader's recall is taken per template, together with the
-edges it read that the graph does not have. Both template sets are scored: the
-training templates (in distribution) and the held-out ones. Each reader's recall
-over all templates is checked against the recall its study recorded on the same
-graphs (``val_in`` and ``val_out``), so the audit reads the graphs the study scored.
+edges it read that the graph does not have. Three template sets are scored: the
+training wording of its study (in distribution), the held-out templates and the
+novel ones. Each reader's recall over all templates is checked against the recall
+its study recorded on the same graphs (``val_in``, ``val_out`` and, where the study
+scored it, ``val_novel``), so the audit reads the graphs the study scored.
 
 For the language models of ``run_llm_reader --rendering nl`` (``--reader llm``),
 the recorded replies are grouped the same way, per model and question set, with
@@ -38,14 +39,14 @@ import sys
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from reachability_gen.nl_render import TEMPLATES, build_vocab, render, word_tokens
+from reachability_gen.nl_render import DISTRACTORS, TEMPLATES, build_vocab, render, word_tokens
 from reachability_gen.overfit_ff import load_jsonl
 from reachability_gen.run_llm_reader import graphs_of
 from reachability_gen.run_nl_reader import DEFAULT_EXTENDED, DEFAULT_TRAIN, MAX_OFFSET, lm_features
 
 SENTENCE = re.compile(r"(?<=\.)\s+")
 GRAPHS_PER_BATCH: int = 16
-STUDY_SET: dict[str, str] = {"train": "val_in", "heldout": "val_out"}  # the study's scores on the same graphs
+STUDY_SET: dict[str, str] = {"heldout": "val_out", "novel": "val_novel"}  # the study's scores on the same graphs
 
 
 def template_pattern(template: str) -> re.Pattern:
@@ -63,6 +64,11 @@ def template_of_edges(text: str, templates: Sequence[str]) -> dict[tuple[int, in
                 found[(int(m["u"]), int(m["v"]))] = k
                 break
     return found
+
+
+def ratio(hits: int, total: int) -> Optional[float]:
+    """hits / total, or None when no edge was rendered with the template."""
+    return hits / total if total else None
 
 
 def recall_by_template(adj, which: Sequence[dict[tuple[int, int], int]], ns: Sequence[int],
@@ -103,11 +109,15 @@ def audit_replies(study: dict[str, Any], rows: Sequence[dict[str, Any]], generat
                     backwards[k] += (v, u) in read and (v, u) not in which
             overall = sum(hits) / sum(totals)
             recorded = res["sets"][name]["reader"]["recall"]
-            out[model][name] = {"recall": [h / t for h, t in zip(hits, totals)],
-                                "read_backwards": [b / t for b, t in zip(backwards, totals)], "edges": totals,
+            out[model][name] = {"recall": [ratio(h, t) for h, t in zip(hits, totals)],
+                                "read_backwards": [ratio(b, t) for b, t in zip(backwards, totals)], "edges": totals,
                                 "recall_all_templates": overall, "study_recall": recorded,
                                 "matches_study": abs(overall - recorded) < 1e-9}
     return out
+
+
+def rounded(values: Sequence[Optional[float]]) -> list[Optional[float]]:
+    return [None if v is None else round(v, 3) for v in values]
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -131,8 +141,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         models = audit_replies(study, load_jsonl(args.train_data) + load_jsonl(args.extended_data), generations)
         for model, sets in models.items():
             for name, s in sets.items():
-                print(f"[{model}] {name}: recall by held-out template {[round(r, 3) for r in s['recall']]}, "
-                      f"read backwards {[round(r, 3) for r in s['read_backwards']]}", file=sys.stderr, flush=True)
+                print(f"[{model}] {name}: recall by held-out template {rounded(s['recall'])}, "
+                      f"read backwards {rounded(s['read_backwards'])}", file=sys.stderr, flush=True)
         artifact = {
             "science_open": False,
             "post_hoc": True,
@@ -153,6 +163,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     study_path = args.study or Path(f"artifacts/nl_reader_{args.reader}.json")
     study = json.loads(study_path.read_text(encoding="utf-8"))
+    out_path = args.out or Path(f"artifacts/nl_templates_{study_path.stem.removeprefix('nl_reader_')}.json")
+    wording = study["protocol"].get("train_wording", "train")  # studies before the diverse split trained on "train"
+    study_set = {wording: "val_in", **STUDY_SET}
+    vocab = build_vocab(TEMPLATES[wording] + DISTRACTORS)
     for run in study["runs"]:
         digest = hashlib.sha256(Path(run["checkpoint_path"]).read_bytes()).hexdigest()
         if digest != run["checkpoint_sha256"]:
@@ -163,7 +177,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     keys = list(graphs)
     ns = [graphs[k][0] for k in keys]
     splits: dict[str, Any] = {}
-    for split in ("train", "heldout"):
+    for split in (wording, "heldout", "novel"):
         texts = [render(n, e, split, k) for k, (n, e) in ((k, graphs[k]) for k in keys)]
         which = [template_of_edges(t, TEMPLATES[split]) for t in texts]
         for k, tmpl in zip(keys, which):
@@ -171,7 +185,6 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 print(f"FAIL: the rendering of {k} does not parse back to its edges", file=sys.stderr)
                 return 1
         if args.reader == "words":
-            vocab = build_vocab()
             items = [word_tokens(t, n, vocab) for t, n in zip(texts, ns)]
         else:
             enc = study["protocol"]["encoder"]
@@ -181,7 +194,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     seeds = []
     for run in study["runs"]:
         if args.reader == "words":
-            reader = GraphReader(vocab_size=len(build_vocab()) + 2, max_offset=MAX_OFFSET)
+            reader = GraphReader(vocab_size=len(vocab) + 2, max_offset=MAX_OFFSET)
         else:
             reader = FeatureReader(study["protocol"]["encoder"]["feature_dim"], max_offset=MAX_OFFSET)
         state = torch.load(run["checkpoint_path"], map_location="cpu", weights_only=True)
@@ -196,22 +209,29 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     adj = reader(collate(items[i : i + GRAPHS_PER_BATCH], args.device), hard=True).cpu()
                     h, t, x = recall_by_template(adj, which[i : i + GRAPHS_PER_BATCH], ns[i : i + GRAPHS_PER_BATCH], n_t)
                     hits, totals, extra = [a + b for a, b in zip(hits, h)], [a + b for a, b in zip(totals, t)], extra + x
-            recorded = run["final"][STUDY_SET[split]]["reader"]["recall"]
-            entry[split] = {"recall": [a / b for a, b in zip(hits, totals)], "edges": totals, "extra_edges": extra,
+            scored = run["final"].get(study_set[split])  # None where the study did not score this wording
+            recorded = scored["reader"]["recall"] if scored else None
+            entry[split] = {"recall": [ratio(a, b) for a, b in zip(hits, totals)], "edges": totals, "extra_edges": extra,
                             "recall_all_templates": sum(hits) / sum(totals), "study_recall": recorded,
-                            "matches_study": abs(sum(hits) / sum(totals) - recorded) < 1e-9}
+                            "matches_study": None if recorded is None
+                            else abs(sum(hits) / sum(totals) - recorded) < 1e-9}
         seeds.append(entry)
         print(f"[{args.reader}/seed{run['seed']}] recall by held-out template "
-              f"{[round(r, 3) for r in entry['heldout']['recall']]}, extra edges {entry['heldout']['extra_edges']}",
+              f"{rounded(entry['heldout']['recall'])}, extra edges {entry['heldout']['extra_edges']}",
               file=sys.stderr, flush=True)
+    def over_seeds(fn, split: str, k: int) -> Optional[float]:
+        vals = [s[split]["recall"][k] for s in seeds if s[split]["recall"][k] is not None]
+        return fn(vals) if vals else None
+
     summary = {split: {
-        "recall_mean": [statistics.fmean(s[split]["recall"][k] for s in seeds) for k in range(len(TEMPLATES[split]))],
-        "recall_min": [min(s[split]["recall"][k] for s in seeds) for k in range(len(TEMPLATES[split]))],
-        "recall_max": [max(s[split]["recall"][k] for s in seeds) for k in range(len(TEMPLATES[split]))],
-        "seeds_reading_template_at_0_99": [sum(s[split]["recall"][k] >= 0.99 for s in seeds)
+        "recall_mean": [over_seeds(statistics.fmean, split, k) for k in range(len(TEMPLATES[split]))],
+        "recall_min": [over_seeds(min, split, k) for k in range(len(TEMPLATES[split]))],
+        "recall_max": [over_seeds(max, split, k) for k in range(len(TEMPLATES[split]))],
+        "seeds_reading_template_at_0_99": [sum((s[split]["recall"][k] or 0.0) >= 0.99 for s in seeds)
                                            for k in range(len(TEMPLATES[split]))],
         "extra_edges_total": sum(s[split]["extra_edges"] for s in seeds),
-        "seeds_matching_study_recall": sum(s[split]["matches_study"] for s in seeds),
+        "seeds_with_study_record": sum(s[split]["matches_study"] is not None for s in seeds),
+        "seeds_matching_study_recall": sum(s[split]["matches_study"] is True for s in seeds),
     } for split in splits}
     artifact = {
         "science_open": False,
@@ -219,6 +239,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "purpose": "which phrasings a natural-language reader reads: recall per template on the validation graphs",
         "reader": args.reader,
         "study": study_path.as_posix(),
+        "train_wording": wording,
         "templates": {split: list(TEMPLATES[split]) for split in splits},
         "graphs": len(keys),
         "seeds": seeds,
