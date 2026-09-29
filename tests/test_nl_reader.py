@@ -182,6 +182,7 @@ def test_template_audit_parses_every_edge_and_checks_checkpoints(tmp_path, monke
         s = art["seeds"][0][split]
         assert len(s["recall"]) == len(TEMPLATES[split]) and sum(s["edges"]) == edges
         assert all(0.0 <= r <= 1.0 for r in s["recall"]) and s["extra_edges"] >= 0
+        assert s["matches_study"]  # the audit reads the graphs its study scored
     ckpt = Path(json.loads(study.read_text())["runs"][0]["checkpoint_path"])
     ckpt.write_bytes(ckpt.read_bytes() + b"tampered")
     assert audit.main(argv) == 1

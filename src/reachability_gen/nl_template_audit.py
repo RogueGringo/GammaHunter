@@ -9,7 +9,9 @@ reader saved by ``run_nl_reader`` (checked against the SHA-256 its study
 recorded), the edges of the validation graphs are grouped by the template that
 rendered them, and the reader's recall is taken per template, together with the
 edges it read that the graph does not have. Both template sets are scored: the
-training templates (in distribution) and the held-out ones.
+training templates (in distribution) and the held-out ones. Each reader's recall
+over all templates is checked against the recall its study recorded on the same
+graphs (``val_in`` and ``val_out``), so the audit reads the graphs the study scored.
 
 ``science_open=false`` always.
 
@@ -37,6 +39,7 @@ from reachability_gen.run_nl_reader import DEFAULT_TRAIN, MAX_OFFSET, lm_feature
 
 SENTENCE = re.compile(r"(?<=\.)\s+")
 GRAPHS_PER_BATCH: int = 16
+STUDY_SET: dict[str, str] = {"train": "val_in", "heldout": "val_out"}  # the study's scores on the same graphs
 
 
 def template_pattern(template: str) -> re.Pattern:
@@ -127,7 +130,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     adj = reader(collate(items[i : i + GRAPHS_PER_BATCH], args.device), hard=True).cpu()
                     h, t, x = recall_by_template(adj, which[i : i + GRAPHS_PER_BATCH], ns[i : i + GRAPHS_PER_BATCH], n_t)
                     hits, totals, extra = [a + b for a, b in zip(hits, h)], [a + b for a, b in zip(totals, t)], extra + x
-            entry[split] = {"recall": [a / b for a, b in zip(hits, totals)], "edges": totals, "extra_edges": extra}
+            recorded = run["final"][STUDY_SET[split]]["reader"]["recall"]
+            entry[split] = {"recall": [a / b for a, b in zip(hits, totals)], "edges": totals, "extra_edges": extra,
+                            "recall_all_templates": sum(hits) / sum(totals), "study_recall": recorded,
+                            "matches_study": abs(sum(hits) / sum(totals) - recorded) < 1e-9}
         seeds.append(entry)
         print(f"[{args.reader}/seed{run['seed']}] recall by held-out template "
               f"{[round(r, 3) for r in entry['heldout']['recall']]}, extra edges {entry['heldout']['extra_edges']}",
@@ -139,6 +145,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "seeds_reading_template_at_0_99": [sum(s[split]["recall"][k] >= 0.99 for s in seeds)
                                            for k in range(len(TEMPLATES[split]))],
         "extra_edges_total": sum(s[split]["extra_edges"] for s in seeds),
+        "seeds_matching_study_recall": sum(s[split]["matches_study"] for s in seeds),
     } for split in splits}
     artifact = {
         "science_open": False,
