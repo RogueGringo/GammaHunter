@@ -774,7 +774,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--through", choices=("probability", "logit"), default=THROUGH)
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    p.add_argument("--ckpt-dir", type=Path, default=DEFAULT_CKPT_DIR)
+    p.add_argument("--ckpt-dir", type=Path, default=DEFAULT_CKPT_DIR,
+                   help="checkpoints go to a subdirectory named after --out, so concurrent runs never share one")
     p.add_argument("--no-verify", action="store_true", help="skip dataset verification (tests only)")
     p.add_argument("--criteria", choices=tuple(CRITERIA), default="exact",
                    help="pass criteria: exact edge set (default) or the true closure (answers-only studies)")
@@ -844,7 +845,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         },
     }
     t0 = time.perf_counter()
-    runs = [run(regime, seed, train, val, ext, device=args.device, ckpt_dir=args.ckpt_dir,
+    runs = [run(regime, seed, train, val, ext, device=args.device, ckpt_dir=args.ckpt_dir / args.out.stem,
                 reader_epochs=args.reader_epochs, solver_epochs=args.solver_epochs, reader_lr=args.reader_lr,
                 through=args.through, density=density, criteria=args.criteria)
             for regime in args.regimes for seed in args.seeds]

@@ -89,6 +89,8 @@ def test_pipeline_smoke_all_regimes(tmp_path, monkeypatch):
     assert code == 0
     art = json.loads(out.read_text())
     assert art["self_audit_mismatches"] == [] and set(art["summary"]) == set(rr.REGIMES)
+    # checkpoints sit in a directory named after the result file, so concurrent runs cannot overwrite each other's
+    assert {Path(run["checkpoint_path"]).parent for run in art["runs"]} == {tmp_path / "ckpt" / out.stem}
     for run in art["runs"]:
         r = run["final"]["val"]["reader"]
         assert 0.0 <= r["closure_agreement_all_pairs"] <= 1.0 and 0.0 <= r["exact_graphs"] <= 1.0

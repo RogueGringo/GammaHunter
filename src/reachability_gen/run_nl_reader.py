@@ -291,8 +291,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         untrained = {"val_out": evaluate(reader, solver, data["val_out"], TRAIN_STEPS)}
         history = train_reader(reader, solver, data["train"], data["val_out"], epochs=args.reader_epochs,
                                reader_lr=args.reader_lr, label=f"{args.reader}/seed{seed}", device=args.device)
-        args.ckpt_dir.mkdir(parents=True, exist_ok=True)
-        path = args.ckpt_dir / f"{args.reader}_seed{seed}.pt"
+        path = args.ckpt_dir / out_path.stem / f"{args.reader}_seed{seed}.pt"  # one directory per result file
+        path.parent.mkdir(parents=True, exist_ok=True)
         torch.save({"reader": reader.state_dict(), "solver": solver.state_dict(), "seed": seed,
                     "science_open": False}, path)
         fresh_reader, fresh_solver = make_reader().to(args.device), build_solver().to(args.device)
