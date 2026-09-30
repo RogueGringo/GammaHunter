@@ -435,6 +435,71 @@ question set, with the share of each template's edges listed backwards. It
 writes `artifacts/nl_templates_<study>.json` (for example
 `artifacts/nl_templates_words_diverse.json`) and `artifacts/nl_templates_llm.json`.
 
+## Selection normalizers
+
+`reachability_gen.selection` is a self-contained package (relative imports,
+the standard library and torch only; a test enforces both) holding four
+attention normalizers: softmax (α = 1), entmax-1.5 (α = 1.5), sparsemax
+(α = 2) and scalable softmax (softmax of s · ln n · z, with s learned per
+attention layer and head, started at 1 and used without the optional bias of
+the paper that defines it). It has a specification (`spec`, with its
+sources), a reference backend with exact sort-based forward passes and
+analytic backward passes (`reference`), a certificate checker that needs no
+framework (`certificate`: the optimality conditions checked in exact rational
+arithmetic for sparsemax, and for entmax-1.5 in rational arithmetic with one
+square root taken to 60 digits), and a conformance battery (`conformance`)
+that every backend must pass and that a deliberately broken sparsemax is
+tested to fail.
+
+```bash
+python -m reachability_gen.selection.conformance
+python -m reachability_gen.selection.stage_a
+```
+
+The battery grades each reference backend and the broken one in float64
+(simplex, exact masking, shift and permutation invariance, order
+preservation, invariance to appended positions below the threshold, the
+certificate, gradients against finite differences, zero gradient off the
+support), and checks each reference backend's float32 output, on the CPU and
+on CUDA when present, against its float64 output, on short rows and on rows
+of 2,048 positions (longer than any stage-B rendering) with spread and with
+nearly tied scores. Stage A measures, on the
+CPU in float64, the smallest logit at which one relevant position keeps half
+the weight against n = 1 to 100,000 distractors, bounded (all at 0) or drawn
+from N(0, 1) (five seeded draws, every draw kept), and the effect of
+appending positions far below the threshold, next to the predictions and
+tolerances fixed in the module: exact values for bounded distractors, and for
+N(0, 1) distractors, from n = 1,000 on, ln n + ½ for softmax and a mean-field
+threshold for sparsemax. Figures supplied with the study's specification are
+recorded as claims beside the measured values, and count as reproduced when
+they lie within the range of the draws widened by their own rounding. They write
+`artifacts/selection_conformance.json` and `artifacts/selection_stage_a.json`.
+
+```bash
+python -m reachability_gen.run_selection_reader --arm softmax --device cuda
+python -m reachability_gen.run_selection_reader --arm ssmax --device cuda
+python -m reachability_gen.run_selection_reader --arm entmax15 --device cuda
+python -m reachability_gen.run_selection_reader --arm sparsemax --device cuda
+python -m reachability_gen.run_selection_reader --decide
+```
+
+Stage B: the word reader of limitations item 19, trained exactly as there,
+with its attention normalized by one of the four normalizers (10 seeds per
+arm). Each run is scored on the validation graphs in the training wording at
+0.25, 1 and 4 distractor sentences per edge, on the long-path graphs in the
+training wording, and on item 19's held-out wording; it also records the
+untrained reader, the solver on the true graphs, item 19's pass criteria and,
+for every arm but softmax, the attention support actually used, before and
+after training. `--decide` refuses result files that differ in seeds or
+protocol, fail their self-audit or were run without dataset verification,
+applies the decision rules fixed in the runner (H1–H4, with guards against
+the confounds the runner names and its statement of their power), and
+compares the softmax arm seed by seed with item 19's
+recorded word reader under a replication criterion fixed in the runner. The
+runner's docstring lists where the study departs from its queued
+specification. The arms write `artifacts/selection_reader_<arm>.json`;
+`--decide` writes `artifacts/selection_reader.json`.
+
 ## External benchmarks
 
 ```bash

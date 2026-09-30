@@ -127,12 +127,15 @@ UNK: int = 1  # token kinds: 0 = NODE, 1 = UNK, 2.. = words
 WORD = re.compile(r"\d+|->|[A-Za-z]+|[.,]")
 
 
-def render(n: int, edges: Sequence[tuple[int, int]], split: str, key: str) -> str:
-    """The graph as shuffled sentences from one template split (deterministic per ``key`` and split)."""
+def render(n: int, edges: Sequence[tuple[int, int]], split: str, key: str, rate: float = DISTRACTOR_RATE) -> str:
+    """The graph as shuffled sentences from one template split (deterministic per ``key`` and split).
+
+    ``rate`` distractor sentences per edge; the default is the rate of every earlier study.
+    """
     rng = random.Random(f"{SEED}/{key}/{split}")
     sentences = [rng.choice(TEMPLATES[split]).format(u=u, v=v) for u, v in edges]
     sentences += [rng.choice(DISTRACTORS).format(w=rng.randrange(n))
-                  for _ in range(int(round(DISTRACTOR_RATE * len(edges))))]
+                  for _ in range(int(round(rate * len(edges))))]
     rng.shuffle(sentences)
     return " ".join(sentences)
 

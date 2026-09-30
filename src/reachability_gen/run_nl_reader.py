@@ -189,8 +189,12 @@ def lm_features(texts: Sequence[str], ns: Sequence[int], name: str, layer: int, 
 
 
 def train_reader(reader, solver, train: NLData, val: NLData, *, epochs: int, reader_lr: float, label: str,
-                 device: str) -> list[dict[str, Any]]:
-    """Supervised on the true edges (the ``supervised`` regime of ``run_reader``); history on ``val``."""
+                 device: str, batch_losses: Optional[list[list[float]]] = None) -> list[dict[str, Any]]:
+    """Supervised on the true edges (the ``supervised`` regime of ``run_reader``); history on ``val``.
+
+    When ``batch_losses`` is given, each epoch appends the list of its per-batch
+    training losses to it (recording only: training is unchanged).
+    """
     import torch
     from torch.nn.utils import clip_grad_norm_
 
@@ -200,6 +204,8 @@ def train_reader(reader, solver, train: NLData, val: NLData, *, epochs: int, rea
         reader.train()
         order = torch.randperm(len(train.rows)).tolist()
         loss_sum, seen = 0.0, 0
+        if batch_losses is not None:
+            batch_losses.append([])
         for i in range(0, len(order), BATCH):
             idx = order[i : i + BATCH]
             graph, tokens = train.batch(idx)
@@ -209,8 +215,11 @@ def train_reader(reader, solver, train: NLData, val: NLData, *, epochs: int, rea
             loss.backward()
             clip_grad_norm_(reader.parameters(), GRAD_CLIP)
             opt.step()
-            loss_sum += float(loss.item()) * len(idx)
+            value = float(loss.item())
+            loss_sum += value * len(idx)
             seen += len(idx)
+            if batch_losses is not None:
+                batch_losses[-1].append(value)
         ev = evaluate(reader, solver, val, TRAIN_STEPS)
         history.append({"epoch": epoch, "train_loss": loss_sum / seen, "val_accuracy": ev["accuracy"],
                         "val_exact_graphs": ev["reader"]["exact_graphs"], "val_edge_f1": ev["reader"]["f1"],

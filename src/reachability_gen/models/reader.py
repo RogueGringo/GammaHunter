@@ -82,11 +82,20 @@ def collate_tokens(items: Sequence[EdgeListTokens], device: torch.device | str =
 
 
 class RelativeAttentionLayer(nn.Module):
-    """Self-attention with a learned bias per clipped relative offset, then an MLP."""
+    """Self-attention with a learned bias per clipped relative offset, then an MLP.
 
-    def __init__(self, d: int, heads: int, max_offset: int) -> None:
+    ``normalizer`` selects the attention normalizer (``reachability_gen.selection``);
+    the default, softmax, runs the original code path.
+    """
+
+    def __init__(self, d: int, heads: int, max_offset: int, normalizer: str = "softmax") -> None:
         super().__init__()
         self.heads, self.max_offset = heads, max_offset
+        self.normalizer = None
+        if normalizer != "softmax":
+            from reachability_gen.selection.reference import Normalizer
+
+            self.normalizer = Normalizer(normalizer, heads)
         self.qkv = nn.Linear(d, 3 * d)
         self.out = nn.Linear(d, d)
         self.bias = nn.Embedding(2 * max_offset + 3, heads)  # offsets -max..max, plus "far" both ways
@@ -104,7 +113,10 @@ class RelativeAttentionLayer(nn.Module):
         q, k, v = self.qkv(x).view(bsz, length, 3, self.heads, d // self.heads).unbind(2)
         att = torch.einsum("bihd,bjhd->bhij", q, k) / (d // self.heads) ** 0.5
         att = att + self.bias(self.offsets(length, h.device)).permute(2, 0, 1)[None]
-        att = att.masked_fill(~mask[:, None, None, :], float("-inf")).softmax(dim=-1)
+        if self.normalizer is None:
+            att = att.masked_fill(~mask[:, None, None, :], float("-inf")).softmax(dim=-1)
+        else:
+            att = self.normalizer(att, mask[:, None, None, :])
         h = h + self.out(torch.einsum("bhij,bjhd->bihd", att, v).reshape(bsz, length, d))
         return h + self.mlp(self.norm2(h))
 
@@ -112,13 +124,14 @@ class RelativeAttentionLayer(nn.Module):
 class GraphReader(nn.Module):
     """Edge-list tokens → edge scores for every ordered pair of node slots."""
 
-    def __init__(self, d: int = 64, layers: int = 2, heads: int = 4, max_offset: int = 4, vocab_size: int = 2) -> None:
+    def __init__(self, d: int = 64, layers: int = 2, heads: int = 4, max_offset: int = 4, vocab_size: int = 2,
+                 normalizer: str = "softmax") -> None:
         super().__init__()
         # One embedding for every node token and one per other kind: the separator of the
         # edge-list format (vocab_size 2), or the words of a natural-language rendering.
         self.kind = nn.Embedding(vocab_size, d)
         self.slot = nn.Embedding(3, d)
-        self.layers = nn.ModuleList([RelativeAttentionLayer(d, heads, max_offset) for _ in range(layers)])
+        self.layers = nn.ModuleList([RelativeAttentionLayer(d, heads, max_offset, normalizer) for _ in range(layers)])
         self.src, self.dst = nn.Linear(d, d), nn.Linear(d, d)
         self.pair_offset = nn.Embedding(2 * max_offset + 3, 1)  # the scorer also sees the pair's clipped offset
         # One shared starting value for every offset (no offset preferred), low enough

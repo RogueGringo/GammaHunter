@@ -63,6 +63,7 @@ reachability-reader-noise = "reachability_gen.reader_noise:main"
 reachability-nl-reader = "reachability_gen.run_nl_reader:main"
 reachability-nl-template-audit = "reachability_gen.nl_template_audit:main"
 reachability-cue-ceiling = "reachability_gen.cue_ceiling:main"
+reachability-selection-reader = "reachability_gen.run_selection_reader:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

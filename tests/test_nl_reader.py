@@ -221,6 +221,34 @@ def test_scoring_batches_shrink_with_rendering_length_and_leave_scores_unchanged
         assert split["reader"][key] == whole["reader"][key]
 
 
+def test_recording_batch_losses_leaves_training_unchanged():
+    from reachability_gen import run_nl_reader as rn
+    from reachability_gen.models.reader import GraphReader, collate_tokens
+    from reachability_gen.run_llm_reader import graphs_of
+    from reachability_gen.run_reader import build_solver
+
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    vocab = build_vocab()
+    tokens = {eh: word_tokens(render(n, e, "train", eh), n, vocab) for eh, (n, e) in graphs_of(rows).items()}
+    train = rn.NLData([r for r in rows if r["split"] == "train"], "cpu", tokens, collate_tokens)
+    val = rn.NLData([r for r in rows if r["split"] == "val"], "cpu", tokens, collate_tokens)
+
+    def trained(record):
+        torch.manual_seed(3)
+        reader, solver = GraphReader(vocab_size=len(vocab) + 2, max_offset=rn.MAX_OFFSET), build_solver()
+        losses: list = []
+        history = rn.train_reader(reader, solver, train, val, epochs=2, reader_lr=1e-2, label="t", device="cpu",
+                                  batch_losses=losses if record else None)
+        return reader.state_dict(), history, losses
+
+    plain, plain_history, _ = trained(False)
+    rec, rec_history, losses = trained(True)
+    assert plain_history == rec_history and all(torch.equal(plain[k], rec[k]) for k in plain)
+    assert len(losses) == 2 and all(losses)
+    batches = -(-len(train.rows) // rn.BATCH)
+    assert len(losses[0]) == batches
+
+
 def _tiny_words_study(tmp_path, monkeypatch, wording="train"):
     from reachability_gen import run_nl_reader as rn
 

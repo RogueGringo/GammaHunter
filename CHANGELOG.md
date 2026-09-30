@@ -108,6 +108,23 @@
   ones; the edge-list reader's slot input disclosed; `run_ood_gate2` loads
   checkpoints with `weights_only=True`. Limitations items 10, 13–16, 19 and 20,
   the related-work table and the Direction section updated.
+- Selection-normalizer study, fixed before any run on the study's data (the
+  test suite runs miniature versions; stage A was smoke-tested at n ≤ 1,000
+  during development): a self-contained `selection` package (softmax,
+  entmax-1.5, sparsemax and scalable softmax; exact forward and analytic
+  backward passes; a framework-free certificate checker; a conformance battery
+  with a float32 agreement check and a deliberately broken backend it must
+  reject); stage A (margin needed against the number of distractors, with
+  exact and finite-n predictions, tolerances and a claim-reproduction rule);
+  stage B (`run_selection_reader`: the item-19 word reader with each
+  normalizer, dilution, length and held-out-wording sets, fixed hypotheses
+  H1–H4 with confound guards, untrained-reader and attention-support
+  controls, and a replication criterion against item 19). Departures from the
+  queued specification are listed in the runner. `GraphReader` takes a
+  `normalizer` argument (softmax keeps the original code path),
+  `nl_render.render` a distractor rate (default unchanged), and
+  `run_nl_reader.train_reader` an optional recorder of per-batch losses
+  (training unchanged, tested).
 
 ## 0.1.0 (2026-09-27)
 
