@@ -31,3 +31,6 @@ artifacts/nl_reader/
 
 # selection-normalizer reader checkpoints (hashes are recorded in artifacts/selection_reader_*.json)
 artifacts/selection_reader/
+
+# tuned-encoder reader checkpoints (hashes are recorded in artifacts/tuned_reader_*.json)
+artifacts/tuned_reader/

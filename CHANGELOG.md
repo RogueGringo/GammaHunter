@@ -128,6 +128,21 @@
   measurement-only status becomes item 22); limitations item 19 notes that
   its word reader's held-out scores were not reproduced; a related-work row
   and a Direction paragraph added.
+- Embedding-and-representation tuning study, fixed before any run on the
+  study's data (the PI's hypothesis, recorded verbatim in the runner):
+  `tuned_encoder` (the natural-language readers' encoder truncated at its read
+  layer with its final norm removed, which reproduces the frozen features
+  exactly; trainable embedding deltas for tokens that occur in training; LoReFT
+  interventions written as W = R + D, with R orthonormalised by QR, so that
+  they start as the identity exactly) and `run_tuned_reader` (frozen,
+  embeddings, interventions, parameter-matched interventions, both, and a
+  parameter-matched capacity control, 10 seeds each; recall per template;
+  primary measure the held-out construction absent from training; fixed
+  decision rules with confound guards, a collapse rule and a replication
+  criterion against item 20). The choices made under the PI's delegation are
+  recorded with their reasons in the runner, including why the PI's pass is
+  reported rather than decided and why the entmax-gated arm was dropped. Tests
+  use a tiny random model built locally.
 
 ## 0.1.0 (2026-09-27)
 

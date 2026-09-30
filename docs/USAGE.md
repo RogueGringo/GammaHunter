@@ -500,6 +500,40 @@ runner's docstring lists where the study departs from its queued
 specification. The arms write `artifacts/selection_reader_<arm>.json`;
 `--decide` writes `artifacts/selection_reader.json`.
 
+## Embedding and representation tuning
+
+```bash
+python -m reachability_gen.run_tuned_reader --arm frozen --device cuda
+python -m reachability_gen.run_tuned_reader --arm embeddings --device cuda
+python -m reachability_gen.run_tuned_reader --arm interventions --device cuda
+python -m reachability_gen.run_tuned_reader --arm interventions_matched --device cuda
+python -m reachability_gen.run_tuned_reader --arm both --device cuda
+python -m reachability_gen.run_tuned_reader --arm capacity --device cuda
+python -m reachability_gen.run_tuned_reader --decide
+```
+
+The language-model reader of limitations item 20 (51 training wordings, 10
+seeds per arm) with its encoder frozen, with the input embeddings of the tokens
+that occur in training tuned, with low-rank representation interventions
+(`tuned_encoder`: LoReFT at the output of each block below the read layer,
+every position) tuned at rank 4, with interventions alone at the rank whose
+parameter count matches both components together, with both, and with the
+encoder frozen and a wider reader holding as many extra trainable parameters
+as both components add. Every tuned arm starts bit for bit as the frozen one,
+audited per run in evaluation and through the training path. Each run is scored
+on the training wording, item 19's held-out templates and item 20's novel
+templates, with recall per template; the primary measure is recall on the
+held-out construction absent from the training wordings. The runner's docstring
+records the hypothesis and the PI's delegation verbatim, lists every choice
+made under that delegation with its reason where one exists (constants such as
+the rank, the margins and the guard sizes were set by judgement and are stated
+as such), and every departure from the methods it uses. `--decide` refuses result files that differ in seeds, protocol
+or sizes, fail their self-audit or were run without dataset verification,
+applies the decision rules fixed in the runner, and compares the frozen arm with
+item 20's recorded reader (whose files it requires). The arms write
+`artifacts/tuned_reader_<arm>.json`; `--decide` writes
+`artifacts/tuned_reader.json`.
+
 ## External benchmarks
 
 ```bash
