@@ -192,7 +192,8 @@ def _build_loop(vocab_size: int, pad_id: int, max_len: int, hparams: dict[str, A
 def _load_ckpt(model, path: Path) -> dict[str, Any]:
     import torch
 
-    ckpt = torch.load(path, map_location="cpu", weights_only=False)
+    # the checkpoints hold only tensors and plain values, so no unpickling of arbitrary objects is needed
+    ckpt = torch.load(path, map_location="cpu", weights_only=True)
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
     return {

@@ -82,3 +82,56 @@ def test_reach_cue_artifact_contract():
             assert 0.5 <= best <= 1.0
         if "crossed" in name:  # every endpoint appears once with each label
             assert set(rep["max_by_horizon"].values()) == {0.5}
+        assert rep["pigeonhole"]["fires_on_unreachable"] == 0  # the rule is sound
+        if "and_rule" in rep:
+            assert set(rep["and_rule"]) == {"train_rows", "endpoints_excluded", "endpoints_counted"}
+
+
+def test_pigeonhole_rule_is_sound_on_random_graphs():
+    import random
+
+    from reachability_gen.reach_cues import _bfs, pigeonhole_fires
+
+    rng = random.Random(0)
+    fired = 0
+    for _ in range(400):
+        n = rng.randint(3, 12)
+        edges = sorted({(rng.randrange(n), rng.randrange(n)) for _ in range(rng.randint(0, 3 * n))}
+                       - {(i, i) for i in range(n)})
+        s, t = rng.sample(range(n), 2)
+        fwd: dict[int, list[int]] = {}
+        for u, v in edges:
+            fwd.setdefault(u, []).append(v)
+        if pigeonhole_fires(n, edges, s, t):
+            fired += 1
+            assert t in _bfs(fwd, s, None)  # when it fires, the target is reachable
+    assert fired > 0
+
+
+def test_and_rule_fit_separates_a_toy_set():
+    from reachability_gen.reach_cues import and_rule_fit
+
+    xs = [0.1, 0.2, 0.5, 0.6, 0.7, 0.8]
+    ys = [0.9, 0.1, 0.6, 0.7, 0.2, 0.9]
+    a, b, acc = and_rule_fit(xs, ys, [0, 0, 1, 1, 0, 1])
+    assert acc == 1.0 and (a, b) == (0.2, 0.6)  # the first perfect pair in ascending order
+    assert and_rule_fit([0.3, 0.3], [0.3, 0.3], [0, 0])[2] == 1.0  # a rule that never fires
+
+
+def test_and_rule_report_fits_on_train_and_scores_the_given_rows():
+    from reachability_gen.gen_id_disjoint import generate_id_disjoint
+    from reachability_gen.reach_cues import and_rule_report
+
+    rows = [e.to_dict() for e in generate_id_disjoint(seed=3, n_total=100, n_val=50)[0]]
+    train, val = [r for r in rows if r["split"] == "train"], [r for r in rows if r["split"] == "val"]
+    rep = and_rule_report(train, val)
+    assert rep["train_rows"] == len(train)
+    for key in ("endpoints_excluded", "endpoints_counted"):
+        v = rep[key]
+        assert 0.0 <= v["accuracy"] <= 1.0 and 0.5 <= v["train_accuracy"] <= 1.0
+        labels = [int(r["y"]) for r in val]
+        fr = __import__("reachability_gen.reach_cues", fromlist=["reach_fractions"]).reach_fractions(
+            val, endpoints=key == "endpoints_counted")
+        hits = sum(int((x >= v["source_fraction_at_least"] and y >= v["target_fraction_at_least"]) == bool(lab))
+                   for (x, y), lab in zip(fr, labels))
+        assert v["accuracy"] == hits / len(labels)  # scored with the thresholds fitted on train

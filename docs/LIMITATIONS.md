@@ -105,15 +105,87 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     fitted on the set itself, score up to 0.78 on the graph-disjoint
     validation splits and up to 0.86 on the long-path set (0.79 when limited
     to 6 hops from the endpoint); endpoint degrees alone score up to 0.62
-    (`artifacts/reach_cue_audit.json`). Accuracy between 0.5 and these levels
-    does not by itself show path search; results at 1.000, such as those of
-    the message-passing arms on the validation splits, exceed them. The
-    crossed sets (`id_crossed_20k`, `extended_crossed_2k`) remove these cues
-    by construction: each graph contributes two reachable queries and the two
-    queries that cross them, so every source and every target appears once
-    with each label, and every one-endpoint rule scores exactly 0.5. A rule on
-    the distance between the two endpoints with edge direction ignored scores
-    0.51 on them (0.53–0.54 on the paired sets).
+    (`artifacts/reach_cue_audit.json`).
+    - *Both endpoints, paired sets.* Rules that combine both endpoints' reach,
+      still without a path between them, come much closer. The pigeonhole
+      rule is fitted on nothing: reachable iff |desc(s) ∪ {s}| +
+      |anc(t) ∪ {t}| > n, when the two sets must share a node. It is sound, so
+      it never fires on an unreachable pair. It scores 0.9878 and 0.9925 on
+      the two graph-disjoint validation splits (firing on 1,951 of the 2,000
+      reachable pairs of the larger) and 0.9715 on the long-path set. A
+      two-threshold rule on the two reach fractions, fitted on the training
+      split, scores 0.9788 on the larger split and 0.9750 on the smaller with
+      the endpoints left out of the counts, and 0.9750 and 0.9800 with them
+      counted. A gradient-boosted learner (`artifacts/cue_ceiling.json`,
+      five learner seeds) was trained on the training split and scored on the
+      larger validation split. With 13 endpoint features it scores
+      0.9885–0.9892 (0.9900 on the smaller split), and 0.9995 in grouped
+      cross-validation on the long-path set; with the target's side alone,
+      0.7990–0.8033. With 42 richer features, added after a first comparison
+      with an independent review's figures, it scores 0.9935–0.9942 (target
+      side alone 0.8020–0.8067). Refitted on shuffled training labels, the
+      same learner scores 0.35–0.64 on the larger split. On the paired sets,
+      then, accuracy up to about 0.994 on the validation splits and 0.9995
+      on the long-path set does not by itself show path search. Results at
+      1.000 on the validation splits, such as those of the message-passing
+      arms, exceed the best such rule measured by 0.58 points on the larger
+      split (0.9942) and 0.75 on the smaller (the pigeonhole rule's 0.9925).
+      The long-path results of item 9 (at least 0.997) do not exceed it.
+    - *Both endpoints, crossed sets.* The crossed sets (`id_crossed_20k`,
+      `extended_crossed_2k`) remove the one-endpoint cues by construction.
+      Each graph contributes two reachable queries and the two queries that
+      cross them, so every source and every target appears once with each
+      label, and every one-endpoint rule scores exactly 0.5. The same
+      construction lets the pigeonhole rule fire on at most one of each
+      graph's two reachable queries, and it fired on none. A rule on the
+      distance between the two endpoints with edge direction ignored scores
+      0.51 (0.53–0.54 on the paired sets). The learner, trained on the crossed
+      training split and scored on its validation split, gives:
+      - with the 13 endpoint features, 0.5068–0.5152, just above its
+        range on shuffled labels (0.4925–0.5030; 0.4905–0.5100 over all
+        feature sets);
+      - with three direction-blind pair features added, 0.5285–0.5373;
+      - with the richer features, 0.5188–0.6098;
+      - with the richer features and the pair features, 0.5780–0.6070
+        (0.5275–0.675 by graph hop).
+
+      In grouped cross-validation on the long-path set it scores
+      0.5035–0.5105 (shuffled labels: 0.4945–0.5120). Crossed-set accuracies
+      up to about 0.61 on the validation split, and up to about 0.51 on the
+      long-path set, therefore do not by themselves show search. Items 14,
+      16, 17, 19 and 20 cite this ceiling where crossed-set accuracies fall
+      between chance and about 0.61; results at 0.50 (items 12, 13, 15, 18)
+      are at chance and are not annotated.
+    - *The review's figures, one by one* (recorded as claims in both result
+      files).
+      - Reproduced:
+        - pigeonhole 0.9878, firing on 1,951 of 2,000 reachable pairs with
+          precision 1.0, and 0.9925;
+        - the two-threshold rule's 0.980 on the smaller split, with the
+          endpoints counted;
+        - the learner's 0.9995 in grouped cross-validation on the paired
+          long-path set;
+        - about 0.50–0.52 in grouped cross-validation on the crossed
+          long-path set (0.5105 with the original features).
+      - Not reproduced:
+        - the two-threshold rule's 0.976 on the larger split (0.9788 or
+          0.9750);
+        - the learner's 0.996 on the larger paired split (0.9885–0.9892;
+          0.9935–0.9942 with the later features);
+        - 0.934 with the target's side alone (0.7990–0.8067);
+        - 0.54 with per-endpoint features on the crossed validation split
+          (0.5068–0.5152; 0.5188–0.6098 with the later features);
+        - 0.60–0.61 in four of five learner seeds and 0.54 in one, and
+          0.57–0.67 at every hop, with pair features added. No feature set
+          here reproduces that pattern: 0.5285–0.5373 with the original
+          features, and 0.5780–0.6070 with the later ones, whose lowest
+          hop is 0.5275–0.5675.
+
+      The review's exact features were not available. Its interactions are
+      read here as those the trees learn, and every feature set includes the
+      graph size. The learner's seed only matters with more than 10,000
+      training rows, where it draws the held-out split for early stopping, so
+      the smaller sets give the same score for every seed.
 
 11. **Crossed-set construction.** In a crossed graph, each reachable query has
     exactly one path, and graph sizes (16–24 nodes, and 40–48 for the
@@ -165,9 +237,40 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     rate significantly. Seeds shared with the stability ring reproduce its
     first epochs exactly. Like every message-passing arm, the anchored
     variant is given the graph's edges, and its design keeps unreached nodes
-    at exactly zero, the structure breadth-first search relies on. Its result
-    therefore shows that this structure is learned reliably at this size, not
-    that it emerges from token input.
+    at exactly zero. In exact arithmetic that zero pattern computes
+    reachability within the step budget except for weights under which a
+    newly reached node's update is exactly zero (every pre-activation at or
+    below zero); in float32 it did so on these sets
+    (`artifacts/anchored_untrained_control.json`, five random
+    initialisations at the take-off width). A frozen random core,
+    read by the fixed rule "reachable iff some element of the target's state
+    is non-zero", scored 1.000 on the validation split at 6 steps and on the
+    long-path set at 16, 48 and 192 steps in every initialisation. It scored
+    0.900 and 0.800 at 5 and 4 steps, where only reachable pairs beyond the
+    step budget were missed. Read by the state's norm instead, it scored 0.90
+    on the long-path set at 16 steps: for every target 16 hops from the
+    source the float32 norm underflowed to 0, although its elements did not.
+    In a random core the non-zero states shrink by a factor of 37–370 per
+    hop (at 6 steps, median norm at the target 5–9 × 10⁻² two hops from the
+    source, 0.3–1.1 × 10⁻⁹ at six). A readout head trained on the frozen
+    core (the take-off protocol, 5 epochs) reached only 0.70 on the
+    validation split at 6 steps, and 0.50 on the long-path set at 16 and 48
+    steps (1.000 on both sets at 192 steps), in every seed: it did not tell
+    the small states
+    from zero. In the take-off study's trained checkpoints (cold
+    start, seeds 0–4), every reached target sits at the norm cap (12.2) at
+    every hop and step count measured. Both readings score 1.000 within the
+    step budget (6 steps on the validation split; 16, 48 and 192 on the
+    long-path set) and, like the random core, 0.800 and 0.900 at 4 and 5
+    steps, where targets beyond the budget are not yet reached. The search
+    itself, which nodes are non-zero, is therefore fixed by the
+    architecture, and training does two things: it learns the readout, and
+    it keeps the reached states at full size. This departs from the
+    independent review's proposed wording ("training learns only the
+    zero/non-zero readout"), which the trained-head control does not
+    support. The take-off result shows how reliably training achieves this
+    at this size, not that search is learned or that it emerges from token
+    input.
 
 14. **LLM reference points.** Open language models from the local cache
     answered the same questions, inference only: eight models of 0.49 to 3.82
@@ -211,7 +314,10 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       400 questions per set with edges and 100 without, every generation
       recorded in the matching `*_generations.jsonl`): they reached 0.45–0.55
       among parsed answers on the crossed validation split (the 7B model
-      0.54) and 0.48–0.52 on the long-path set (0.52). On the long-path set,
+      0.54) and 0.48–0.52 on the long-path set (0.52): within what a
+      learned rule that needs no search reaches on the crossed validation
+      split (up to 0.61), and at or just above what it reaches on the
+      long-path set (0.50–0.51; item 10). On the long-path set,
       3–52% of the answers were cut off at the 768-token budget before a
       final answer (18% for the 7B model). Without the edges, one model
       declined to answer 97% of the questions and the others stayed at
@@ -235,9 +341,12 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
 
 15. **Reader pipeline.** A reader that sees only the edge list, never the
     question, and gives every node token the same embedding supplied the
-    anchored arm with an explicit 0/1 graph
-    (`artifacts/reader_pipeline.json`: three regimes, 10 seeds each, 5 epochs
-    on `id_crossed_20k`; pass criteria fixed in the runner).
+    anchored arm with an explicit 0/1 graph. It is also given each token's
+    slot within its edge (source, separator, target) as an input embedding,
+    so the edge list reaches it already parsed into source and target
+    positions; the natural-language readers of items 19–20 receive no slots.
+    Results are in `artifacts/reader_pipeline.json` (three regimes, 10 seeds
+    each, 5 epochs on `id_crossed_20k`; pass criteria fixed in the runner).
     - *Trained on the true edges*, with the solver trained first on true
       graphs and then frozen, the reader passed in all 10 seeds, each from
       its first epoch. It read every validation and long-path graph exactly,
@@ -325,7 +434,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       read backwards. The frozen solvers, which answer every
       question correctly on the true graphs, then scored 0.51–0.58 on the
       crossed questions (Phi-3.5 0.58, Wilson 95% 0.53–0.63; Falcon3 0.55)
-      and 0.48–0.51 on the long-path questions; all but a handful of the
+      and 0.48–0.51 on the long-path questions, within what a learned rule
+      that needs no search reaches on those sets (up to 0.61 and 0.51;
+      item 10); all but a handful of the
       wrong answers trace to the graph read. On the same crossed questions
       these models, reasoning step by step, had scored 0.48–0.53. They
       verify a single listed edge at AUROC 0.89–0.99 (item 14), so listing a
@@ -371,8 +482,10 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       scored within 0.03 of the model's own pipeline in four of six
       model–set pairs; on the crossed questions Phi-3.5 and Falcon3 scored
       0.05 and 0.03 above their matched noise, differences of the size of the
-      sampling error for 400 questions. Their reading errors cost about what
-      random errors at the same rates cost.
+      sampling error for 400 questions, and their 0.58 and 0.55 are within
+      what a learned rule needing no search reaches there (up to 0.61;
+      item 10). Their reading errors cost about what random errors at the
+      same rates cost.
     - *Why answers alone did not teach the reader*
       (`artifacts/reader_answers_density.json`; frozen solver, hard graph,
       density prior, 10 seeds per cell, scored on the true closure): the
@@ -444,7 +557,8 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     later file of each seed was kept.
 
 19. **Reading natural language.** Three readers, fixed in code before they
-    ran, read each graph from sentences instead of an edge list
+    ran, read each graph from sentences instead of an edge list, without the
+    slot input that parses the edge list for item 15's reader
     (`nl_render`): one sentence per edge in a seeded shuffled order, worded
     by one of five training templates or one of four held-out templates
     whose wording never appears in training (in each set, one template names
@@ -504,7 +618,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     Only the trained readers came close to exact, and only in the wording
     they were trained on. On the held-out wording no reader read the graphs
     exactly enough for the search, and every pipeline stayed at chance on
-    the long paths. A small language model's frozen features carried more of
+    the long paths. On the validation questions, accuracies up to about 0.61
+    are within what a learned rule that needs no search reaches (item 10).
+    A small language model's frozen features carried more of
     the reading to new wording than words learned from scratch, while the
     language models read the sentences worse than the edge list. The
     sentence that names the target first was the hardest for all three.
@@ -528,8 +644,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
 20. **Wording diversity.** Fixed in code before it ran (commit ba7a5b5): the
     two trained readers of item 19, trained on 51 wordings instead of five
     (`artifacts/nl_reader_words_diverse.json`,
-    `artifacts/nl_reader_lm_diverse.json`; otherwise as in item 19, 10 seeds
-    each, except that the word reader's vocabulary grows with the wordings).
+    `artifacts/nl_reader_lm_diverse.json`; otherwise as in item 19, without
+    slot input, 10 seeds each, except that the word reader's vocabulary grows
+    with the wordings).
     The wordings are the five training templates and 46 more; a quarter name
     the target first, and "by" introduces the source in some and the target in
     another. None uses an open-class word of any held-out or novel template.
@@ -546,7 +663,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       the nine seeds that did not diverge), with precision 0.965–0.998 and
       recall 0.83–0.87, and the pipeline scored 0.73–0.80 on the validation
       questions (item 19: 0.55–0.76 in those nine). Exact graphs stayed at
-      0.4–3.1%, and the long paths at 0.51–0.54 (item 19: 0.50). The template
+      0.4–3.1%, and the long paths at 0.51–0.54 (item 19: 0.50), at or just
+      above the 0.50–0.51 that a learned rule needing no search reaches on
+      that set in grouped cross-validation (item 10). The template
       audit (`artifacts/nl_templates_lm_diverse.json`, reproducing each
       reader's recorded recall exactly) shows where. The three held-out
       templates whose constructions occur in the training wordings were now
@@ -590,9 +709,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       the target-first template, whose construction the new wordings
       contain, by 2, 1 without them (item 19: none; mean recall 0.40, or
       0.26), while "{u} leads to {v}." fell from mean recall 0.68 to 0.38, or
-      0.23 (seeds at 0.99 or more: 4 to 2, or 1). The word reader also read 21,725 edges
-      that the graphs do not have (item 19: 5), 69% of them in seeds 1, 5 and
-      6, the three whose last epoch ended in a loss jump.
+      0.23 (seeds at 0.99 or more: 4 to 2, or 1). The word reader also read
+      21,725 edges that the graphs do not have (item 19: 5), 69% of them in
+      seeds 1, 5 and 6, the three whose last epoch ended in a loss jump.
 
     Diverse wording let the language-model reader read new words almost
     completely in constructions it had seen. Constructions it had not seen it
@@ -616,8 +735,9 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     paths at 16 steps (language-model reader, seed 7; none at 192 steps),
     once on the novel validation questions (seed 8), and 22 times on the
     validation questions for the word reader (24 counting the question
-    sample, which repeats validation questions), all in seeds 1, 5 and 6. The pass criterion admits up to ten misread graphs
-    among the 1,000 validation graphs; for graphs drawn as those are, a
+    sample, which repeats validation questions), all in seeds 1, 5 and 6.
+    The pass criterion admits up to ten misread graphs among the 1,000
+    validation graphs; for graphs drawn as those are, a
     passing reader's misread rate is then below 1.7% (one-sided 95%, exact
     binomial), and below 0.3% if it reads all 1,000 exactly. The item-19
     template audits were rerun with the novel templates after the grammar
@@ -625,7 +745,11 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     them; their earlier numbers were unchanged, and a rerun after the commit
     reproduced them. From this study on, the language-model features are
     held in CPU memory between batches, which leaves the reads unchanged: the
-    reruns reproduce item 19's recorded recall exactly.
+    reruns reproduce item 19's recorded recall exactly. On the crossed
+    validation questions a learned rule that needs no search reaches up to
+    0.61 (item 10); the word reader's 0.50–0.61 and the 0.51–0.56 on the
+    novel wording are within it. On the long-path set such a rule reaches
+    0.50–0.51; every long-path figure above is within 0.05 of chance.
 
 21. **Measurement-only status.** No result in this repository is presented as
     an established finding.

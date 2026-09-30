@@ -1,5 +1,5 @@
-data/id_disjoint_2k.jsonl (n=400): best one-endpoint rule within_1=0.6200 within_6=0.7775 unlimited=0.7775; direction-blind distance 0.5250
-data/id_disjoint_20k.jsonl (n=4000): best one-endpoint rule within_1=0.6042 within_6=0.7823 unlimited=0.7820; direction-blind distance 0.5265
-data/extended_disjoint_2k.jsonl (n=2000): best one-endpoint rule within_1=0.5290 within_6=0.7935 unlimited=0.8555; direction-blind distance 0.5395
-data/id_crossed_20k.jsonl (n=4000): best one-endpoint rule within_1=0.5000 within_6=0.5000 unlimited=0.5000; direction-blind distance 0.5080
-data/extended_crossed_2k.jsonl (n=2000): best one-endpoint rule within_1=0.5000 within_6=0.5000 unlimited=0.5000; direction-blind distance 0.5120
+data/id_disjoint_2k.jsonl (n=400): best one-endpoint rule within_1=0.6200 within_6=0.7775 unlimited=0.7775; direction-blind distance 0.5250; pigeonhole 0.9925 (fires on 197/200 reachable, 0 unreachable); AND rule 0.9750 (endpoints counted 0.9800); review claimed {'pigeonhole': '0.9925', 'and_rule': '0.980'}
+data/id_disjoint_20k.jsonl (n=4000): best one-endpoint rule within_1=0.6042 within_6=0.7823 unlimited=0.7820; direction-blind distance 0.5265; pigeonhole 0.9878 (fires on 1951/2000 reachable, 0 unreachable); AND rule 0.9788 (endpoints counted 0.9750); review claimed {'pigeonhole': '0.9878 (fires on 1951 of 2000 reachable pairs, precision 1.0)', 'and_rule': '0.976'}
+data/extended_disjoint_2k.jsonl (n=2000): best one-endpoint rule within_1=0.5290 within_6=0.7935 unlimited=0.8555; direction-blind distance 0.5395; pigeonhole 0.9715 (fires on 943/1000 reachable, 0 unreachable)
+data/id_crossed_20k.jsonl (n=4000): best one-endpoint rule within_1=0.5000 within_6=0.5000 unlimited=0.5000; direction-blind distance 0.5080; pigeonhole 0.5000 (fires on 0/2000 reachable, 0 unreachable); AND rule 0.4988 (endpoints counted 0.4988)
+data/extended_crossed_2k.jsonl (n=2000): best one-endpoint rule within_1=0.5000 within_6=0.5000 unlimited=0.5000; direction-blind distance 0.5120; pigeonhole 0.5000 (fires on 0/1000 reachable, 0 unreachable)

@@ -97,6 +97,17 @@
   covers the novel split for every reader and audits diverse-wording studies
   (`--study`); language-model features held in CPU memory between batches
   (same values). Results recorded (limitations item 20).
+- Corrections after an independent review: the reach-cue audit adds the
+  pigeonhole rule (sound, no fitting) and a two-threshold rule on both
+  endpoints' reach; learned no-search ceilings on the paired and crossed sets
+  (`cue_ceiling`, scikit-learn as an optional extra, with a shuffled-label
+  null control); anchored-arm controls (`untrained_control --anchored`: a
+  frozen random core read by a fixed zero test, element by element and by
+  norm; the frozen core with a trained head; and the take-off study's trained
+  checkpoints); the review's figures recorded as claims beside the reproduced
+  ones; the edge-list reader's slot input disclosed; `run_ood_gate2` loads
+  checkpoints with `weights_only=True`. Limitations items 10, 13–16, 19 and 20,
+  the related-work table and the Direction section updated.
 
 ## 0.1.0 (2026-09-27)
 

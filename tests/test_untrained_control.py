@@ -87,3 +87,55 @@ def test_untrained_control_artifact_contract():
         assert set(per_seed["unlooped"]["extended_by_steps"]) == {"6"}
     if "learned_margin" in art:
         assert len(art["learned_margin"]) == 2 * 2 * len(art["control"])
+
+
+ANCHORED = Path(__file__).resolve().parents[1] / "artifacts" / "anchored_untrained_control.json"
+
+
+def test_anchored_zero_test_needs_no_training():
+    """A random anchored core read by the fixed zero test answers every question within its step budget."""
+    from reachability_gen.gen_crossed import CROSSED_EXTENDED_SPEC, generate_crossed
+    from reachability_gen.run_stability import SetData
+    from reachability_gen.untrained_control import anchored_control
+
+    rows = [e.to_dict() for e in generate_crossed(seed=21, n_total=40, n_val=20)[0]]
+    ext = [e.to_dict() for e in generate_crossed(seed=22, n_total=20, n_val=20, spec=CROSSED_EXTENDED_SPEC)[0]]
+    crossed = SetData([r for r in rows if r["split"] == "train"], "cpu")
+    val, long = SetData([r for r in rows if r["split"] == "val"], "cpu"), SetData(ext, "cpu")
+    out = anchored_control(0, crossed, val, long, device="cpu", epochs=1)
+    zt = out["zero_test"]
+    assert zt["val_by_steps"]["6"]["acc"] == 1.0  # every crossed path is at most 6 hops
+    assert all(v["acc"] == 1.0 for v in zt["long_by_steps"].values())
+    # with fewer steps only reachable pairs beyond the budget are missed
+    for steps in ("4", "5"):
+        missed = [h for h, a in zt["val_by_steps"][steps]["by_graph_hop"].items() if a < 1.0]
+        assert all(int(h) > int(steps) for h in missed)
+    assert out["trained_head"]["core_unchanged"] is True
+
+
+@pytest.mark.skipif(not ANCHORED.exists(), reason="anchored-control artifact not present")
+def test_anchored_control_artifact_contract():
+    art = json.loads(ANCHORED.read_text(encoding="utf-8"))
+    assert art["science_open"] is False and len(art["runs"]) == len(art["seeds"])
+    within_budget = [("val_by_steps", "6"), ("long_by_steps", "16"), ("long_by_steps", "48"),
+                     ("long_by_steps", "192")]
+    for run in art["runs"]:
+        assert run["trained_head"]["core_unchanged"] is True
+        assert set(run["zero_test"]["val_by_steps"]) == {"4", "5", "6"}
+        assert set(run["zero_test"]["long_by_steps"]) == {"16", "48", "192"}
+        for group, steps in within_budget:  # the element rule answers everything within the step budget
+            assert run["zero_test"][group][steps]["acc"] == 1.0
+        for by_steps in run["zero_test"].values():
+            for zt in by_steps.values():
+                assert 0.0 <= zt["norm_rule_acc"] <= 1.0
+                for stats in zt["reachable_target_state_by_graph_hop"].values():
+                    assert 0 <= stats["norms_exactly_zero"] <= stats["targets"]
+    trained = art["trained_takeoff_checkpoints"]
+    assert trained is not None and set(trained) == {str(s) for s in art["seeds"]}
+    for ckpt in trained.values():
+        assert len(ckpt["checkpoint_sha256"]) == 64
+        for group, steps in within_budget:
+            zt = ckpt[group][steps]
+            assert zt["acc"] == 1.0 and zt["norm_rule_acc"] == 1.0
+            for stats in zt["reachable_target_state_by_graph_hop"].values():
+                assert stats["norms_exactly_zero"] == 0 and stats["norm_min"] > 1.0  # reached states stay large

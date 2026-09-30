@@ -245,3 +245,21 @@ def test_generate_ood_hops_end_to_end(tmp_path: Path):
     out = tmp_path / "ood_hops.jsonl"
     write_jsonl(out, examples)
     assert report["science_open"] is False
+
+
+def test_gate2_checkpoints_load_without_unpickling_objects(tmp_path: Path):
+    torch = pytest.importorskip("torch")
+    import pickle
+
+    from reachability_gen.run_ood_gate2 import _load_ckpt
+
+    model = torch.nn.Linear(2, 2)
+    path = tmp_path / "ok.pt"
+    torch.save({"state_dict": model.state_dict(), "epoch": 3, "val_acc": 0.5, "arm": "ff", "science_open": False}, path)
+    assert _load_ckpt(torch.nn.Linear(2, 2), path)["epoch"] == 3
+    bad = tmp_path / "bad.pt"
+    import datetime
+
+    torch.save({"state_dict": model.state_dict(), "extra": datetime.date(2026, 9, 29)}, bad)  # not a plain value
+    with pytest.raises(pickle.UnpicklingError):
+        _load_ckpt(torch.nn.Linear(2, 2), bad)

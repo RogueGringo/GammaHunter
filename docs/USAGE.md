@@ -158,6 +158,22 @@ training cannot be attributed to learning. It writes
 margin (trained minus untrained accuracy) for both saved checkpoints when the
 calibration's result file is present.
 
+```bash
+python -m reachability_gen.untrained_control --anchored --device cuda
+```
+
+Controls for the take-off study's anchored arm on the crossed sets, five
+initialisations at the take-off width: a frozen random core read by the fixed
+rule "reachable iff some element of the target's state is non-zero" (4, 5 and
+6 steps on the validation split, 16, 48 and 192 on the long-path set), also
+read by the state's float32 norm, with the norm and largest element at
+reachable targets by graph hop; and the same frozen core with only its readout
+head trained under the take-off protocol, checked to leave the core
+unchanged. When `artifacts/takeoff_study.json` is present, the same
+measurements are taken on its trained anchored cold-start checkpoints,
+verified against their recorded SHA-256. Writes
+`artifacts/anchored_untrained_control.json`.
+
 ## Stability ring
 
 ```bash
@@ -471,7 +487,25 @@ nodes the source reaches, how many nodes reach the target, and how far those
 sets extend, within 1 hop, within 6 hops and without limit. It also scores the
 distance between the two endpoints with edge direction ignored. Each rule's
 threshold is fitted on the audited rows themselves, so every score is a
-ceiling for that rule. Writes `artifacts/reach_cue_audit.json`.
+ceiling for that rule. It also scores two rules that combine both endpoints:
+the pigeonhole rule (reachable iff |desc(s) ∪ {s}| + |anc(t) ∪ {t}| > n; sound
+and fitted on nothing) and a two-threshold rule on the two reach fractions,
+fitted on the train split. Writes `artifacts/reach_cue_audit.json`.
+
+```bash
+pip install -e ".[cue-ceiling]"                          # adds scikit-learn (optional extra)
+python -m reachability_gen.cue_ceiling
+```
+
+Learned no-search ceilings: a gradient-boosted-tree classifier on features
+that need no directed path between the endpoints (endpoint reach, depth and
+degree profiles, and direction-blind pair features), trained on each file's
+train split and scored on its validation split, or scored by grouped 5-fold
+cross-validation where a file has no train split; five learner seeds, with
+accuracy by graph hop, and a null control that refits the learner on shuffled
+training labels. An independent review's figures are recorded beside the
+reproduced ones here and in the reach-cue audit. Writes
+`artifacts/cue_ceiling.json`.
 
 ## Utilities
 

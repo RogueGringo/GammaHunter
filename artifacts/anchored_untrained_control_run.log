@@ -1,0 +1,5 @@
+[anchored seed 0] zero test val T=4:0.8000 T=5:0.9000 T=6:1.0000 | long T=16:1.0000 T=48:1.0000 T=192:1.0000 | trained head val 0.7000, long T=16:0.5000 T=48:0.5000 T=192:1.0000, core unchanged True
+[anchored seed 1] zero test val T=4:0.8000 T=5:0.9000 T=6:1.0000 | long T=16:1.0000 T=48:1.0000 T=192:1.0000 | trained head val 0.7000, long T=16:0.5000 T=48:0.5000 T=192:1.0000, core unchanged True
+[anchored seed 2] zero test val T=4:0.8000 T=5:0.9000 T=6:1.0000 | long T=16:1.0000 T=48:1.0000 T=192:1.0000 | trained head val 0.7000, long T=16:0.5000 T=48:0.5000 T=192:1.0000, core unchanged True
+[anchored seed 3] zero test val T=4:0.8000 T=5:0.9000 T=6:1.0000 | long T=16:1.0000 T=48:1.0000 T=192:1.0000 | trained head val 0.7000, long T=16:0.5000 T=48:0.5000 T=192:1.0000, core unchanged True
+[anchored seed 4] zero test val T=4:0.8000 T=5:0.9000 T=6:1.0000 | long T=16:1.0000 T=48:1.0000 T=192:1.0000 | trained head val 0.7000, long T=16:0.5000 T=48:0.5000 T=192:1.0000, core unchanged True

@@ -25,6 +25,7 @@ dev = ["pytest>=7.0"]
 torch = ["torch"]
 benchmarks = ["pyarrow"]
 llm = ["transformers", "accelerate"]
+cue-ceiling = ["scikit-learn"]  # dev-only audit (reachability_gen.cue_ceiling)
 
 [project.scripts]
 reachability-gen = "reachability_gen.generate:main"
@@ -61,6 +62,7 @@ reachability-reader-identifiability = "reachability_gen.reader_identifiability:m
 reachability-reader-noise = "reachability_gen.reader_noise:main"
 reachability-nl-reader = "reachability_gen.run_nl_reader:main"
 reachability-nl-template-audit = "reachability_gen.nl_template_audit:main"
+reachability-cue-ceiling = "reachability_gen.cue_ceiling:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

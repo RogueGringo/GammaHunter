@@ -11,7 +11,7 @@
     "within_6",
     "unlimited"
   ],
-  "method": "best single-threshold rule per feature, fitted on the audited rows themselves",
+  "method": "best single-threshold rule per feature, fitted on the audited rows themselves; the pigeonhole rule (no fitting); the two-threshold AND rule, fitted on the train split where a file has one",
   "missing": [],
   "purpose": "ceilings for rules that read only one endpoint's reach (no path between the endpoints)",
   "science_open": false,
@@ -24,6 +24,13 @@
         "within_6": 0.5
       },
       "n": 2000,
+      "pigeonhole": {
+        "accuracy": 0.5,
+        "fires_on_reachable": 0,
+        "fires_on_unreachable": 0,
+        "precision": null,
+        "reachable": 1000
+      },
       "positive_rate": 0.5,
       "rules": {
         "source_reach": {
@@ -56,6 +63,13 @@
         "within_6": 0.7935
       },
       "n": 2000,
+      "pigeonhole": {
+        "accuracy": 0.9715,
+        "fires_on_reachable": 943,
+        "fires_on_unreachable": 0,
+        "precision": 1.0,
+        "reachable": 1000
+      },
       "positive_rate": 0.5,
       "rules": {
         "source_reach": {
@@ -81,6 +95,21 @@
       }
     },
     "data/id_crossed_20k.jsonl": {
+      "and_rule": {
+        "endpoints_counted": {
+          "accuracy": 0.49875,
+          "source_fraction_at_least": 0.45,
+          "target_fraction_at_least": 0.4583333333333333,
+          "train_accuracy": 0.5016875
+        },
+        "endpoints_excluded": {
+          "accuracy": 0.49875,
+          "source_fraction_at_least": 0.4,
+          "target_fraction_at_least": 0.4166666666666667,
+          "train_accuracy": 0.5016875
+        },
+        "train_rows": 16000
+      },
       "direction_blind_distance": 0.508,
       "max_by_horizon": {
         "unlimited": 0.5,
@@ -88,6 +117,13 @@
         "within_6": 0.5
       },
       "n": 4000,
+      "pigeonhole": {
+        "accuracy": 0.5,
+        "fires_on_reachable": 0,
+        "fires_on_unreachable": 0,
+        "precision": null,
+        "reachable": 2000
+      },
       "positive_rate": 0.5,
       "rules": {
         "source_reach": {
@@ -113,6 +149,25 @@
       }
     },
     "data/id_disjoint_20k.jsonl": {
+      "and_rule": {
+        "endpoints_counted": {
+          "accuracy": 0.975,
+          "source_fraction_at_least": 0.35,
+          "target_fraction_at_least": 0.3888888888888889,
+          "train_accuracy": 0.9726875
+        },
+        "endpoints_excluded": {
+          "accuracy": 0.97875,
+          "source_fraction_at_least": 0.3125,
+          "target_fraction_at_least": 0.3333333333333333,
+          "train_accuracy": 0.9758125
+        },
+        "train_rows": 16000
+      },
+      "claimed_by_review": {
+        "and_rule": "0.976",
+        "pigeonhole": "0.9878 (fires on 1951 of 2000 reachable pairs, precision 1.0)"
+      },
       "direction_blind_distance": 0.5265,
       "max_by_horizon": {
         "unlimited": 0.782,
@@ -120,6 +175,13 @@
         "within_6": 0.78225
       },
       "n": 4000,
+      "pigeonhole": {
+        "accuracy": 0.98775,
+        "fires_on_reachable": 1951,
+        "fires_on_unreachable": 0,
+        "precision": 1.0,
+        "reachable": 2000
+      },
       "positive_rate": 0.5,
       "rules": {
         "source_reach": {
@@ -145,6 +207,25 @@
       }
     },
     "data/id_disjoint_2k.jsonl": {
+      "and_rule": {
+        "endpoints_counted": {
+          "accuracy": 0.98,
+          "source_fraction_at_least": 0.4375,
+          "target_fraction_at_least": 0.35,
+          "train_accuracy": 0.978125
+        },
+        "endpoints_excluded": {
+          "accuracy": 0.975,
+          "source_fraction_at_least": 0.3125,
+          "target_fraction_at_least": 0.3,
+          "train_accuracy": 0.981875
+        },
+        "train_rows": 1600
+      },
+      "claimed_by_review": {
+        "and_rule": "0.980",
+        "pigeonhole": "0.9925"
+      },
       "direction_blind_distance": 0.525,
       "max_by_horizon": {
         "unlimited": 0.7775,
@@ -152,6 +233,13 @@
         "within_6": 0.7775
       },
       "n": 400,
+      "pigeonhole": {
+        "accuracy": 0.9925,
+        "fires_on_reachable": 197,
+        "fires_on_unreachable": 0,
+        "precision": 1.0,
+        "reachable": 200
+      },
       "positive_rate": 0.5,
       "rules": {
         "source_reach": {

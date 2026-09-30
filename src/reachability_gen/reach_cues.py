@@ -18,6 +18,17 @@ one endpoint) and unlimited. It also reports the same ceiling for the distance
 between the two endpoints with edge direction ignored: that rule does search,
 but not the directed search the label depends on.
 
+Two rules that combine both endpoints' reach, still without a path between them:
+
+* the pigeonhole rule, fitted on nothing: reachable iff
+  |desc(s) ∪ {s}| + |anc(t) ∪ {t}| > n. The two sets then share a node, so s
+  reaches t: the rule is sound (it never fires on an unreachable pair) and can
+  only miss reachable ones;
+* a two-threshold AND rule, reachable iff |desc(s)|/n ≥ a and |anc(t)|/n ≥ b,
+  fitted on a file's train split and scored on the audited split, with the
+  endpoints left out of desc(s) and anc(t) and with them counted (both are
+  reported; the definition leaves this open and it moves the result).
+
 ``science_open=false`` always.
 
 Usage::
@@ -52,6 +63,12 @@ DEFAULT_DATA: tuple[str, ...] = (
     "data/extended_crossed_2k.jsonl",
 )
 DEFAULT_OUT = Path("artifacts/reach_cue_audit.json")
+# Values reported by an independent review (to reproduce, not to cite); recorded beside the results.
+CLAIMS: dict[str, dict[str, str]] = {
+    "data/id_disjoint_20k.jsonl": {"pigeonhole": "0.9878 (fires on 1951 of 2000 reachable pairs, precision 1.0)",
+                                   "and_rule": "0.976"},
+    "data/id_disjoint_2k.jsonl": {"pigeonhole": "0.9925", "and_rule": "0.980"},
+}
 
 
 def horizon_key(limit: Optional[int]) -> str:
@@ -101,6 +118,79 @@ def undirected_distance(n: int, edges: Iterable[tuple[int, int]], s: int, t: int
     return _bfs(adj, s, None).get(t, n)
 
 
+def pigeonhole_fires(n: int, edges: Iterable[tuple[int, int]], s: int, t: int) -> bool:
+    """|desc(s) ∪ {s}| + |anc(t) ∪ {t}| > n: the two sets overlap, so s reaches t (sound, no fitting)."""
+    fwd: dict[int, list[int]] = {}
+    bwd: dict[int, list[int]] = {}
+    for u, v in edges:
+        fwd.setdefault(u, []).append(v)
+        bwd.setdefault(v, []).append(u)
+    return len(_bfs(fwd, s, None)) + len(_bfs(bwd, t, None)) > n
+
+
+def pigeonhole_report(parsed: Sequence[tuple[int, Any, int, int]], labels: Sequence[int]) -> dict[str, Any]:
+    """Accuracy of predicting reachable exactly where the pigeonhole rule fires, and where it fires."""
+    fires = [pigeonhole_fires(n, edges, s, t) for n, edges, s, t in parsed]
+    tp = sum(1 for f, y in zip(fires, labels) if f and y)
+    fp = sum(1 for f, y in zip(fires, labels) if f and not y)
+    positives = sum(labels)
+    return {
+        "accuracy": (tp + (len(labels) - positives - fp)) / len(labels),
+        "fires_on_reachable": tp,
+        "reachable": positives,
+        "fires_on_unreachable": fp,
+        "precision": tp / (tp + fp) if tp + fp else None,
+    }
+
+
+def reach_fractions(rows: Sequence[dict[str, Any]], *, endpoints: bool = False) -> list[tuple[float, float]]:
+    """(|desc(s)|/n, |anc(t)|/n) per row, with s and t themselves counted if ``endpoints``."""
+    out = []
+    for n, edges, s, t in (parse_instance(str(r["encoding"])) for r in rows):
+        f = endpoint_reach_features(edges, s, t)
+        out.append(((f["source_reach"] + endpoints) / n, (f["target_ancestors"] + endpoints) / n))
+    return out
+
+
+def and_rule_fit(xs: Sequence[float], ys: Sequence[float], labels: Sequence[int]) -> tuple[float, float, float]:
+    """Thresholds (a, b) maximising the accuracy of ``1 iff x >= a and y >= b``; returns (a, b, accuracy).
+
+    Every pair of observed values is tried, plus thresholds above every value (a rule that
+    never fires); ties keep the first pair in ascending order.
+    """
+    ux, uy = sorted(set(xs)), sorted(set(ys))
+    ix, iy = {v: i for i, v in enumerate(ux)}, {v: j for j, v in enumerate(uy)}
+    pos = [[0] * (len(uy) + 1) for _ in range(len(ux) + 1)]
+    neg = [[0] * (len(uy) + 1) for _ in range(len(ux) + 1)]
+    for x, y, lab in zip(xs, ys, labels):
+        (pos if lab else neg)[ix[x]][iy[y]] += 1
+    for i in range(len(ux) - 1, -1, -1):  # suffix sums: counts with x >= ux[i] and y >= uy[j]
+        for j in range(len(uy) - 1, -1, -1):
+            for table in (pos, neg):
+                table[i][j] += table[i + 1][j] + table[i][j + 1] - table[i + 1][j + 1]
+    total, n_neg = len(labels), neg[0][0]
+    best = (-1.0, float("inf"), float("inf"))
+    for i in range(len(ux) + 1):
+        for j in range(len(uy) + 1):
+            acc = (pos[i][j] + n_neg - neg[i][j]) / total
+            if acc > best[0]:
+                best = (acc, ux[i] if i < len(ux) else float("inf"), uy[j] if j < len(uy) else float("inf"))
+    return best[1], best[2], best[0]
+
+
+def and_rule_report(train_rows: Sequence[dict[str, Any]], rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """The AND rule fitted on ``train_rows`` and scored on ``rows``, endpoints excluded and counted."""
+    labels = [int(r["y"]) for r in rows]
+    out: dict[str, Any] = {"train_rows": len(train_rows)}
+    for key, endpoints in (("endpoints_excluded", False), ("endpoints_counted", True)):
+        tr, ev = reach_fractions(train_rows, endpoints=endpoints), reach_fractions(rows, endpoints=endpoints)
+        a, b, train_acc = and_rule_fit([x for x, _ in tr], [y for _, y in tr], [int(r["y"]) for r in train_rows])
+        hits = sum(int((x >= a and y >= b) == bool(lab)) for (x, y), lab in zip(ev, labels))
+        out[key] = {"source_fraction_at_least": a, "target_fraction_at_least": b, "train_accuracy": train_acc,
+                    "accuracy": hits / len(labels)}
+    return out
+
+
 def best_threshold_accuracy(values: Sequence[float], labels: Sequence[int]) -> float:
     """Best accuracy of ``predict 1 iff value >= θ``, or its complement, over all θ.
 
@@ -147,6 +237,7 @@ def reach_cue_report(
         "direction_blind_distance": best_threshold_accuracy(
             [undirected_distance(n, edges, s, t) for n, edges, s, t in parsed], labels
         ),
+        "pigeonhole": pigeonhole_report(parsed, labels),
     }
 
 
@@ -165,16 +256,23 @@ def main(argv: Optional[list[str]] = None) -> int:
         if not path.exists():
             missing.append(path.as_posix())
             continue
-        rows = [r for r in load_jsonl(path) if r.get("split") == args.split]
+        every = load_jsonl(path)
+        rows = [r for r in every if r.get("split") == args.split]
         if rows:
             sets[path.as_posix()] = reach_cue_report(rows)
+            train = [r for r in every if r.get("split") == "train"]
+            if train and args.split != "train":
+                sets[path.as_posix()]["and_rule"] = and_rule_report(train, rows)
+            if path.as_posix() in CLAIMS:
+                sets[path.as_posix()]["claimed_by_review"] = CLAIMS[path.as_posix()]
     if not sets:
         print(f"FAIL: no {args.split!r} rows audited; missing: {missing}; see docs/USAGE.md", file=sys.stderr)
         return 1
     artifact = {
         "science_open": False,
         "purpose": "ceilings for rules that read only one endpoint's reach (no path between the endpoints)",
-        "method": "best single-threshold rule per feature, fitted on the audited rows themselves",
+        "method": "best single-threshold rule per feature, fitted on the audited rows themselves; the pigeonhole "
+                  "rule (no fitting); the two-threshold AND rule, fitted on the train split where a file has one",
         "split": args.split,
         "features": FEATURES,
         "direction_blind_distance": "distance between the two endpoints with edge direction ignored",
@@ -186,8 +284,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     args.out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
     for name, rep in sets.items():
         best = " ".join(f"{k}={v:.4f}" for k, v in rep["max_by_horizon"].items())
+        pig = rep["pigeonhole"]
+        extra = (f"; AND rule {rep['and_rule']['endpoints_excluded']['accuracy']:.4f} "
+                 f"(endpoints counted {rep['and_rule']['endpoints_counted']['accuracy']:.4f})") if "and_rule" in rep else ""
         print(f"{name} (n={rep['n']}): best one-endpoint rule {best}; "
-              f"direction-blind distance {rep['direction_blind_distance']:.4f}", file=sys.stderr)
+              f"direction-blind distance {rep['direction_blind_distance']:.4f}; pigeonhole {pig['accuracy']:.4f} "
+              f"(fires on {pig['fires_on_reachable']}/{pig['reachable']} reachable, "
+              f"{pig['fires_on_unreachable']} unreachable){extra}"
+              + (f"; review claimed {rep['claimed_by_review']}" if "claimed_by_review" in rep else ""), file=sys.stderr)
     print(json.dumps({"ok": True, "out": args.out.as_posix(), "science_open": False}, sort_keys=True))
     return 0
 

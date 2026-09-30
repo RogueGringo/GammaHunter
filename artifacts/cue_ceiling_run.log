@@ -1,0 +1,13 @@
+data/id_disjoint_20k.jsonl/endpoint: 0.9890 [0.9885, 0.9892] (train split -> validation split); review claimed 0.996
+data/id_disjoint_20k.jsonl/ancestor_side: 0.8008 [0.7990, 0.8033] (train split -> validation split); review claimed 0.934
+data/id_disjoint_2k.jsonl/endpoint: 0.9900 [0.9900, 0.9900] (train split -> validation split)
+data/extended_disjoint_2k.jsonl/endpoint: 0.9995 [0.9995, 0.9995] (grouped 5-fold cross-validation (groups: graphs)); review claimed 0.9995 (grouped 5-fold CV)
+data/id_crossed_20k.jsonl/endpoint: 0.5104 [0.5068, 0.5152] (train split -> validation split); review claimed 0.54
+data/id_crossed_20k.jsonl/endpoint_pair: 0.5336 [0.5285, 0.5373] (train split -> validation split); review claimed 0.60-0.61 in 4 of 5 learner seeds, 0.54 in one; 0.57-0.67 at every hop
+data/extended_crossed_2k.jsonl/endpoint_pair: 0.5105 [0.5105, 0.5105] (grouped 5-fold cross-validation (groups: graphs)); review claimed about 0.50-0.52 (grouped CV)
+data/id_disjoint_20k.jsonl/profile: 0.9938 [0.9935, 0.9942] (train split -> validation split)
+data/id_disjoint_20k.jsonl/profile_ancestor: 0.8045 [0.8020, 0.8067] (train split -> validation split)
+data/extended_disjoint_2k.jsonl/profile: 0.9995 [0.9995, 0.9995] (grouped 5-fold cross-validation (groups: graphs))
+data/id_crossed_20k.jsonl/profile: 0.5883 [0.5188, 0.6098] (train split -> validation split)
+data/id_crossed_20k.jsonl/profile_pair: 0.5889 [0.5780, 0.6070] (train split -> validation split)
+data/extended_crossed_2k.jsonl/profile_pair: 0.5035 [0.5035, 0.5035] (grouped 5-fold cross-validation (groups: graphs))
