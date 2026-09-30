@@ -1,0 +1,60 @@
+[entmax15/seed0] epoch 1/5: loss 22.8369 held-out val acc 0.5048 exact graphs 0.0000 edge F1 0.4342
+[entmax15/seed0] epoch 2/5: loss 0.0307 held-out val acc 0.5172 exact graphs 0.0000 edge F1 0.4983
+[entmax15/seed0] epoch 3/5: loss 0.0048 held-out val acc 0.5125 exact graphs 0.0000 edge F1 0.4288
+[entmax15/seed0] epoch 4/5: loss 0.0446 held-out val acc 0.5262 exact graphs 0.0000 edge F1 0.5580
+[entmax15/seed0] epoch 5/5: loss 0.0017 held-out val acc 0.5252 exact graphs 0.0000 edge F1 0.5528
+[entmax15/seed0] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.553
+[entmax15/seed1] epoch 1/5: loss 3.1287 held-out val acc 0.5028 exact graphs 0.0000 edge F1 0.4321
+[entmax15/seed1] epoch 2/5: loss 0.1279 held-out val acc 0.5040 exact graphs 0.0000 edge F1 0.4172
+[entmax15/seed1] epoch 3/5: loss 7.0892 held-out val acc 0.5058 exact graphs 0.0000 edge F1 0.3219
+[entmax15/seed1] epoch 4/5: loss 0.0031 held-out val acc 0.5008 exact graphs 0.0000 edge F1 0.1631
+[entmax15/seed1] epoch 5/5: loss 0.0017 held-out val acc 0.5008 exact graphs 0.0000 edge F1 0.1445
+[entmax15/seed1] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.144
+[entmax15/seed2] epoch 1/5: loss 7.5535 held-out val acc 0.5028 exact graphs 0.0000 edge F1 0.4324
+[entmax15/seed2] epoch 2/5: loss 0.1277 held-out val acc 0.5045 exact graphs 0.0000 edge F1 0.0783
+[entmax15/seed2] epoch 3/5: loss 0.1263 held-out val acc 0.5028 exact graphs 0.0000 edge F1 0.4324
+[entmax15/seed2] epoch 4/5: loss 4807.7928 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.1552
+[entmax15/seed2] epoch 5/5: loss 733.3065 held-out val acc 0.5330 exact graphs 0.0000 edge F1 0.6115
+[entmax15/seed2] F1 in@0.25 0.995 in@4 1.000 long_in 0.993 out 0.612
+[entmax15/seed3] epoch 1/5: loss 15.1956 held-out val acc 0.5105 exact graphs 0.0000 edge F1 0.4000
+[entmax15/seed3] epoch 2/5: loss 0.0189 held-out val acc 0.5198 exact graphs 0.0000 edge F1 0.5254
+[entmax15/seed3] epoch 3/5: loss 575.8718 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0365
+[entmax15/seed3] epoch 4/5: loss 0.0091 held-out val acc 0.5192 exact graphs 0.0000 edge F1 0.5254
+[entmax15/seed3] epoch 5/5: loss 0.0026 held-out val acc 0.5120 exact graphs 0.0000 edge F1 0.4239
+[entmax15/seed3] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.424
+[entmax15/seed4] epoch 1/5: loss 1.6204 held-out val acc 0.5022 exact graphs 0.0000 edge F1 0.0876
+[entmax15/seed4] epoch 2/5: loss 0.1279 held-out val acc 0.5045 exact graphs 0.0000 edge F1 0.0753
+[entmax15/seed4] epoch 3/5: loss 0.1263 held-out val acc 0.5022 exact graphs 0.0000 edge F1 0.0879
+[entmax15/seed4] epoch 4/5: loss 0.1259 held-out val acc 0.5045 exact graphs 0.0000 edge F1 0.0753
+[entmax15/seed4] epoch 5/5: loss 0.1257 held-out val acc 0.5045 exact graphs 0.0000 edge F1 0.0753
+[entmax15/seed4] F1 in@0.25 0.387 in@4 0.414 long_in 0.326 out 0.075
+[entmax15/seed5] epoch 1/5: loss 0.5975 held-out val acc 0.5463 exact graphs 0.0000 edge F1 0.6509
+[entmax15/seed5] epoch 2/5: loss 0.0090 held-out val acc 0.5040 exact graphs 0.0000 edge F1 0.2447
+[entmax15/seed5] epoch 3/5: loss 838.1346 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0000
+[entmax15/seed5] epoch 4/5: loss 390.2755 held-out val acc 0.5028 exact graphs 0.0000 edge F1 0.2318
+[entmax15/seed5] epoch 5/5: loss 0.0033 held-out val acc 0.5062 exact graphs 0.0000 edge F1 0.3255
+[entmax15/seed5] F1 in@0.25 1.000 in@4 1.000 long_in 0.999 out 0.326
+[entmax15/seed6] epoch 1/5: loss 8.6581 held-out val acc 0.5028 exact graphs 0.0000 edge F1 0.4324
+[entmax15/seed6] epoch 2/5: loss 38.1807 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[entmax15/seed6] epoch 3/5: loss 0.0076 held-out val acc 0.5493 exact graphs 0.0000 edge F1 0.6647
+[entmax15/seed6] epoch 4/5: loss 0.0037 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[entmax15/seed6] epoch 5/5: loss 0.0024 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[entmax15/seed6] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.667
+[entmax15/seed7] epoch 1/5: loss 5.9907 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0763
+[entmax15/seed7] epoch 2/5: loss 0.0261 held-out val acc 0.5002 exact graphs 0.0000 edge F1 0.1218
+[entmax15/seed7] epoch 3/5: loss 261.1189 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0001
+[entmax15/seed7] epoch 4/5: loss 25.5846 held-out val acc 0.5100 exact graphs 0.0000 edge F1 0.3992
+[entmax15/seed7] epoch 5/5: loss 0.0030 held-out val acc 0.5145 exact graphs 0.0000 edge F1 0.4632
+[entmax15/seed7] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.463
+[entmax15/seed8] epoch 1/5: loss 8.1654 held-out val acc 0.5108 exact graphs 0.0000 edge F1 0.3973
+[entmax15/seed8] epoch 2/5: loss 0.0405 held-out val acc 0.5092 exact graphs 0.0000 edge F1 0.3866
+[entmax15/seed8] epoch 3/5: loss 0.0160 held-out val acc 0.5080 exact graphs 0.0000 edge F1 0.3865
+[entmax15/seed8] epoch 4/5: loss 438.3033 held-out val acc 0.5085 exact graphs 0.0000 edge F1 0.3739
+[entmax15/seed8] epoch 5/5: loss 0.0058 held-out val acc 0.5092 exact graphs 0.0000 edge F1 0.3639
+[entmax15/seed8] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.364
+[entmax15/seed9] epoch 1/5: loss 4.6375 held-out val acc 0.5490 exact graphs 0.0000 edge F1 0.6665
+[entmax15/seed9] epoch 2/5: loss 0.0265 held-out val acc 0.5373 exact graphs 0.0000 edge F1 0.6209
+[entmax15/seed9] epoch 3/5: loss 16.0094 held-out val acc 0.5198 exact graphs 0.0000 edge F1 0.5346
+[entmax15/seed9] epoch 4/5: loss 0.0034 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[entmax15/seed9] epoch 5/5: loss 0.0016 held-out val acc 0.5497 exact graphs 0.0000 edge F1 0.6674
+[entmax15/seed9] F1 in@0.25 1.000 in@4 1.000 long_in 1.000 out 0.667

@@ -124,7 +124,10 @@
   `normalizer` argument (softmax keeps the original code path),
   `nl_render.render` a distractor rate (default unchanged), and
   `run_nl_reader.train_reader` an optional recorder of per-batch losses
-  (training unchanged, tested).
+  (training unchanged, tested). Results recorded (limitations item 21;
+  measurement-only status becomes item 22); limitations item 19 notes that
+  its word reader's held-out scores were not reproduced; a related-work row
+  and a Direction paragraph added.
 
 ## 0.1.0 (2026-09-27)
 

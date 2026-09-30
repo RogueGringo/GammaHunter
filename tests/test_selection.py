@@ -266,3 +266,42 @@ def test_float32_agreement_of_reference_backends():
     for kind, fn in BACKENDS.items():
         report = float32_agreement(fn)
         assert report["passed"], (kind, report)
+
+
+SELECTION_ARMS = ("softmax", "ssmax", "entmax15", "sparsemax")
+
+
+@pytest.mark.skipif(not all((ROOT / "artifacts" / f"selection_reader_{a}.json").exists() for a in SELECTION_ARMS),
+                    reason="selection-reader artifacts not present")
+def test_selection_reader_artifacts_contract():
+    from reachability_gen import run_selection_reader as rs
+
+    arts = {a: json.loads((ROOT / "artifacts" / f"selection_reader_{a}.json").read_text(encoding="utf-8"))
+            for a in SELECTION_ARMS}
+    assert rs.check_arts(arts) == []
+    for arm, art in arts.items():
+        assert art["science_open"] is False and art["arm"] == arm
+        assert sorted(r["seed"] for r in art["runs"]) == list(range(10))
+        assert art["protocol"]["dataset_verified"] is True and art["protocol"]["reader_epochs"] == 5
+        for run in art["runs"]:
+            assert run["rescore_matches_record"] is True and len(run["checkpoint_sha256"]) == 64
+            assert len(run["batch_losses"]) == 5 and run["oracle"]["val_out"]["accuracy"] == 1.0
+            assert set(run["untrained_reader"]) == set(rs.SUPPORT_SETS)
+            assert (run["attention_support"]["trained"]["val_in_4"] is None) == (arm == "softmax")
+    decided = json.loads((ROOT / "artifacts" / "selection_reader.json").read_text(encoding="utf-8"))
+    assert decided["science_open"] is False and decided["verdicts"] == rs.decide(arts)  # the verdicts re-derive
+    item19 = ROOT / "artifacts" / "nl_reader_words.json"
+    if item19.exists():  # the replication re-derives from both result files
+        assert decided["replication_of_item19"] == rs.replication(
+            arts["softmax"], json.loads(item19.read_text(encoding="utf-8")))
+
+
+@pytest.mark.skipif(not (ROOT / "artifacts" / "selection_stage_a.json").exists(), reason="stage A artifact not present")
+def test_selection_stage_a_and_conformance_artifacts_contract():
+    stage_a = json.loads((ROOT / "artifacts" / "selection_stage_a.json").read_text(encoding="utf-8"))
+    assert stage_a["science_open"] is False and stage_a["predictions"]["all_hold"] is True
+    assert all(len(v["per_draw"]) == stage_a["draws"] for per in stage_a["gaussian"].values() for v in per.values())
+    assert set(stage_a["claimed"]["gaussian_100000"]) == {"softmax", "sparsemax"}
+    conformance = json.loads((ROOT / "artifacts" / "selection_conformance.json").read_text(encoding="utf-8"))
+    assert conformance["ok"] is True and conformance["broken_backend"]["passed"] is False
+    assert all(r["passed"] for r in conformance["reference_backends"].values())

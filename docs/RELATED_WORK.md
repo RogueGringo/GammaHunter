@@ -25,6 +25,7 @@ result files cited, and every GammaHunter result keeps the scope stated in
 | Trained from the answers alone with an unbiased score-function estimator (sampled graphs, leave-one-out baselines), the reader's graph turned deterministic, empty or complete, within an epoch at the study's rate, and stayed nearly empty at a tenth of it | Score-function (REINFORCE) gradients for discrete latent structure; variance reduction with several samples per input and leave-one-out baselines | REINFORCE (Williams, Machine Learning 8, 1992; not on arXiv); Monte Carlo gradient estimation surveyed (1906.10652); leave-one-out baselines from several samples per input (Kool, van Hoof and Welling, ICLR 2019 workshop; OpenReview r1lgTGL5DE); REINFORCE-style optimisation revisited for language models (2402.14740) | Limitations item 18 |
 | Reading the graph from sentences worded unlike any in training: a word reader trained from scratch read only the held-out wordings that keep the training word order; frozen features of a small language model read more of them (edge F1 up to 0.91) but at most 2.3% of the graphs exactly; language models listing successors read the sentences worse than the edge list, and most often read backwards the sentence that names the target first | Sensitivity of graph reasoning to how the graph is written as text; probing frozen representations, with controls for what the probe itself learns | How a graph is encoded as text changes LLM graph-reasoning accuracy (2310.04560); linear probes (1610.01644); control tasks for probes (1909.03368) | Limitations item 19 |
 | Trained on 51 wordings instead of five, the reader on frozen language-model features read held-out sentences whose constructions occur in training almost completely and a construction absent from training only partly; no reader read more than 3.1% of the graphs exactly | Lexical versus structural generalisation (novel combinations of a familiar primitive and a familiar structure, against novel combinations of familiar syntactic structures); broadening the training data | COGS separates the two and finds structural generalisation harder (2010.05465); systematic generalisation beyond small differences between training and test (SCAN, 1711.00350); training data broadened by recombining fragments (1904.09545) | Limitations item 20 |
+| With its attention normalized by sparsemax, entmax-1.5 or scalable softmax instead of softmax, a gain of 0.05 in the word reader's held-out edge F1 could be neither shown nor excluded (every verdict inconclusive; losses were not tested); the dilution comparison was moot, because softmax lost less than 0.01 of edge F1 from 0.25 to 4 distractor sentences per edge | Sparse attention (exact zeros below a threshold); attention scaled with the context length | sparsemax (1602.02068); α-entmax (1905.05702); scalable softmax, against attention fading as the context grows (2501.19399) | Limitations item 21 |
 
 ## Direction
 
@@ -116,3 +117,15 @@ features then read new words almost completely in constructions it had seen,
 but one construction it had not seen left only 0.4–3.1% of the graphs read
 exactly, a pattern consistent with, though not shown to be, a failure of
 structural rather than lexical generalisation in the terms of COGS.
+
+Changing how the reader's attention selects among the words (limitations item
+21), from softmax to sparsemax, entmax-1.5 or scalable softmax, left the
+question open: by the rules fixed in advance, a gain of 0.05 in held-out
+edge F1 could be neither shown nor excluded for any of them. The
+dilution comparison did not apply, because softmax lost less than the 0.01
+of edge F1 the rule required from 0.25 to 4 distractor sentences per edge (16
+times as many), a result that rests on one degraded seed; exact reading,
+which fell with dilution in softmax alone, was not a measure fixed in
+advance. Rerun, the softmax reader did not reproduce item 19's held-out
+scores, seed by seed or in their mean: the same seed's held-out edge F1
+differed between the two runs by up to 0.66.

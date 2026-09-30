@@ -615,6 +615,10 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
       the other templates, and listed 27–63% of them backwards, against
       6–31%.
 
+    The per-seed held-out figures of the word reader describe one run: rerun
+    with the same code path and seeds (item 21), it did not reproduce them,
+    seed by seed or in their mean (held-out edge F1 0.371 against 0.463).
+
     Only the trained readers came close to exact, and only in the wording
     they were trained on. On the held-out wording no reader read the graphs
     exactly enough for the search, and every pipeline stayed at chance on
@@ -751,5 +755,120 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     novel wording are within it. On the long-path set such a rule reaches
     0.50–0.51; every long-path figure above is within 0.05 of chance.
 
-21. **Measurement-only status.** No result in this repository is presented as
+21. **Selection normalizers.** Fixed in code before it ran (commit b7baef4),
+    with predictions, decision rules, controls and the departures from its
+    queued specification stated in the runner. The word reader of item 19
+    was retrained exactly as there, with its attention normalized by
+    softmax (the original code path), scalable softmax (softmax of
+    s · ln n · z, s learned per layer and head from 1), entmax-1.5 or
+    sparsemax (`artifacts/selection_reader_<arm>.json`, 10 seeds each;
+    verdicts in `artifacts/selection_reader.json`).
+    - *Operators* (`artifacts/selection_conformance.json`,
+      `artifacts/selection_stage_a.json`). Every reference normalizer passed
+      the conformance battery, a deliberately broken sparsemax failed it
+      (simplex, certificate, gradient), and float32 outputs matched float64
+      within 7.7 × 10⁻⁷ on the CPU and the GPU, on rows of up to 2,048
+      positions. Every prediction fixed for stage A held. To keep half the
+      weight against n distractors at logit 0, one position needs exactly
+      ln n with softmax but less than ½ with sparsemax and less than √2 with
+      entmax-1.5 at every n (largest error 4.4 × 10⁻¹⁰). Against 100,000
+      N(0, 1) distractors the median margin was 12.02 for softmax (predicted
+      12.01), 4.64 for sparsemax (mean-field prediction 4.58), 5.02 for
+      entmax-1.5 and 4.63 for scalable softmax. At 1,000 and 10,000
+      distractors sparsemax lay 0.29 and 0.31 from its prediction, inside the
+      tolerance of 0.5. Positions appended far below the threshold left
+      entmax-1.5 and sparsemax unchanged and diluted softmax; with scalable
+      softmax they raised the relevant position's weight (0.52 to 0.80 with
+      1,000 appended), because they raise ln n. Of the figures supplied with
+      the specification, 12.0 for softmax was reproduced (draws 12.016–12.020)
+      and 4.5 for sparsemax was reproduced by the rule fixed in advance
+      (draws 4.42–5.25), although the median of the draws was 4.64.
+    - *Dilution and length (H1, H2).* Both were moot by their fixed rule,
+      which applies them only if softmax loses at least 0.01 of mean edge F1.
+      From 0.25 to 4 distractor sentences per edge (16 times as many) in the
+      training wording, softmax's mean edge F1 fell by 0.0096 (0.998 to
+      0.988): it fell in 9 of 10 seeds (by 0.0003 to 0.043) and rose in seed
+      4, whose training had degraded (see below); without that seed the mean
+      fall would have been 0.012 and the rule would have applied. From the
+      validation graphs to the long-path graphs it fell by 0.0001. The sparse
+      arms' mean edge F1 rose slightly under dilution, by 0.001 for
+      sparsemax and by 0.003 for entmax-1.5, most of it from its stalled seed
+      4 (0.0006 without it). Moot means the comparison was not made; it is
+      not evidence that dilution does or does not limit the reading.
+    - *Held-out wording (H3).* The rule fixed in advance returned
+      "inconclusive" for all three normalizers: it could neither show a gain
+      of 0.05 in held-out edge F1 over softmax nor exclude one. Mean edge F1
+      was 0.43 for entmax-1.5, 0.35 for sparsemax and 0.31 for scalable
+      softmax against 0.37 for softmax (differences +0.058, −0.022 and
+      −0.058; one-sided p for a gain 0.30, 0.58 and 0.71; a gain of 0.05 or
+      more rejected at p 0.53, 0.25 and 0.16, so for no arm). As stated in
+      advance, "inconclusive" is the expected outcome at this spread of seeds
+      and supports neither side. No run read a held-out graph exactly or met
+      item 19's pass criteria; pipeline accuracy stayed at 0.50–0.55 on the
+      validation questions, within the no-search ceiling of item 10, and at
+      0.498–0.504 on the long paths. The solvers scored 1.000 on the true
+      graphs in every run.
+    - *Start of training (H4).* Not supported: the median per-batch loss of
+      the first epoch was 0.146 for entmax-1.5 and 0.150 for sparsemax
+      against 0.133 for softmax (p 0.22 and 0.15).
+    - *Replication of item 19.* Not replicated by the criterion fixed in
+      advance. In the training wording the softmax arm's mean edge F1 was
+      within 0.002 of item 19's (p 0.79), although its seed 4 read only 30%
+      of the validation graphs exactly (item 19's seed 4: 99%; the other
+      seeds 98–100%). On the held-out wording its mean edge F1 was 0.091
+      lower (0.371 against 0.463; the criterion allows 0.05; p 0.42), so the
+      level of item 19's held-out reading was not reproduced either. Its
+      held-out precision fell below 1.000 in three seeds (0.033 in seed 0,
+      0.78 in seed 8, 0.98 in seed 6; item 19: 1.000 in every seed), and the
+      same seed read the held-out wording very differently in the two runs
+      (seed 0: 0.007 against 0.666; seed 3: 0.657 against 0.000).
+      The code path, seeds, data, torch version and GPU were the same. The
+      epoch-1 mean losses agreed within 0.06 in seeds 6–9 and differed by up
+      to 13.4 in the others (seed 3: 4.62 against 18.06), so the runs parted
+      within the first epoch. This is consistent with the GPU's
+      non-reproducible summation (item 15) amplified by the unstable reader
+      rate, which these runs did not isolate. Item 19's held-out scores
+      were therefore not reproduced, seed by seed or in their mean; no
+      verdict above uses them.
+    - *Not fixed in advance (descriptive only, no test).* Edge F1 sits near
+      its ceiling in the training wording; exact graphs, a stricter measure,
+      moved with dilution. From 0.25 to 4 distractor sentences per edge,
+      softmax read fewer validation graphs exactly in 9 of 10 seeds (mean 0.92
+      to 0.81), whereas the other arms read as many or more in 26 of their 27
+      seeds that read their wording (entmax-1.5 0.87 to 0.90, sparsemax 0.82
+      to 0.89, scalable softmax 0.88 to 0.90). Whether this holds would need a
+      study fixed on that measure. The sparse arms' attention was sparse:
+      after training, a position of the first layer gave weight to 8 keys on
+      average with sparsemax (2.8% of them) and 14 with entmax-1.5 (5.1%;
+      18.7% before training) at 0.25 distractor sentences per edge, and to 24
+      and 38 at 4. The number of keys attended grew with the distractors
+      while their share fell. Scalable softmax learned scales from −0.29 to
+      2.52. Its first layer gave exactly zero weight to more than 1% of
+      positions in 5 of its other 9 seeds (up to 25% on the validation graphs
+      and 27% on the long-path graphs; traces in a sixth) and to up to 73% in
+      seed 0, whose reading collapsed; for a dense normalizer such zeros can
+      only come from float32 underflow.
+
+    Training was again unstable at the reader rate of item 19 (1e-2): the
+    mean training loss of some epoch rose above 10 in 5 of 10 softmax runs
+    (item 19: 7 of 10) and in 8, 8 and 9 runs of the scalable-softmax,
+    entmax-1.5 and sparsemax arms. Four runs ended their last epoch on such a
+    rise (entmax-1.5 seed 2, sparsemax seeds 4 and 9, scalable softmax seed
+    0); two of them read nothing in distribution (sparsemax seed 9, to 9,271;
+    scalable softmax seed 0, to 14,601). Entmax-1.5 seed 4 stalled at a loss
+    of 0.126–0.128 from its second epoch (in-distribution edge F1 0.39).
+    Softmax seed 4 rose to 963.5 in its fourth epoch and ended at 0.110
+    (the other softmax seeds at about 0.002), reading 30% of the validation
+    graphs exactly; it is the seed that makes H1 moot. All runs are included
+    in every verdict, as fixed. Stage A was smoke-tested at
+    up to 1,000 distractors during development before its finite-n
+    tolerances were written, and the float32 agreement of the reference
+    backends was measured before its long cases were added. Checkpoints are
+    not kept in the repository; their SHA-256 are recorded, and each was
+    re-scored after saving and matched its record. These results cover one
+    word reader of two layers, one training rate, distractor sentences that
+    name a single node, and renderings of up to 1,764 tokens; other readers,
+    rates, forms of distraction and longer contexts remain untested.
+
+22. **Measurement-only status.** No result in this repository is presented as
     an established finding.
