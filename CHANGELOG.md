@@ -89,6 +89,14 @@
   item 19).
 - Scoring batches of the natural-language readers sized by rendering length;
   checkpoints of the reader runners kept in one directory per result file.
+- Wording diversity for natural-language reading
+  (`run_nl_reader --train-wording diverse`): 51 training wordings that avoid
+  every open-class word of the held-out and novel templates, and a novel
+  held-out split of constructions the training wordings lack, scored in every
+  run as a stress test beside the unchanged pass criteria; the template audit
+  covers the novel split for every reader and audits diverse-wording studies
+  (`--study`); language-model features held in CPU memory between batches
+  (same values). Results recorded (limitations item 20).
 
 ## 0.1.0 (2026-09-27)
 

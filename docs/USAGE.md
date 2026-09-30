@@ -388,19 +388,36 @@ phrasings, with in-distribution phrasings reported alongside. They write
 `artifacts/llm_reader_nl.json`.
 
 ```bash
+python -m reachability_gen.run_nl_reader --reader words --train-wording diverse --device cuda
+python -m reachability_gen.run_nl_reader --reader lm --train-wording diverse --device cuda
+```
+
+The same readers trained on 51 wordings instead of five: the diverse split of
+`nl_render` (the five training templates and 46 more, none using an
+open-class word of the held-out or novel templates). Only the training and
+in-distribution renderings and the word vocabulary change. Every run also
+scores a novel split of four held-out templates built from constructions the
+diverse wordings lack, with the same criteria, recorded as `passes_novel` and
+reported apart from the pass criteria. They write
+`artifacts/nl_reader_words_diverse.json` and `artifacts/nl_reader_lm_diverse.json`.
+
+```bash
 python -m reachability_gen.nl_template_audit --reader words
 python -m reachability_gen.nl_template_audit --reader lm --device cuda
 python -m reachability_gen.nl_template_audit --reader llm
+python -m reachability_gen.nl_template_audit --reader words --study artifacts/nl_reader_words_diverse.json
+python -m reachability_gen.nl_template_audit --reader lm --device cuda --study artifacts/nl_reader_lm_diverse.json
 ```
 
 A post-hoc audit of the saved natural-language readers (checked against their
 recorded SHA-256): recall per template on the validation graphs, for the
-training and the held-out wording, with each reader's recall over all
-templates checked against the recall its study recorded. With `--reader llm`
-it groups the recorded replies of the language models the same way, per model
-and question set, with the share of each template's edges listed backwards.
-It writes `artifacts/nl_templates_words.json`, `artifacts/nl_templates_lm.json`
-and `artifacts/nl_templates_llm.json`.
+reader's training wording, the held-out wording and the novel wording, with
+each reader's recall over all templates checked against the recall its study
+recorded where the study scored that wording. With `--reader llm` it groups
+the recorded replies of the language models the same way, per model and
+question set, with the share of each template's edges listed backwards. It
+writes `artifacts/nl_templates_<study>.json` (for example
+`artifacts/nl_templates_words_diverse.json`) and `artifacts/nl_templates_llm.json`.
 
 ## External benchmarks
 

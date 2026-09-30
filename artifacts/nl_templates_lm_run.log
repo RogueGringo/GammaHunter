@@ -1,6 +1,6 @@
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 3817.01it/s]
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 11/290 [00:00<00:02, 93.81it/s]Loading weights:   7%|▋         | 21/290 [00:00<00:03, 78.21it/s]Loading weights:  11%|█         | 32/290 [00:00<00:02, 89.13it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 632.97it/s]
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 12/290 [00:00<00:03, 91.50it/s]Loading weights:   8%|▊         | 24/290 [00:00<00:02, 92.20it/s]Loading weights:  12%|█▏        | 36/290 [00:00<00:02, 100.75it/s]Loading weights:  16%|█▌        | 47/290 [00:00<00:02, 91.47it/s] Loading weights: 100%|██████████| 290/290 [00:00<00:00, 535.68it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   2%|▏         | 7/290 [00:00<00:04, 60.74it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1507.21it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  11%|█▏        | 33/290 [00:00<00:00, 281.18it/s]Loading weights:  21%|██▏       | 62/290 [00:00<00:00, 252.72it/s]Loading weights:  30%|███       | 88/290 [00:00<00:01, 169.49it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 610.95it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 12/290 [00:00<00:02, 115.83it/s]Loading weights:  20%|█▉        | 57/290 [00:00<00:00, 295.86it/s]Loading weights:  30%|███       | 87/290 [00:00<00:00, 218.12it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 721.15it/s]
 [lm/seed0] recall by held-out template [0.896, 0.896, 0.352, 0.06], extra edges 2249
 [lm/seed1] recall by held-out template [0.378, 0.333, 0.186, 0.151], extra edges 49295
 [lm/seed2] recall by held-out template [0.874, 0.893, 0.404, 0.162], extra edges 1557

@@ -525,5 +525,107 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     (`artifacts/nl_reader_words_oom_run.log`,
     `artifacts/nl_reader_words_stopped_run.log`).
 
-20. **Measurement-only status.** No result in this repository is presented as
+20. **Wording diversity.** Fixed in code before it ran (commit ba7a5b5): the
+    two trained readers of item 19, trained on 51 wordings instead of five
+    (`artifacts/nl_reader_words_diverse.json`,
+    `artifacts/nl_reader_lm_diverse.json`; otherwise as in item 19, 10 seeds
+    each, except that the word reader's vocabulary grows with the wordings).
+    The wordings are the five training templates and 46 more; a quarter name
+    the target first, and "by" introduces the source in some and the target in
+    another. None uses an open-class word of any held-out or novel template.
+    Two sets of held-out templates were scored. Item 19's four held-out
+    templates carry the pass criteria, unchanged; the new wordings contain the
+    constructions of three of them, with other words. Four novel templates are
+    built from constructions the wordings lack (an imperative, a conditional,
+    a locative inversion and an "endpoint of" phrase); they were scored with
+    the same criteria as a stress test, reported separately. No seed of either
+    reader passed either.
+    - *Frozen language-model features.* In distribution every seed read
+      closely (edge F1 0.995–0.999, exact graphs 0.73–0.95). On the held-out
+      templates edge F1 was 0.90–0.93 in all ten seeds (item 19: 0.68–0.91 in
+      the nine seeds that did not diverge), with precision 0.965–0.998 and
+      recall 0.83–0.87, and the pipeline scored 0.73–0.80 on the validation
+      questions (item 19: 0.55–0.76 in those nine). Exact graphs stayed at
+      0.4–3.1%, and the long paths at 0.51–0.54 (item 19: 0.50). The template
+      audit (`artifacts/nl_templates_lm_diverse.json`, reproducing each
+      reader's recorded recall exactly) shows where. The three held-out
+      templates whose constructions occur in the training wordings were now
+      read almost completely (mean recall 1.000, 0.996 and 0.985; item 19:
+      0.91, 0.91 and 0.27). The fourth, "Starting at {u}, one step takes you
+      to {v}.", a fronted clause whose construction the wordings lack, stayed
+      at 37–50% in every seed, no better than in item 19 (19–51%); about a
+      quarter of each graph's edges are written this way, so few graphs were
+      read exactly. This is consistent with a failure of structural rather
+      than lexical generalisation in the terms of COGS (Kim and Linzen, 2020),
+      which distinguishes generalisation to novel combinations of a familiar
+      primitive and a familiar structure (lexical) from generalisation to
+      novel combinations of familiar syntactic structures (structural). The
+      design does not establish it: the held-out words are new rather than
+      familiar primitives, and in this template "at" introduces the source,
+      whereas in the training wordings it occurs only in "{u} points at {v}.",
+      where it introduces the target (the novel conditional, which also uses
+      "at" for the source, was read at 0–42%). On the novel templates, recall
+      over all four was 34–56% per seed (item 19's reader: 11–28%), unevenly:
+      81–98% for the locative inversion, 52–95% for the imperative, 0–42% for
+      the conditional and at most 0.51% for the "endpoint of" phrase. Accuracy
+      on the novel wording stayed at 0.51–0.56 on the validation questions and
+      0.50 on the long paths.
+    - *Words from scratch.* In distribution eight seeds read their wording
+      closely (edge F1 0.993–1.000, exact graphs 0.68–0.99). Two seeds ended
+      their last epoch in a jump of the mean training loss (to 799 and 1,408)
+      and read their own wording only partly (exact graphs 0.013); they are
+      also the word reader's two best seeds on the held-out templates (edge F1
+      0.80 and 0.78), so their held-out scores come with a broken
+      in-distribution reading and are not gains. Without those two the word
+      reader did not gain on the held-out templates: mean edge F1 0.42
+      (0.01–0.63) against 0.46 in item 19, precision 0.29–1.00 against 1.00,
+      and no graph read exactly; the pipeline scored 0.50–0.54 on the
+      validation questions (0.50–0.61 with the two) and 0.49–0.50 on the long
+      paths. On the novel templates it read almost nothing (edge F1 at most
+      0.12 without the two, 0.25 with them). The template audit
+      (`artifacts/nl_templates_words_diverse.json`) shows the reading moving
+      between templates rather than growing (counts over all ten seeds, then
+      without the two damaged ones): "A link runs from {u} to {v}." was read
+      at recall 0.99 or more by 6 seeds, 4 without them (item 19: 3), and
+      the target-first template, whose construction the new wordings
+      contain, by 2, 1 without them (item 19: none; mean recall 0.40, or
+      0.26), while "{u} leads to {v}." fell from mean recall 0.68 to 0.38, or
+      0.23 (seeds at 0.99 or more: 4 to 2, or 1). The word reader also read 21,725 edges
+      that the graphs do not have (item 19: 5), 69% of them in seeds 1, 5 and
+      6, the three whose last epoch ended in a loss jump.
+
+    Diverse wording let the language-model reader read new words almost
+    completely in constructions it had seen. Constructions it had not seen it
+    read partly and unevenly, never completely, and the one such construction
+    among the four held-out templates left only 0.4–3.1% of the graphs read
+    exactly and the long paths near chance. The word reader, which has no
+    knowledge of the new words, read more of some templates and less of
+    others, and, without its two damaged seeds, not more overall. These
+    results cover one grammar of 51
+    wordings, one held-out and one novel set of four templates each, and one
+    small encoder at one layer; other grammars, larger or fine-tuned encoders
+    and generated paraphrases remain untested.
+
+    Training was again unstable at the reader rate of the earlier studies
+    (1e-2): in 10 of the 20 runs the mean training loss of some epoch rose
+    above 10, and four runs ended their last epoch on such a rise (word
+    reader seeds 1, 5 and 6, to 799, 1,408 and 199; language-model reader
+    seed 3, to 37, which supplies that reader's lowest held-out scores above
+    except precision). Wrong answers attributed to the solver, whose read
+    graph had the true answer to the question, occurred once on the long
+    paths at 16 steps (language-model reader, seed 7; none at 192 steps),
+    once on the novel validation questions (seed 8), and 22 times on the
+    validation questions for the word reader (24 counting the question
+    sample, which repeats validation questions), all in seeds 1, 5 and 6. The pass criterion admits up to ten misread graphs
+    among the 1,000 validation graphs; for graphs drawn as those are, a
+    passing reader's misread rate is then below 1.7% (one-sided 95%, exact
+    binomial), and below 0.3% if it reads all 1,000 exactly. The item-19
+    template audits were rerun with the novel templates after the grammar
+    and the novel templates were written, but before the commit that fixed
+    them; their earlier numbers were unchanged, and a rerun after the commit
+    reproduced them. From this study on, the language-model features are
+    held in CPU memory between batches, which leaves the reads unchanged: the
+    reruns reproduce item 19's recorded recall exactly.
+
+21. **Measurement-only status.** No result in this repository is presented as
     an established finding.

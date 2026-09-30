@@ -1,0 +1,13 @@
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   3%|▎         | 8/290 [00:00<00:04, 60.53it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1481.58it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   2%|▏         | 6/290 [00:00<00:06, 40.68it/s]Loading weights:  14%|█▍        | 42/290 [00:00<00:01, 176.41it/s]Loading weights:  21%|██        | 61/290 [00:00<00:01, 176.27it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 711.58it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 11/290 [00:00<00:03, 81.09it/s]Loading weights:   7%|▋         | 20/290 [00:00<00:03, 68.87it/s]Loading weights:  10%|█         | 30/290 [00:00<00:03, 79.67it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 734.72it/s]
+[lm/seed0] recall by held-out template [1.0, 1.0, 0.469, 0.987], extra edges 440
+[lm/seed1] recall by held-out template [1.0, 1.0, 0.495, 1.0], extra edges 81
+[lm/seed2] recall by held-out template [1.0, 0.99, 0.497, 0.972], extra edges 271
+[lm/seed3] recall by held-out template [0.999, 0.989, 0.367, 0.95], extra edges 496
+[lm/seed4] recall by held-out template [1.0, 0.995, 0.377, 0.989], extra edges 215
+[lm/seed5] recall by held-out template [0.999, 0.999, 0.496, 0.99], extra edges 208
+[lm/seed6] recall by held-out template [1.0, 0.99, 0.486, 0.99], extra edges 135
+[lm/seed7] recall by held-out template [1.0, 0.997, 0.49, 0.979], extra edges 1020
+[lm/seed8] recall by held-out template [1.0, 0.999, 0.496, 0.995], extra edges 135
+[lm/seed9] recall by held-out template [1.0, 1.0, 0.497, 0.997], extra edges 53
