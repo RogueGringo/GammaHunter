@@ -870,5 +870,87 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     name a single node, and renderings of up to 1,764 tokens; other readers,
     rates, forms of distraction and longer contexts remain untested.
 
-22. **Measurement-only status.** No result in this repository is presented as
+22. **Embedding and representation tuning (stopped early).** Fixed in code
+    before it ran (commit 2810228), with the PI's hypothesis recorded verbatim in
+    the runner: "Prolly a combo of embedding and representation tuning across all
+    subsets in modern convention." The language-model reader of item 20 was to be
+    retrained with its encoder frozen, with the input embeddings of the tokens
+    that occur in training tuned, with low-rank representation interventions
+    (LoReFT) tuned, with both, with interventions alone at a parameter-matched
+    rank, and with a wider reader as a capacity control, 10 seeds each. The
+    primary measure was recall on the held-out construction absent from the
+    training wordings ("Starting at {u}, one step takes you to {v}."). No
+    stopping rule was fixed in advance. About 12.5 hours in, after interim per-seed
+    results had been reported to the PI, the PI judged the remainder ("from your
+    language i remain unconvinced the remainder has any promise...") and then
+    directed the work elsewhere ("notate the givens and lets move on"), and the
+    runs were stopped (`artifacts/tuned_reader_stopped.json`, which records these
+    words). Computed in between, the primary prediction could by then no longer
+    be met by any outcome of the remaining runs: "both" had to beat the frozen
+    arm's mean recall on the construction (0.481) by 0.30, and with five of its
+    seeds at 0.020, 0.514, 0.329, 0.000 and 0.050 its ten-seed mean could reach
+    at most 0.591, against 0.781 required. No verdict was computed by the fixed
+    rules, which need every arm complete; what follows is what the runs
+    recorded.
+    - *Frozen encoder* (complete; `artifacts/tuned_reader_frozen.json`): recall
+      on the construction 0.455–0.506 and held-out edge F1 0.886–0.931. By the
+      replication criterion fixed in advance it reproduces item 20 in
+      distribution (mean differences −0.001 in held-out edge F1 and +0.014 in
+      recall on the construction; p 0.87 and 0.45), unlike the word reader in
+      item 21. No seed met the PI's pass or the 0.90 bar on the novel templates
+      (mean recall over them 0.303–0.582).
+    - *Both components* (5 of 10 seeds; values as each run printed them, to
+      three decimals): every seed read its training wording at edge F1
+      0.999–1.000, but the held-out templates at 0.840–0.935 and the construction
+      at 0.000–0.514, below the frozen arm's lowest seed (0.455) in four of the
+      five. Mean recall over the novel templates was 0.003–0.426, and no seed
+      read more than 5.1% of the held-out graphs exactly at any epoch, so none
+      could meet the PI's pass.
+    - *Interventions alone* (2 of 10 seeds scored, a third trained but not
+      scored): both scored seeds read their own training wording at edge F1 0.20
+      and 0.18, so training collapsed, and their recall on the construction (0.53
+      and 0.13, with held-out edge F1 0.22 and 0.16) does not reflect a reading.
+    - The embeddings, parameter-matched interventions and capacity arms did not
+      run. The first two were launched by the run queue as it was being stopped
+      and were halted while loading the model; their logs, which showed only the
+      model loading, were removed.
+    - *Instability* (epoch-mean training losses in the run logs): spikes above
+      10 occurred in all three arms that ran. In the frozen arm they hit seeds 1,
+      7 and 8 (189.4, 39.5 and 102.4) and left their reading of the construction
+      (0.465, 0.469 and 0.466) within the range of the arm's other seeds
+      (0.455–0.506). In "both" they hit seeds 0
+      and 3 (35.8 and 200.2), its two lowest on the construction (0.020 and
+      0.000), and seed 4, the next lowest (0.050), ran at 6.3 and 8.5 in its
+      first two epochs; the two seeds whose loss fell smoothly after the first
+      epoch read it at 0.514 and 0.329. Both scored interventions seeds collapsed
+      after spikes (40.1 and 4,478.8 in their last epoch); the third spiked to
+      99.9 in its second epoch and recovered. The per-batch losses that the design
+      records were lost with the stopped arms' result files.
+
+    At the fixed, untuned rates used, tuning both components did not help the
+    reader read the construction it had never seen: in four of five seeds it read
+    it worse than the frozen encoder, while reading its training wordings at edge
+    F1 0.999–1.000. Two readings fit, and these runs do not separate them: tuning
+    may specialise the encoder to the training constructions, or the drop may
+    come from unstable training, since it is concentrated in the seeds whose loss
+    spiked or ran high (of the two smooth seeds, one read the construction above
+    every frozen seed and one below). These runs do not say which component is responsible
+    (the embeddings and parameter-matched ablations did not run, and
+    interventions alone collapsed), whether other rates or a penalty for drifting
+    from the frozen features would behave differently, or which label the fixed
+    rules would have given.
+
+    The tuned seeds took 1.8–3.6 hours each by the intervals between their
+    checkpoints, with other runs of the study sharing the GPU; the engineering
+    check before launch had timed one training batch (about 0.6 s at the
+    longest renderings), which left out the rest of each seed's work (the
+    solver, the per-epoch features and the final scoring) and the sharing.
+    The per-run controls (among them the audit that each tuned arm starts from
+    exactly the frozen features, in evaluation and through the training path)
+    are written only into an arm's result file, so for the stopped arms they are
+    not recorded; the engineering checks before launch had found the starts
+    exact. The stopped arms' checkpoints are kept out of the repository, with
+    their SHA-256 and write times in the stop record.
+
+23. **Measurement-only status.** No result in this repository is presented as
     an established finding.

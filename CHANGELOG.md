@@ -143,6 +143,13 @@
   recorded with their reasons in the runner, including why the PI's pass is
   reported rather than decided and why the entmax-gated arm was dropped. Tests
   use a tiny random model built locally.
+- The tuning study was stopped early by the PI after interim results (no
+  stopping rule had been fixed in advance; by then its primary prediction could
+  no longer be met); `run_tuned_reader --record-stopped` writes the record of a
+  stopped study (per-seed and per-epoch values read back from the run logs,
+  checkpoint hashes and write times, the arithmetic bound on the prediction, the
+  replication of item 20, and the stop's reason in the PI's words). Results
+  recorded (limitations item 22; measurement-only status becomes item 23).
 
 ## 0.1.0 (2026-09-27)
 

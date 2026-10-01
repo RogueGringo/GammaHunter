@@ -1,0 +1,66 @@
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 12/290 [00:00<00:02, 98.56it/s]Loading weights:   8%|▊         | 22/290 [00:00<00:03, 86.59it/s]Loading weights:  23%|██▎       | 67/290 [00:00<00:01, 221.17it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 775.47it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   8%|▊         | 22/290 [00:00<00:01, 196.03it/s]Loading weights:  14%|█▍        | 42/290 [00:00<00:01, 184.57it/s]Loading weights:  24%|██▍       | 69/290 [00:00<00:01, 218.79it/s]Loading weights:  32%|███▏      | 92/290 [00:00<00:00, 200.82it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 589.51it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  10%|█         | 30/290 [00:00<00:00, 299.49it/s]Loading weights:  21%|██        | 60/290 [00:00<00:00, 233.97it/s]Loading weights:  29%|██▉       | 85/290 [00:00<00:01, 142.76it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 547.52it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 12/290 [00:00<00:03, 79.29it/s]Loading weights:   9%|▉         | 27/290 [00:00<00:02, 104.14it/s]Loading weights:  13%|█▎        | 38/290 [00:00<00:02, 98.70it/s] Loading weights: 100%|██████████| 290/290 [00:00<00:00, 659.28it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   7%|▋         | 20/290 [00:00<00:01, 138.13it/s]Loading weights:  12%|█▏        | 34/290 [00:00<00:02, 98.78it/s] Loading weights:  16%|█▌        | 45/290 [00:00<00:02, 99.26it/s]Loading weights:  19%|█▉        | 56/290 [00:00<00:02, 99.31it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 520.24it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   7%|▋         | 19/290 [00:00<00:01, 188.45it/s]Loading weights:  13%|█▎        | 38/290 [00:00<00:01, 144.42it/s]Loading weights:  19%|█▊        | 54/290 [00:00<00:02, 114.89it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 655.51it/s]
+[frozen/seed0] epoch 1/5: loss 3.5090 held-out val acc 0.7672 exact graphs 0.0210 edge F1 0.9158
+[frozen/seed0] epoch 2/5: loss 0.0017 held-out val acc 0.8017 exact graphs 0.0340 edge F1 0.9336
+[frozen/seed0] epoch 3/5: loss 9.8131 held-out val acc 0.7460 exact graphs 0.0080 edge F1 0.9013
+[frozen/seed0] epoch 4/5: loss 0.0037 held-out val acc 0.7820 exact graphs 0.0180 edge F1 0.9229
+[frozen/seed0] epoch 5/5: loss 0.0011 held-out val acc 0.7907 exact graphs 0.0270 edge F1 0.9283
+[frozen/seed0] F1 in 0.999 out 0.928 construction recall 0.493 novel 0.383
+[frozen/seed1] epoch 1/5: loss 1.7058 held-out val acc 0.7943 exact graphs 0.0250 edge F1 0.9303
+[frozen/seed1] epoch 2/5: loss 0.0450 held-out val acc 0.7827 exact graphs 0.0220 edge F1 0.9254
+[frozen/seed1] epoch 3/5: loss 0.0008 held-out val acc 0.7947 exact graphs 0.0300 edge F1 0.9305
+[frozen/seed1] epoch 4/5: loss 189.4330 held-out val acc 0.6690 exact graphs 0.0020 edge F1 0.8514
+[frozen/seed1] epoch 5/5: loss 0.0089 held-out val acc 0.7632 exact graphs 0.0150 edge F1 0.9133
+[frozen/seed1] F1 in 0.997 out 0.913 construction recall 0.465 novel 0.376
+[frozen/seed2] epoch 1/5: loss 2.8834 held-out val acc 0.7202 exact graphs 0.0110 edge F1 0.8844
+[frozen/seed2] epoch 2/5: loss 0.0014 held-out val acc 0.7505 exact graphs 0.0240 edge F1 0.8994
+[frozen/seed2] epoch 3/5: loss 3.4581 held-out val acc 0.6773 exact graphs 0.0030 edge F1 0.8596
+[frozen/seed2] epoch 4/5: loss 0.0058 held-out val acc 0.7692 exact graphs 0.0200 edge F1 0.9098
+[frozen/seed2] epoch 5/5: loss 0.0010 held-out val acc 0.7670 exact graphs 0.0240 edge F1 0.9130
+[frozen/seed2] F1 in 0.998 out 0.913 construction recall 0.455 novel 0.456
+[frozen/seed3] epoch 1/5: loss 6.8146 held-out val acc 0.7957 exact graphs 0.0300 edge F1 0.9300
+[frozen/seed3] epoch 2/5: loss 1.9607 held-out val acc 0.7625 exact graphs 0.0180 edge F1 0.9154
+[frozen/seed3] epoch 3/5: loss 0.0024 held-out val acc 0.7953 exact graphs 0.0280 edge F1 0.9286
+[frozen/seed3] epoch 4/5: loss 0.0467 held-out val acc 0.7432 exact graphs 0.0100 edge F1 0.9005
+[frozen/seed3] epoch 5/5: loss 0.0021 held-out val acc 0.7870 exact graphs 0.0260 edge F1 0.9275
+[frozen/seed3] F1 in 0.999 out 0.927 construction recall 0.474 novel 0.431
+[frozen/seed4] epoch 1/5: loss 2.5452 held-out val acc 0.7360 exact graphs 0.0080 edge F1 0.9005
+[frozen/seed4] epoch 2/5: loss 0.2766 held-out val acc 0.7780 exact graphs 0.0180 edge F1 0.9189
+[frozen/seed4] epoch 3/5: loss 0.0021 held-out val acc 0.7945 exact graphs 0.0360 edge F1 0.9309
+[frozen/seed4] epoch 4/5: loss 0.0005 held-out val acc 0.7995 exact graphs 0.0310 edge F1 0.9320
+[frozen/seed4] epoch 5/5: loss 0.0003 held-out val acc 0.7960 exact graphs 0.0350 edge F1 0.9308
+[frozen/seed4] F1 in 0.999 out 0.931 construction recall 0.506 novel 0.560
+[frozen/seed5] epoch 1/5: loss 2.1634 held-out val acc 0.5002 exact graphs 0.0000 edge F1 0.2316
+[frozen/seed5] epoch 2/5: loss 0.0445 held-out val acc 0.7875 exact graphs 0.0230 edge F1 0.9254
+[frozen/seed5] epoch 3/5: loss 0.0309 held-out val acc 0.7850 exact graphs 0.0200 edge F1 0.9246
+[frozen/seed5] epoch 4/5: loss 0.0013 held-out val acc 0.7963 exact graphs 0.0300 edge F1 0.9302
+[frozen/seed5] epoch 5/5: loss 0.0005 held-out val acc 0.7967 exact graphs 0.0300 edge F1 0.9303
+[frozen/seed5] F1 in 0.999 out 0.930 construction recall 0.493 novel 0.477
+[frozen/seed6] epoch 1/5: loss 1.9393 held-out val acc 0.4988 exact graphs 0.0000 edge F1 0.3742
+[frozen/seed6] epoch 2/5: loss 0.0447 held-out val acc 0.7758 exact graphs 0.0160 edge F1 0.9184
+[frozen/seed6] epoch 3/5: loss 0.0015 held-out val acc 0.7815 exact graphs 0.0210 edge F1 0.9220
+[frozen/seed6] epoch 4/5: loss 0.0010 held-out val acc 0.7915 exact graphs 0.0310 edge F1 0.9286
+[frozen/seed6] epoch 5/5: loss 0.0005 held-out val acc 0.7890 exact graphs 0.0230 edge F1 0.9273
+[frozen/seed6] F1 in 0.998 out 0.927 construction recall 0.493 novel 0.582
+[frozen/seed7] epoch 1/5: loss 1.8019 held-out val acc 0.7975 exact graphs 0.0290 edge F1 0.9302
+[frozen/seed7] epoch 2/5: loss 0.5993 held-out val acc 0.7945 exact graphs 0.0280 edge F1 0.9280
+[frozen/seed7] epoch 3/5: loss 39.5090 held-out val acc 0.5000 exact graphs 0.0000 edge F1 0.0102
+[frozen/seed7] epoch 4/5: loss 0.2348 held-out val acc 0.7570 exact graphs 0.0120 edge F1 0.9116
+[frozen/seed7] epoch 5/5: loss 0.0056 held-out val acc 0.7605 exact graphs 0.0120 edge F1 0.9110
+[frozen/seed7] F1 in 0.994 out 0.911 construction recall 0.469 novel 0.469
+[frozen/seed8] epoch 1/5: loss 3.2242 held-out val acc 0.6963 exact graphs 0.0020 edge F1 0.8695
+[frozen/seed8] epoch 2/5: loss 0.0052 held-out val acc 0.7963 exact graphs 0.0300 edge F1 0.9307
+[frozen/seed8] epoch 3/5: loss 0.0008 held-out val acc 0.7980 exact graphs 0.0360 edge F1 0.9322
+[frozen/seed8] epoch 4/5: loss 102.4412 held-out val acc 0.5673 exact graphs 0.0000 edge F1 0.7388
+[frozen/seed8] epoch 5/5: loss 0.0238 held-out val acc 0.7292 exact graphs 0.0070 edge F1 0.8861
+[frozen/seed8] F1 in 0.986 out 0.886 construction recall 0.466 novel 0.303
+[frozen/seed9] epoch 1/5: loss 0.9495 held-out val acc 0.7890 exact graphs 0.0240 edge F1 0.9272
+[frozen/seed9] epoch 2/5: loss 0.4823 held-out val acc 0.7907 exact graphs 0.0240 edge F1 0.9271
+[frozen/seed9] epoch 3/5: loss 1.1733 held-out val acc 0.7827 exact graphs 0.0190 edge F1 0.9211
+[frozen/seed9] epoch 4/5: loss 0.0024 held-out val acc 0.7970 exact graphs 0.0310 edge F1 0.9301
+[frozen/seed9] epoch 5/5: loss 0.0009 held-out val acc 0.7983 exact graphs 0.0310 edge F1 0.9310
+[frozen/seed9] F1 in 0.999 out 0.931 construction recall 0.495 novel 0.510

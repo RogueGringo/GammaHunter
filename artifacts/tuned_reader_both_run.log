@@ -1,0 +1,34 @@
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  11%|█         | 32/290 [00:00<00:01, 250.99it/s]Loading weights:  20%|██        | 58/290 [00:00<00:01, 203.32it/s]Loading weights:  32%|███▏      | 92/290 [00:00<00:00, 239.40it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 719.23it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   6%|▌         | 17/290 [00:00<00:01, 166.66it/s]Loading weights:  12%|█▏        | 35/290 [00:00<00:01, 147.36it/s]Loading weights:  24%|██▍       | 69/290 [00:00<00:00, 222.37it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 703.26it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   4%|▍         | 11/290 [00:00<00:02, 104.25it/s]Loading weights:   8%|▊         | 22/290 [00:00<00:02, 97.29it/s] Loading weights:  11%|█         | 32/290 [00:00<00:02, 98.20it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 711.76it/s]
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[both/seed0] epoch 1/5: loss 1.5111 held-out val acc 0.8223 exact graphs 0.0510 edge F1 0.9467
+[both/seed0] epoch 2/5: loss 35.7722 held-out val acc 0.6402 exact graphs 0.0000 edge F1 0.8242
+[both/seed0] epoch 3/5: loss 0.0087 held-out val acc 0.6522 exact graphs 0.0010 edge F1 0.8403
+[both/seed0] epoch 4/5: loss 0.0364 held-out val acc 0.6268 exact graphs 0.0000 edge F1 0.8083
+[both/seed0] epoch 5/5: loss 0.0039 held-out val acc 0.6510 exact graphs 0.0000 edge F1 0.8405
+[both/seed0] F1 in 1.000 out 0.840 construction recall 0.020 novel 0.144
+[both/seed1] epoch 1/5: loss 1.6514 held-out val acc 0.7692 exact graphs 0.0160 edge F1 0.9214
+[both/seed1] epoch 2/5: loss 0.0004 held-out val acc 0.7967 exact graphs 0.0350 edge F1 0.9326
+[both/seed1] epoch 3/5: loss 0.0000 held-out val acc 0.8000 exact graphs 0.0400 edge F1 0.9340
+[both/seed1] epoch 4/5: loss 0.0000 held-out val acc 0.8000 exact graphs 0.0390 edge F1 0.9336
+[both/seed1] epoch 5/5: loss 0.0000 held-out val acc 0.8037 exact graphs 0.0430 edge F1 0.9349
+[both/seed1] F1 in 1.000 out 0.935 construction recall 0.514 novel 0.426
+[both/seed2] epoch 1/5: loss 2.7883 held-out val acc 0.7608 exact graphs 0.0170 edge F1 0.9115
+[both/seed2] epoch 2/5: loss 0.0002 held-out val acc 0.7745 exact graphs 0.0120 edge F1 0.9209
+[both/seed2] epoch 3/5: loss 0.0000 held-out val acc 0.7670 exact graphs 0.0120 edge F1 0.9162
+[both/seed2] epoch 4/5: loss 0.0000 held-out val acc 0.7560 exact graphs 0.0070 edge F1 0.9123
+[both/seed2] epoch 5/5: loss 0.0000 held-out val acc 0.7438 exact graphs 0.0040 edge F1 0.9063
+[both/seed2] F1 in 1.000 out 0.906 construction recall 0.329 novel 0.414
+[both/seed3] epoch 1/5: loss 6.8573 held-out val acc 0.6637 exact graphs 0.0000 edge F1 0.8536
+[both/seed3] epoch 2/5: loss 0.0014 held-out val acc 0.7175 exact graphs 0.0030 edge F1 0.8947
+[both/seed3] epoch 3/5: loss 200.2394 held-out val acc 0.5675 exact graphs 0.0000 edge F1 0.7167
+[both/seed3] epoch 4/5: loss 0.0086 held-out val acc 0.6510 exact graphs 0.0000 edge F1 0.8401
+[both/seed3] epoch 5/5: loss 0.0026 held-out val acc 0.6597 exact graphs 0.0000 edge F1 0.8498
+[both/seed3] F1 in 0.999 out 0.850 construction recall 0.000 novel 0.003
+[both/seed4] epoch 1/5: loss 6.3103 held-out val acc 0.6975 exact graphs 0.0020 edge F1 0.8815
+[both/seed4] epoch 2/5: loss 8.4809 held-out val acc 0.6552 exact graphs 0.0010 edge F1 0.8427
+[both/seed4] epoch 3/5: loss 0.0054 held-out val acc 0.6687 exact graphs 0.0000 edge F1 0.8528
+[both/seed4] epoch 4/5: loss 0.0090 held-out val acc 0.6617 exact graphs 0.0000 edge F1 0.8477
+[both/seed4] epoch 5/5: loss 0.0017 held-out val acc 0.6765 exact graphs 0.0010 edge F1 0.8627
+[both/seed4] F1 in 1.000 out 0.863 construction recall 0.050 novel 0.165

@@ -259,3 +259,38 @@ def test_replication_of_item20_criterion():
     assert replication(near, item20, templates)["verdict"] == "in distribution"
     far = frozen(f1s, [r + 0.3 for r in recalls])
     assert replication(far, item20, templates)["verdict"] == "not replicated"
+
+
+def test_record_of_a_stopped_study(tmp_path, monkeypatch):
+    from reachability_gen import run_tuned_reader as rt
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "artifacts").mkdir()
+    (tmp_path / "artifacts" / "tuned_reader_both_run.log").write_text(
+        "[both/seed0] epoch 1/5: loss 35.8 held-out val acc 0.8 exact graphs 0.0 edge F1 0.9\n"
+        "[both/seed0] F1 in 1.000 out 0.840 construction recall 0.020 novel 0.144\n"
+        "[both/seed1] epoch 2/5: loss 0.0100 held-out val acc 0.8 exact graphs 0.043 edge F1 0.9\n")
+    (tmp_path / "artifacts" / "tuned_reader_interventions_run.log").write_text(
+        "[interventions/seed0] F1 in 0.204 out 0.217 construction recall 0.529 novel 0.555\n")
+    frozen = {"arm": "frozen", "self_audit_mismatches": [], "protocol": {"dataset_verified": True},
+              "runs": [{"seed": s, "construction_recall": 0.48, "passes_pi": False, "novel_bar_met": False,
+                        "seconds": 100.0} for s in range(10)]}
+    (tmp_path / "artifacts" / "tuned_reader_frozen.json").write_text(json.dumps(frozen))
+    ckpt = tmp_path / "ckpt" / "tuned_reader_both"
+    ckpt.mkdir(parents=True)
+    (ckpt / "both_seed0.pt").write_bytes(b"x")
+    assert rt.main(["--record-stopped", "stopped by the PI", "--ckpt-dir", str(tmp_path / "ckpt"),
+                    "--no-replication"]) == 0
+    rec = json.loads((tmp_path / "artifacts" / "tuned_reader_stopped.json").read_text())
+    assert rec["stopped"] is True and rec["reason"] == "stopped by the PI" and rec["fixed_rule_verdicts"] is None
+    both = rec["arms"]["both"]
+    assert both["scored_seeds_from_log"] == [{"seed": 0, "val_in_f1": 1.0, "val_out_f1": 0.84,
+                                              "construction_recall": 0.02, "novel_mean_recall": 0.144}]
+    assert both["last_epoch_logged_per_seed"] == {"0": 1, "1": 2} and len(both["checkpoints"]) == 1
+    assert both["seeds_with_an_epoch_loss_spike"] == [0]
+    assert both["epochs_logged_per_seed"]["1"][0]["heldout_exact_graphs"] == 0.043
+    assert "written" in both["checkpoints"]["both_seed0.pt"]
+    assert rec["frozen_result_file"]["passes_pi"] == 0 and rec["frozen_result_file"]["dataset_verified"] is True
+    assert rec["arms"]["interventions"]["collapsed_seeds_from_log"] == 1
+    bound = rec["p1_bound"]  # 0.02 + 9 seeds at 1.0 = 0.902 mean >= 0.78 required: still attainable here
+    assert bound["supported_attainable"] is True and abs(bound["best_attainable_both_mean"] - 0.902) < 1e-9

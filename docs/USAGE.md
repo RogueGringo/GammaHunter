@@ -532,7 +532,9 @@ or sizes, fail their self-audit or were run without dataset verification,
 applies the decision rules fixed in the runner, and compares the frozen arm with
 item 20's recorded reader (whose files it requires). The arms write
 `artifacts/tuned_reader_<arm>.json`; `--decide` writes
-`artifacts/tuned_reader.json`.
+`artifacts/tuned_reader.json`. For a study stopped before every arm finished,
+`--record-stopped REASON` writes `artifacts/tuned_reader_stopped.json` from the
+run logs and checkpoints instead (no fixed-rule verdict).
 
 ## External benchmarks
 

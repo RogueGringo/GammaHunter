@@ -153,6 +153,7 @@ import gc
 import hashlib
 import json
 import math
+import re
 import statistics
 import sys
 import time
@@ -679,6 +680,75 @@ def decide(arts: dict[str, dict[str, Any]]) -> dict[str, Any]:
     return out
 
 
+STOPPED_OUT = Path("artifacts/tuned_reader_stopped.json")
+SEED_LINE = re.compile(r"\[(?P<arm>[a-z_]+)/seed(?P<seed>\d+)\] F1 in (?P<val_in>[\d.]+) out (?P<val_out>[\d.]+) "
+                       r"construction recall (?P<construction>[\d.]+) novel (?P<novel>[\d.]+)")
+EPOCH_LINE = re.compile(r"\[(?P<arm>[a-z_]+)/seed(?P<seed>\d+)\] epoch (?P<epoch>\d+)/\d+: loss (?P<loss>[\d.]+) "
+                        r"held-out val acc (?P<acc>[\d.]+) exact graphs (?P<exact>[\d.]+) edge F1 (?P<f1>[\d.]+)")
+SPIKE_LOSS: float = 10.0  # an epoch-mean training loss above this counts as a spike (as in items 19-21)
+
+
+def record_stopped(reason: str, ckpt_dir: Path, *, replicate: bool = True) -> dict[str, Any]:
+    """The record of a study stopped before every arm finished: what each arm printed per seed, and what it saved.
+
+    A stopped arm writes no result file, so its scored seeds are read back from
+    the line each run prints at the end of a seed, and its epochs from the line
+    printed after each epoch (training loss and the held-out scores; values
+    rounded as printed); its checkpoints are hashed as found, with the time each
+    was written (consecutive times bound how long a seed took). No fixed-rule
+    verdict is computed (``--decide`` needs all six arms complete); the arithmetic
+    bound on P1 and the replication of item 20 (when the frozen arm finished) are.
+    """
+    from datetime import datetime, timezone
+
+    arms: dict[str, Any] = {}
+    for arm in ARMS:
+        log = Path(f"artifacts/tuned_reader_{arm}_run.log")
+        text = log.read_text(encoding="utf-8", errors="replace") if log.exists() else ""
+        scored = [{"seed": int(m["seed"]), "val_in_f1": float(m["val_in"]), "val_out_f1": float(m["val_out"]),
+                   "construction_recall": float(m["construction"]), "novel_mean_recall": float(m["novel"])}
+                  for m in SEED_LINE.finditer(text) if m["arm"] == arm]
+        epochs: dict[str, list[dict[str, float]]] = {}
+        for m in EPOCH_LINE.finditer(text):
+            if m["arm"] == arm:
+                epochs.setdefault(m["seed"], []).append(
+                    {"epoch": int(m["epoch"]), "train_loss": float(m["loss"]), "heldout_val_accuracy": float(m["acc"]),
+                     "heldout_exact_graphs": float(m["exact"]), "heldout_edge_f1": float(m["f1"])})
+        folder = ckpt_dir / out_path(arm).stem
+        ckpts = {p.name: {"sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+                          "written": datetime.fromtimestamp(p.stat().st_mtime, timezone.utc).isoformat()}
+                 for p in sorted(folder.glob("*.pt"))}
+        arms[arm] = {"result_file_written": out_path(arm).exists(), "scored_seeds_from_log": scored,
+                     "epochs_logged_per_seed": epochs,
+                     "last_epoch_logged_per_seed": {s: max(e["epoch"] for e in v) for s, v in epochs.items()},
+                     "seeds_with_an_epoch_loss_spike": sorted(
+                         (int(s) for s, v in epochs.items() if any(e["train_loss"] > SPIKE_LOSS for e in v))),
+                     "checkpoints": ckpts,
+                     "collapsed_seeds_from_log": sum(1 for s in scored if s["val_in_f1"] < COLLAPSE_F1)}
+    out: dict[str, Any] = {"science_open": False, "hypothesis_verbatim": HYPOTHESIS_VERBATIM, "stopped": True,
+                           "reason": reason, "arms": arms, "fixed_rule_verdicts": None}
+    if out_path("frozen").exists():
+        frozen = json.loads(out_path("frozen").read_text(encoding="utf-8"))
+        out["frozen_result_file"] = {
+            "self_audit_mismatches": frozen.get("self_audit_mismatches"),
+            "dataset_verified": frozen.get("protocol", {}).get("dataset_verified"),
+            "passes_pi": sum(bool(r.get("passes_pi")) for r in frozen["runs"]),
+            "novel_bar_met": sum(bool(r.get("novel_bar_met")) for r in frozen["runs"]),
+            "seconds_per_seed": [r.get("seconds") for r in sorted(frozen["runs"], key=lambda r: r["seed"])]}
+        frozen_rec = per_seed(frozen, lambda r: r["construction_recall"])
+        both = [s["construction_recall"] for s in arms["both"]["scored_seeds_from_log"]]
+        n = len(frozen_rec)
+        best = (sum(both) + (n - len(both)) * 1.0) / n  # every unscored seed at the maximum recall of 1
+        required = statistics.fmean(frozen_rec) + P1_MARGIN
+        out["p1_bound"] = {"frozen_mean_construction_recall": statistics.fmean(frozen_rec),
+                           "required_both_mean": required, "both_scored_seeds": len(both),
+                           "best_attainable_both_mean": best, "supported_attainable": best >= required}
+        if replicate and ITEM20.exists() and ITEM20_TEMPLATES.exists():
+            out["replication_of_item20"] = replication(frozen, json.loads(ITEM20.read_text(encoding="utf-8")),
+                                                       json.loads(ITEM20_TEMPLATES.read_text(encoding="utf-8")))
+    return out
+
+
 def replication(frozen: dict[str, Any], item20: dict[str, Any], item20_templates: dict[str, Any]) -> dict[str, Any]:
     """The frozen arm against item 20's recorded reader, seed by seed, with the fixed criterion."""
     ref_f1 = {r["seed"]: r["final"]["val_out"]["reader"]["f1"] for r in item20["runs"]}
@@ -717,9 +787,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     p.add_argument("--out", type=Path, default=None)
     p.add_argument("--ckpt-dir", type=Path, default=Path("artifacts/tuned_reader"))
     p.add_argument("--no-verify", action="store_true", help="skip dataset verification (tests only)")
+    p.add_argument("--record-stopped", metavar="REASON", default=None,
+                   help="write the record of a study stopped before every arm finished, with the reason")
     p.add_argument("--no-replication", action="store_true",
                    help="decide without item 20's files (tests only); otherwise they are required")
     args = p.parse_args(argv)
+    if args.record_stopped:
+        record = record_stopped(args.record_stopped, args.ckpt_dir, replicate=not args.no_replication)
+        STOPPED_OUT.parent.mkdir(parents=True, exist_ok=True)
+        STOPPED_OUT.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+        print(json.dumps({"ok": True, "out": STOPPED_OUT.as_posix(), "science_open": False}, sort_keys=True))
+        return 0
     if args.decide:
         missing = [out_path(a).as_posix() for a in ARMS if not out_path(a).exists()]
         if not args.no_replication:
