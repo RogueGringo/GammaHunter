@@ -4,8 +4,10 @@
 
 """Byte tokens: a string is its UTF-8 bytes (0–255), plus four special tokens.
 
-There is no vocabulary to learn, so no input token is ever unseen: a word that
-never occurred in training is still a sequence of familiar bytes.
+There is no vocabulary to learn, so no input token is ever outside the
+vocabulary: a word that never occurred in training is still a sequence of
+bytes, though a byte that never occurred in training can still be new to a
+trained model.
 """
 
 from __future__ import annotations

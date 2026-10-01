@@ -150,6 +150,22 @@
   checkpoint hashes and write times, the arithmetic bound on the prediction, the
   replication of item 20, and the stop's reason in the PI's words). Results
   recorded (limitations item 22; measurement-only status becomes item 23).
+- A small language model built from the ground up (`tinylm`): byte tokens, a
+  decoder in plain PyTorch with no pretrained weights, and a throughput
+  benchmark of full training steps.
+- Frame-coverage study, fixed before any run on its data (`run_coverage`; the
+  test suite runs miniature versions with its own seeds, and an early test run
+  once wrote a stray run file into the repository, deleted unread): the
+  from-scratch byte LM reads one sentence into its edge after training on k of
+  12 constructions, half of each role order (`tinylm.grammar`: 16 lower-case
+  constructions from shared word lists, 4 held out, new in structure only at
+  k = 12); primary measure the held-out target-first constructions; H1 (k = 12
+  beats k = 2 by 0.30, exact one-sided permutation p < 0.05) with an
+  undertraining guard, a fixed classification of the k = 12 level, four
+  controls that read no structure (two of them local role markers, one reading
+  every construction, so the study cannot show reading beyond such markers),
+  word coverage and error kinds per run. `tinylm.extract` holds the task (loss on the
+  answer and EOS, greedy decoding batched by prompt length, exact scoring).
 
 ## 0.1.0 (2026-09-27)
 

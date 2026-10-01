@@ -536,6 +536,33 @@ item 20's recorded reader (whose files it requires). The arms write
 `--record-stopped REASON` writes `artifacts/tuned_reader_stopped.json` from the
 run logs and checkpoints instead (no fixed-rule verdict).
 
+## A small language model from the ground up
+
+```bash
+python -m reachability_gen.tinylm.bench --device cuda
+python -m reachability_gen.run_coverage --device cuda
+python -m reachability_gen.run_coverage --decide
+```
+
+`reachability_gen.tinylm` is a small language model with no pretrained weights
+and no model library: byte tokens (a string is its UTF-8 bytes) and a decoder
+written in plain PyTorch. `bench` times full training steps. `tinylm.grammar`
+states directed edges in 16 lower-case sentence constructions built from shared
+word lists: a pool of 12 (6 naming the source first, 6 the target first) and 4
+held out, every word and byte of which occurs in the pool, so a held-out
+construction is new in structure only once the whole pool is trained.
+`run_coverage` trains the model to read one sentence into its edge on k pool
+constructions (k = 2, 4, 8, 12, always half of each role order; six orderings)
+and scores every construction with exact match, sorting wrong answers by kind.
+It records each run's coverage of the held-out constructions' words, scores the
+untrained model on the held-out constructions, and scores four controls that
+read no structure on every construction: first number as source, first number
+as target, and two readers of familiar local role markers, one of which reads
+every construction here, so the study cannot show reading beyond such markers.
+It then applies the decision rules fixed in its docstring. It
+writes `artifacts/coverage_runs.json` (kept current after each run) and, with
+`--decide`, `artifacts/coverage.json`.
+
 ## External benchmarks
 
 ```bash
