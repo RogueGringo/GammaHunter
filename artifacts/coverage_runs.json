@@ -1,0 +1,5127 @@
+{
+  "complete": true,
+  "elapsed_seconds": 1924.855754499993,
+  "heuristics": {
+    "marker": {
+      "cleft_source": 1.0,
+      "cleft_target": 1.0,
+      "conditional_source": 1.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 1.0,
+      "fronted_source": 1.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 1.0,
+      "noun_target": 1.0,
+      "participial": 1.0,
+      "passive": 1.0,
+      "relative_source": 1.0,
+      "relative_target": 1.0,
+      "svo": 1.0
+    },
+    "mirror": {
+      "cleft_source": 0.0,
+      "cleft_target": 1.0,
+      "conditional_source": 0.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 0.0,
+      "existential_target": 1.0,
+      "fronted_source": 0.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 1.0,
+      "noun_target": 1.0,
+      "participial": 0.0,
+      "passive": 1.0,
+      "relative_source": 0.0,
+      "relative_target": 1.0,
+      "svo": 0.0
+    },
+    "order": {
+      "cleft_source": 1.0,
+      "cleft_target": 0.0,
+      "conditional_source": 1.0,
+      "conditional_target": 0.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 0.0,
+      "fronted_source": 1.0,
+      "fronted_target": 0.0,
+      "imperative_target": 0.0,
+      "locative_inversion": 0.0,
+      "noun_target": 0.0,
+      "participial": 1.0,
+      "passive": 0.0,
+      "relative_source": 1.0,
+      "relative_target": 0.0,
+      "svo": 1.0
+    },
+    "subject_marker": {
+      "cleft_source": 1.0,
+      "cleft_target": 1.0,
+      "conditional_source": 1.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 1.0,
+      "fronted_source": 1.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 0.0,
+      "noun_target": 1.0,
+      "participial": 1.0,
+      "passive": 1.0,
+      "relative_source": 1.0,
+      "relative_target": 1.0,
+      "svo": 1.0
+    }
+  },
+  "protocol": {
+    "batch": 128,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "bf16_autocast": true,
+    "clip": 1.0,
+    "code_dirty": false,
+    "code_revision": "bdae5a1a5e576326ab15b75783cf9ff0d03c29c9",
+    "config": {
+      "d": 256,
+      "eps": 1e-06,
+      "heads": 8,
+      "layers": 6,
+      "max_len": 128,
+      "mlp_hidden": 704,
+      "rope_base": 10000.0,
+      "vocab_size": 260
+    },
+    "data_prefix": "data",
+    "device": "cuda",
+    "distractor_rate": 0.2,
+    "eval_per_frame": 400,
+    "eval_seed": 2029,
+    "frames": {
+      "cleft_source": {
+        "order": "S",
+        "pattern": "it is {u} that {sv} to {v}."
+      },
+      "cleft_target": {
+        "order": "T",
+        "pattern": "it is {v} that {u} {sv} to."
+      },
+      "conditional_source": {
+        "order": "S",
+        "pattern": "if you are at {u}, you can {iv} to {v}."
+      },
+      "conditional_target": {
+        "order": "T",
+        "pattern": "you can {iv} to {v} if you are at {u}."
+      },
+      "existential_participle": {
+        "order": "S",
+        "pattern": "there is {a_n} starting at {u} that {sv} to {v}."
+      },
+      "existential_target": {
+        "order": "T",
+        "pattern": "there is {a_n} to {v} from {u}."
+      },
+      "fronted_source": {
+        "order": "S",
+        "pattern": "from {u}, {a_n} {sv} to {v}."
+      },
+      "fronted_target": {
+        "order": "T",
+        "pattern": "to {v}, {a_n} {sv} from {u}."
+      },
+      "imperative_target": {
+        "order": "T",
+        "pattern": "{iv} to {v} from {u}."
+      },
+      "locative_inversion": {
+        "order": "T",
+        "pattern": "into {v} {sv} {a_n} from {u}."
+      },
+      "noun_target": {
+        "order": "T",
+        "pattern": "{a_n} {sv} to {v} from {u}."
+      },
+      "participial": {
+        "order": "S",
+        "pattern": "starting at {u}, {a_n} {sv} to {v}."
+      },
+      "passive": {
+        "order": "T",
+        "pattern": "{v} {pv} from {u}."
+      },
+      "relative_source": {
+        "order": "S",
+        "pattern": "the node that {u} {sv} to is {v}."
+      },
+      "relative_target": {
+        "order": "T",
+        "pattern": "{v} is the node that {u} {sv} to."
+      },
+      "svo": {
+        "order": "S",
+        "pattern": "{u} {sv} {to} {v}."
+      }
+    },
+    "gpu": "NVIDIA GeForce RTX 5070",
+    "held_out": [
+      "participial",
+      "cleft_target",
+      "locative_inversion",
+      "relative_target"
+    ],
+    "ks": [
+      2,
+      4,
+      8,
+      12
+    ],
+    "lexicon": {
+      "distractors": [
+        "node {w} is marked.",
+        "{w} is one of the nodes."
+      ],
+      "iv": [
+        "go",
+        "move",
+        "pass",
+        "run"
+      ],
+      "nouns": [
+        "edge",
+        "arrow",
+        "link",
+        "path",
+        "pointer",
+        "road"
+      ],
+      "pv": [
+        "is reached",
+        "is entered",
+        "can be reached",
+        "can be entered",
+        "is fed"
+      ],
+      "sv": [
+        "leads",
+        "goes",
+        "points",
+        "moves",
+        "passes",
+        "runs"
+      ],
+      "to_into": [
+        "to",
+        "into"
+      ]
+    },
+    "lr": 0.001,
+    "max_answer": 8,
+    "ordering_frames": [
+      [
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "conditional_source",
+        "imperative_target",
+        "existential_participle",
+        "passive"
+      ],
+      [
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "existential_participle",
+        "passive",
+        "svo",
+        "imperative_target",
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "conditional_source"
+      ],
+      [
+        "cleft_source",
+        "passive",
+        "conditional_source",
+        "imperative_target",
+        "relative_source",
+        "fronted_target",
+        "fronted_source",
+        "conditional_target",
+        "svo",
+        "noun_target",
+        "existential_participle",
+        "existential_target"
+      ],
+      [
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "cleft_source",
+        "imperative_target",
+        "relative_source",
+        "existential_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "conditional_target",
+        "existential_participle"
+      ],
+      [
+        "cleft_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "relative_source",
+        "imperative_target",
+        "conditional_source",
+        "fronted_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "existential_target"
+      ],
+      [
+        "existential_target",
+        "relative_source",
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "cleft_source",
+        "imperative_target",
+        "svo"
+      ]
+    ],
+    "orderings": 6,
+    "pool": [
+      "svo",
+      "existential_participle",
+      "cleft_source",
+      "relative_source",
+      "fronted_source",
+      "conditional_source",
+      "passive",
+      "fronted_target",
+      "existential_target",
+      "noun_target",
+      "imperative_target",
+      "conditional_target"
+    ],
+    "python_version": "3.12.10",
+    "steps": 2000,
+    "torch_version": "2.14.0+cu130",
+    "warmup": 100,
+    "weight_decay": 0.1,
+    "weight_decay_on": "every parameter"
+  },
+  "purpose": "frame coverage of a from-scratch byte LM reading edges",
+  "runs": [
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0075,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 0.8675,
+        "existential_target": 0.0375,
+        "fronted_source": 0.075,
+        "fronted_target": 0.0925,
+        "imperative_target": 0.0,
+        "locative_inversion": 0.0,
+        "noun_target": 0.045,
+        "participial": 0.375,
+        "passive": 0.0,
+        "relative_source": 0.0025,
+        "relative_target": 0.005,
+        "svo": 0.145
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 378,
+          "reversed": 19
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 1,
+          "none": 0,
+          "other": 52,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 140,
+          "none": 98,
+          "other": 113,
+          "reversed": 34
+        },
+        "fronted_source": {
+          "malformed": 119,
+          "none": 61,
+          "other": 186,
+          "reversed": 4
+        },
+        "fronted_target": {
+          "malformed": 340,
+          "none": 17,
+          "other": 6,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 352,
+          "none": 41,
+          "other": 7,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 384,
+          "none": 6,
+          "other": 10,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 300,
+          "none": 10,
+          "other": 40,
+          "reversed": 32
+        },
+        "participial": {
+          "malformed": 76,
+          "none": 35,
+          "other": 132,
+          "reversed": 7
+        },
+        "passive": {
+          "malformed": 175,
+          "none": 160,
+          "other": 63,
+          "reversed": 2
+        },
+        "relative_source": {
+          "malformed": 19,
+          "none": 0,
+          "other": 236,
+          "reversed": 144
+        },
+        "relative_target": {
+          "malformed": 55,
+          "none": 0,
+          "other": 343,
+          "reversed": 0
+        },
+        "svo": {
+          "malformed": 188,
+          "none": 7,
+          "other": 147,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "conditional_target"
+      ],
+      "heldout_S": 0.375,
+      "heldout_T": 0.004166666666666667,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.375,
+        "participial": 0.47058823529411764,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 0,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.453357696533203,
+          1.3378851413726807,
+          0.035484738647937775,
+          0.08478161692619324,
+          0.011177126318216324,
+          0.023461565375328064,
+          0.042417071759700775,
+          0.01264113374054432,
+          0.0034419195726513863,
+          0.0003075262939091772,
+          0.0013948892010375857,
+          0.00016283695003949106,
+          0.0002129476488335058,
+          7.7666605648119e-05,
+          3.52416536770761e-05,
+          1.692545265541412e-05,
+          7.91681304690428e-06,
+          3.1156664590525907e-06,
+          1.0869676998481737e-06,
+          3.586495438412385e-07,
+          9.888562146898039e-08,
+          2.029094048339175e-08,
+          1.7226775561596241e-10,
+          1.7103196636725215e-10,
+          5.153139026603526e-10,
+          6.734987567647011e-10,
+          8.576206966814937e-10,
+          3.4354261102542694e-10,
+          3.343878784978216e-10,
+          8.527130113122894e-10,
+          0.0,
+          6.782889250267488e-10,
+          1.19209286886246e-09,
+          5.058385377232355e-10,
+          3.3818237099580983e-10,
+          5.037011918673784e-10,
+          6.77325473485979e-10,
+          0.0,
+          3.3532851495543525e-10,
+          6.77325473485979e-10,
+          8.588564859302039e-10
+        ],
+        "losses_every": 50,
+        "seconds": 81.05823769999552
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.005,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 0.0525,
+        "imperative_target": 0.62,
+        "locative_inversion": 0.0875,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 0.025,
+        "relative_source": 0.105,
+        "relative_target": 0.0,
+        "svo": 0.05
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 234,
+          "reversed": 164
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 376,
+          "reversed": 3
+        },
+        "imperative_target": {
+          "malformed": 49,
+          "none": 0,
+          "other": 103,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 365,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 1,
+          "none": 0,
+          "other": 388,
+          "reversed": 1
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 340,
+          "reversed": 18
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 388,
+          "reversed": 12
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 380,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.030833333333333334,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 0,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.479991912841797,
+          1.2276779413223267,
+          0.10409051924943924,
+          0.09029633551836014,
+          0.1320204734802246,
+          0.004073961637914181,
+          0.014899342320859432,
+          0.08593663573265076,
+          0.0005934071959927678,
+          0.000379488046746701,
+          0.0007644355064257979,
+          0.07923487573862076,
+          0.0005612687673419714,
+          0.00018258743511978537,
+          0.0010212690103799105,
+          0.00017830809520091861,
+          7.498078048229218e-05,
+          0.006346269976347685,
+          0.00045137543929740787,
+          0.00020244573534000665,
+          3.443591413088143e-05,
+          1.7683249097899534e-05,
+          9.672770829638466e-06,
+          4.172142325842287e-06,
+          1.9365427306183847e-06,
+          7.37237087378162e-07,
+          1.262061459783581e-06,
+          9.523301400804485e-07,
+          1.1960293022639235e-06,
+          7.851069199205085e-07,
+          6.499781761704071e-07,
+          4.5682739369112824e-07,
+          3.445163940796192e-07,
+          2.204438374064921e-07,
+          1.328975400838317e-07,
+          8.66064482352158e-08,
+          7.162788762116179e-08,
+          5.668452374152366e-08,
+          4.629321281868215e-08,
+          4.491453964305947e-08,
+          5.1503860731827444e-08
+        ],
+        "losses_every": 50,
+        "seconds": 73.11071460001403
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0075,
+        "conditional_source": 0.0025,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 0.95,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 0.965,
+        "passive": 0.22,
+        "relative_source": 1.0,
+        "relative_target": 0.0475,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 147,
+          "reversed": 250
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 32,
+          "reversed": 367
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 20,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 14,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 3,
+          "other": 43,
+          "reversed": 266
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 319,
+          "reversed": 62
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "fronted_target",
+        "relative_source",
+        "existential_target"
+      ],
+      "heldout_S": 0.965,
+      "heldout_T": 0.3516666666666666,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 0.9411764705882353,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 0,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.519651889801025,
+          1.3221006393432617,
+          0.13380208611488342,
+          0.10489027202129364,
+          0.02218523807823658,
+          0.0027414674405008554,
+          0.013298770412802696,
+          0.001591152511537075,
+          0.0013926950050517917,
+          0.04214386269450188,
+          0.0010156221687793732,
+          0.0007370412931777537,
+          0.00014225054474081844,
+          0.0025806063786149025,
+          0.0001295518595725298,
+          0.03383383899927139,
+          8.566420729039237e-05,
+          3.921187453670427e-05,
+          1.656493441259954e-05,
+          7.4078343459405005e-06,
+          1.1040128811146133e-05,
+          1.918812449730467e-05,
+          2.3010543372947723e-05,
+          2.2509779228130355e-05,
+          1.0584076335362624e-05,
+          6.968460638745455e-06,
+          4.096803422726225e-06,
+          1.976370867851074e-06,
+          8.523203973709315e-07,
+          3.2073779721031315e-07,
+          1.3193869108363288e-07,
+          5.241825817847712e-08,
+          1.3358202544111464e-08,
+          3.5968317213530554e-09,
+          2.3807842364220733e-09,
+          1.878656341602891e-09,
+          1.6837469196673283e-09,
+          1.8573683702172161e-09,
+          2.023354150892942e-09,
+          1.1769604180145166e-09,
+          1.1870056049190225e-09
+        ],
+        "losses_every": 50,
+        "seconds": 72.93323429999873
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0075,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 0.9475,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.035,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 276,
+          "reversed": 120
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 21,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 2,
+          "none": 0,
+          "other": 343,
+          "reversed": 41
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "conditional_source",
+        "imperative_target",
+        "existential_participle",
+        "passive"
+      ],
+      "heldout_S": 0.9475,
+      "heldout_T": 0.3475,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 0,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.536826133728027,
+          1.323710322380066,
+          0.110223188996315,
+          0.06221478059887886,
+          0.026165448129177094,
+          0.02042519487440586,
+          0.004942741245031357,
+          0.029825620353221893,
+          0.0012173736467957497,
+          0.004340924322605133,
+          0.0010080980136990547,
+          0.0051486375741660595,
+          0.000782354676630348,
+          0.0002625978959258646,
+          0.00039624603232368827,
+          0.00023002283705864102,
+          0.0006142231286503375,
+          0.0008624987676739693,
+          0.00026203712332062423,
+          0.00011465255374787375,
+          0.00012403640721458942,
+          6.066626156098209e-05,
+          3.218429992557503e-05,
+          1.6760288417572156e-05,
+          7.80916707299184e-06,
+          3.0860746846883558e-06,
+          1.1227366485400125e-06,
+          4.271806233191455e-07,
+          5.720457920688204e-07,
+          1.9619496072209586e-07,
+          1.878397455357117e-07,
+          1.763051358238954e-07,
+          1.769351882785486e-07,
+          1.3885170346839004e-07,
+          1.2124414183745102e-07,
+          1.0151682516834626e-07,
+          8.465585921157981e-08,
+          7.735208384929138e-08,
+          7.55961266918348e-08,
+          7.03869531548662e-08,
+          7.320167583202419e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.77774739998858
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.875,
+        "cleft_target": 0.0625,
+        "conditional_source": 0.0025,
+        "conditional_target": 0.0025,
+        "distractor": 1.0,
+        "existential_participle": 0.7925,
+        "existential_target": 0.0,
+        "fronted_source": 0.0,
+        "fronted_target": 1.0,
+        "imperative_target": 0.0275,
+        "locative_inversion": 0.24,
+        "noun_target": 0.04,
+        "participial": 0.0,
+        "passive": 0.1125,
+        "relative_source": 1.0,
+        "relative_target": 0.0875,
+        "svo": 0.1475
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 50,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 2,
+          "none": 0,
+          "other": 352,
+          "reversed": 21
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 181,
+          "reversed": 218
+        },
+        "conditional_target": {
+          "malformed": 92,
+          "none": 8,
+          "other": 263,
+          "reversed": 36
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 83,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 3,
+          "none": 1,
+          "other": 229,
+          "reversed": 167
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 48,
+          "reversed": 352
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 175,
+          "none": 12,
+          "other": 185,
+          "reversed": 17
+        },
+        "locative_inversion": {
+          "malformed": 187,
+          "none": 31,
+          "other": 82,
+          "reversed": 4
+        },
+        "noun_target": {
+          "malformed": 121,
+          "none": 20,
+          "other": 207,
+          "reversed": 36
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 16,
+          "reversed": 384
+        },
+        "passive": {
+          "malformed": 81,
+          "none": 107,
+          "other": 123,
+          "reversed": 44
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 6,
+          "none": 0,
+          "other": 359,
+          "reversed": 0
+        },
+        "svo": {
+          "malformed": 209,
+          "none": 31,
+          "other": 101,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "relative_source"
+      ],
+      "heldout_S": 0.0,
+      "heldout_T": 0.13,
+      "heldout_word_coverage": {
+        "cleft_target": 0.9,
+        "locative_inversion": 0.9375,
+        "participial": 0.8823529411764706,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 1,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.513458251953125,
+          1.2942955493927002,
+          0.03518547862768173,
+          0.045659907162189484,
+          0.04304869845509529,
+          0.013813145458698273,
+          0.0013111664447933435,
+          0.0016935070743784308,
+          0.0008095947559922934,
+          0.0014919227687641978,
+          0.0019231035839766264,
+          0.025339554995298386,
+          0.0003319240640848875,
+          0.001306021586060524,
+          0.00012177637836430222,
+          9.441866859560832e-05,
+          3.49828478647396e-05,
+          1.7980974007514305e-05,
+          8.62714023242006e-06,
+          1.2664230780501384e-05,
+          5.7638455473352224e-05,
+          1.1498163075884804e-05,
+          7.999014997039922e-06,
+          6.121802016423317e-06,
+          3.7861116197746014e-06,
+          2.092308250212227e-06,
+          9.509528240414511e-07,
+          3.6333736375127046e-07,
+          1.5883232151736593e-07,
+          4.051448243558298e-08,
+          3.3866272008964415e-09,
+          8.442583299128614e-10,
+          1.020336259927035e-09,
+          8.430642295387258e-10,
+          1.3682557309380172e-09,
+          1.0291448804267134e-09,
+          6.802241547809729e-10,
+          1.362391754966552e-09,
+          8.502801795984283e-10,
+          1.0321149490621906e-09,
+          1.1989439441251193e-09
+        ],
+        "losses_every": 50,
+        "seconds": 73.05355730000883
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.8675,
+        "cleft_target": 0.0,
+        "conditional_source": 0.5275,
+        "conditional_target": 0.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 0.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 0.97,
+        "noun_target": 0.995,
+        "participial": 0.31,
+        "passive": 0.555,
+        "relative_source": 1.0,
+        "relative_target": 0.0,
+        "svo": 0.4725
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 53,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 69,
+          "reversed": 331
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 181,
+          "reversed": 8
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 35,
+          "reversed": 365
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 2,
+          "none": 0,
+          "other": 378,
+          "reversed": 20
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 12,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 273,
+          "reversed": 3
+        },
+        "passive": {
+          "malformed": 59,
+          "none": 19,
+          "other": 100,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 393,
+          "reversed": 7
+        },
+        "svo": {
+          "malformed": 9,
+          "none": 0,
+          "other": 198,
+          "reversed": 4
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "existential_participle"
+      ],
+      "heldout_S": 0.31,
+      "heldout_T": 0.3233333333333333,
+      "heldout_word_coverage": {
+        "cleft_target": 0.9,
+        "locative_inversion": 0.9375,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 1,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.544938564300537,
+          1.4082045555114746,
+          0.10846862196922302,
+          0.04441435635089874,
+          0.0530916191637516,
+          0.01668296754360199,
+          0.001143069239333272,
+          0.006692091003060341,
+          0.000288502051262185,
+          0.0005302424542605877,
+          0.0008532150532118976,
+          0.00042323730303905904,
+          0.00036073705996386707,
+          0.0142905218526721,
+          0.00011004799307556823,
+          6.569282413693145e-05,
+          0.00012614933075383306,
+          0.0016092343721538782,
+          4.899125633528456e-05,
+          0.00010478487820364535,
+          0.011022109538316727,
+          3.6966204788768664e-05,
+          2.0918849259032868e-05,
+          1.154810524894856e-05,
+          5.644535121973604e-06,
+          2.3458585474145366e-06,
+          1.0323009291823837e-06,
+          3.5881816984328907e-07,
+          1.5167478295552428e-07,
+          4.877517767454265e-08,
+          1.5991858504094125e-07,
+          9.699848391164778e-08,
+          1.0764039615196452e-07,
+          7.998890794169711e-08,
+          7.354037023787896e-08,
+          7.50640438695882e-08,
+          6.668215490890361e-08,
+          5.866395724751783e-08,
+          5.2831378383189076e-08,
+          5.094266342098308e-08,
+          5.334400299261688e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.98287420000997
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0075,
+        "conditional_source": 1.0,
+        "conditional_target": 0.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 0.9925,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.0125,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 381,
+          "reversed": 16
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 400
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 3,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 381,
+          "reversed": 14
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "existential_participle",
+        "passive",
+        "svo",
+        "imperative_target",
+        "cleft_source"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.34,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 1,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.541315078735352,
+          1.226144790649414,
+          0.09984006732702255,
+          0.058047663420438766,
+          0.00734246289357543,
+          0.02759823389351368,
+          0.02585061825811863,
+          0.024016739800572395,
+          0.0005793369491584599,
+          0.000627850997261703,
+          0.0013069238048046827,
+          0.0004894434241577983,
+          0.0001438424369553104,
+          0.00041460528154857457,
+          0.012715545482933521,
+          9.120059257838875e-05,
+          0.0002525877789594233,
+          0.011573126539587975,
+          0.00012460660946089774,
+          0.0001530906738480553,
+          0.00013972667511552572,
+          5.3477120673051104e-05,
+          2.8821459636674263e-05,
+          1.349511330772657e-05,
+          1.4117050341155846e-05,
+          1.4299166650744155e-05,
+          8.45810427563265e-06,
+          5.23466951563023e-06,
+          2.584854200904374e-06,
+          1.298787651649036e-06,
+          5.726817562390352e-07,
+          2.3994468278942804e-07,
+          1.0029788199972245e-07,
+          4.1916056403579205e-08,
+          3.014685390212435e-08,
+          1.4449608620736853e-08,
+          4.2153209811601755e-09,
+          4.0239420684429206e-09,
+          3.2636546798414656e-09,
+          3.282574212448708e-09,
+          4.795775332411267e-09
+        ],
+        "losses_every": 50,
+        "seconds": 72.91901310000685
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0175,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.1625,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 369,
+          "reversed": 23
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 3,
+          "none": 0,
+          "other": 330,
+          "reversed": 2
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "relative_source",
+        "existential_target",
+        "existential_participle",
+        "passive",
+        "svo",
+        "imperative_target",
+        "cleft_source",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "conditional_source"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.3933333333333333,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 1,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.537405014038086,
+          1.2006362676620483,
+          0.09873013943433762,
+          0.057270199060440063,
+          0.010537792928516865,
+          0.009482716210186481,
+          0.0029493405018001795,
+          0.02297614887356758,
+          0.0042732409201562405,
+          0.0010118801146745682,
+          0.0004717910196632147,
+          0.00326367630623281,
+          0.0028232019394636154,
+          0.0002734034205786884,
+          0.00043207473936490715,
+          0.00021261567599140108,
+          0.004136138595640659,
+          0.00019509992853272706,
+          0.0006318876403383911,
+          6.789392500650138e-05,
+          3.720433232956566e-05,
+          1.707916999293957e-05,
+          6.803104952268768e-06,
+          2.4400069378316402e-06,
+          7.702618063376576e-07,
+          2.512512651264842e-07,
+          9.700696779191276e-08,
+          1.4147533988762007e-07,
+          3.136345867460477e-07,
+          1.557053792566876e-07,
+          1.5127127994674083e-07,
+          1.4596703579172754e-07,
+          1.4083724408919807e-07,
+          1.1375190211992958e-07,
+          1.1373624886346079e-07,
+          1.1003932343101042e-07,
+          1.138919998311394e-07,
+          8.600097345379254e-08,
+          8.093415715393348e-08,
+          7.930302814429524e-08,
+          7.941567758962265e-08
+        ],
+        "losses_every": 50,
+        "seconds": 73.06584590001148
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0,
+        "conditional_source": 0.1,
+        "conditional_target": 0.005,
+        "distractor": 1.0,
+        "existential_participle": 0.26,
+        "existential_target": 0.235,
+        "fronted_source": 0.1325,
+        "fronted_target": 0.1525,
+        "imperative_target": 0.605,
+        "locative_inversion": 0.2175,
+        "noun_target": 0.4525,
+        "participial": 0.0675,
+        "passive": 1.0,
+        "relative_source": 0.0275,
+        "relative_target": 0.01,
+        "svo": 0.1025
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 258,
+          "reversed": 141
+        },
+        "conditional_source": {
+          "malformed": 7,
+          "none": 0,
+          "other": 353,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 25,
+          "none": 0,
+          "other": 371,
+          "reversed": 2
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 294,
+          "reversed": 2
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 306,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 7,
+          "none": 0,
+          "other": 336,
+          "reversed": 4
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 339,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 158,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 309,
+          "reversed": 4
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 219,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 356,
+          "reversed": 17
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 342,
+          "reversed": 47
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 354,
+          "reversed": 42
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 333,
+          "reversed": 26
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive"
+      ],
+      "heldout_S": 0.0675,
+      "heldout_T": 0.07583333333333334,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.4375,
+        "participial": 0.4117647058823529,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 2,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.619330406188965,
+          1.1673067808151245,
+          0.03518068790435791,
+          0.019695216789841652,
+          0.01600533351302147,
+          0.0029744626954197884,
+          0.017501192167401314,
+          0.0068330238573253155,
+          0.013333766721189022,
+          0.0007557827630080283,
+          0.07625193148851395,
+          0.00848380196839571,
+          0.0004215033841319382,
+          0.00028046107036061585,
+          0.0001893059816211462,
+          0.00020153979130554944,
+          7.081560033839196e-05,
+          4.122347309021279e-05,
+          0.00010572935570962727,
+          5.2152379794279113e-05,
+          2.9083825211273506e-05,
+          1.6750971553847194e-05,
+          7.858015123929363e-06,
+          4.286327111913124e-06,
+          1.4169359019433614e-05,
+          1.4443274267250672e-05,
+          7.645192454219796e-06,
+          5.545404292206513e-06,
+          4.0979953155328985e-06,
+          2.7514961402630433e-06,
+          1.649230739531049e-06,
+          9.072394391296257e-07,
+          4.711202734597464e-07,
+          2.423131491013919e-07,
+          1.484947915741941e-07,
+          8.563883824308505e-08,
+          6.522449780277384e-08,
+          5.719384787994386e-08,
+          4.9116263056703247e-08,
+          5.2637858516391134e-08,
+          4.605812975455592e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.89953120000428
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0175,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 0.6025,
+        "existential_target": 0.995,
+        "fronted_source": 0.42,
+        "fronted_target": 0.9975,
+        "imperative_target": 1.0,
+        "locative_inversion": 0.625,
+        "noun_target": 0.9825,
+        "participial": 0.8625,
+        "passive": 1.0,
+        "relative_source": 0.0025,
+        "relative_target": 0.2125,
+        "svo": 0.03
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 261,
+          "reversed": 132
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 2,
+          "none": 1,
+          "other": 156,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 2,
+          "none": 0,
+          "other": 226,
+          "reversed": 4
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 1,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 147,
+          "reversed": 3
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 7,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 55,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 273,
+          "reversed": 126
+        },
+        "relative_target": {
+          "malformed": 87,
+          "none": 46,
+          "other": 181,
+          "reversed": 1
+        },
+        "svo": {
+          "malformed": 6,
+          "none": 3,
+          "other": 281,
+          "reversed": 98
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "conditional_source",
+        "imperative_target"
+      ],
+      "heldout_S": 0.8625,
+      "heldout_T": 0.285,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.4375,
+        "participial": 0.47058823529411764,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 2,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.608600616455078,
+          1.2057634592056274,
+          0.03415154665708542,
+          0.050893813371658325,
+          0.019416768103837967,
+          0.02885703556239605,
+          0.01811787113547325,
+          0.0006888927891850471,
+          0.0016741178696975112,
+          0.0017526163719594479,
+          0.0005651274113915861,
+          0.0006533678970299661,
+          0.04608112573623657,
+          0.00028772486257366836,
+          0.0006001365836709738,
+          0.0002952454087790102,
+          8.374740718863904e-05,
+          4.056558100273833e-05,
+          1.966990384971723e-05,
+          7.232782991195563e-06,
+          2.624460648803506e-06,
+          7.66099446991575e-07,
+          2.640238960793795e-07,
+          5.951936188353102e-08,
+          1.1630173268883937e-08,
+          0.0,
+          1.679004019150554e-10,
+          3.4958733130530106e-10,
+          3.420639327345043e-10,
+          3.45034112392284e-10,
+          6.754066750325194e-10,
+          1.7201916280296103e-10,
+          5.04411623580836e-10,
+          5.04411623580836e-10,
+          1.1853195092115243e-09,
+          5.138330871901076e-10,
+          8.336313306323007e-10,
+          6.782889250267488e-10,
+          1.020336259927035e-09,
+          1.197223764570765e-09,
+          8.539346452174357e-10
+        ],
+        "losses_every": 50,
+        "seconds": 72.8352511000121
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0225,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 0.9875,
+        "existential_target": 0.965,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 0.88,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 1.0,
+        "svo": 0.0975
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 371,
+          "reversed": 20
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 5,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 14,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 48,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 339,
+          "reversed": 22
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "conditional_source",
+        "imperative_target",
+        "relative_source",
+        "fronted_target",
+        "fronted_source",
+        "conditional_target"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.6341666666666667,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 2,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.577401161193848,
+          1.2848880290985107,
+          0.08894655108451843,
+          0.03787357732653618,
+          0.038464441895484924,
+          0.00431792950257659,
+          0.0016027329256758094,
+          0.0017317598685622215,
+          0.0006055966950953007,
+          0.01448354497551918,
+          0.010518471710383892,
+          0.15196643769741058,
+          0.0003219789650756866,
+          0.000292891199933365,
+          0.0001576342765474692,
+          0.00012462837912607938,
+          9.302992839366198e-05,
+          0.00016419088933616877,
+          9.223004599334672e-05,
+          7.376319263130426e-05,
+          4.610933319781907e-05,
+          6.526667857542634e-05,
+          3.091052349191159e-05,
+          1.845798033173196e-05,
+          1.0123377251147758e-05,
+          4.532643288257532e-06,
+          1.7677749610811588e-06,
+          1.494154844294826e-06,
+          2.4253442916233325e-06,
+          1.6993268445730791e-06,
+          1.4020773733136593e-06,
+          1.2387758943077642e-06,
+          9.79388460109476e-07,
+          7.899322440607648e-07,
+          5.997038101668295e-07,
+          4.604178514000523e-07,
+          3.8204609609238105e-07,
+          3.3632812801442924e-07,
+          3.0042792786844075e-07,
+          2.9278874080773676e-07,
+          2.925891067206976e-07
+        ],
+        "losses_every": 50,
+        "seconds": 72.8039891999797
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.02,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.32,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 2,
+          "none": 0,
+          "other": 380,
+          "reversed": 10
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 271,
+          "reversed": 1
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "conditional_source",
+        "imperative_target",
+        "relative_source",
+        "fronted_target",
+        "fronted_source",
+        "conditional_target",
+        "svo",
+        "noun_target",
+        "existential_participle",
+        "existential_target"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.4466666666666667,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 2,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.588748931884766,
+          1.375259518623352,
+          0.13488979637622833,
+          0.038900040090084076,
+          0.08634167164564133,
+          0.008342716842889786,
+          0.057009514421224594,
+          0.001215512864291668,
+          0.0010269801132380962,
+          0.017907848581671715,
+          0.009053693152964115,
+          0.007476797793060541,
+          0.00041206294554285705,
+          0.00024022726574912667,
+          0.0003341528063174337,
+          0.00033237706520594656,
+          0.00018225189705844969,
+          7.426677620969713e-05,
+          0.022790975868701935,
+          0.00011737749446183443,
+          0.00012154266732977703,
+          0.00011836684279842302,
+          6.0825572290923446e-05,
+          5.531928763957694e-05,
+          2.4631362975924276e-05,
+          1.3517378647520673e-05,
+          6.624087291129399e-06,
+          2.9471666493918747e-06,
+          1.1957956758124055e-06,
+          4.708421954546793e-07,
+          2.2675489219636802e-07,
+          6.467919888564211e-08,
+          3.5302317513696835e-08,
+          1.3754916317054722e-08,
+          1.010538408507955e-08,
+          2.384185515680315e-09,
+          1.7152413933629873e-09,
+          6.744513836309807e-10,
+          2.170476909313379e-09,
+          2.064229898124381e-09,
+          8.514948190985194e-10
+        ],
+        "losses_every": 50,
+        "seconds": 72.86809669999639
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.0425,
+        "cleft_target": 0.005,
+        "conditional_source": 1.0,
+        "conditional_target": 0.685,
+        "distractor": 1.0,
+        "existential_participle": 0.0625,
+        "existential_target": 0.2375,
+        "fronted_source": 0.2525,
+        "fronted_target": 1.0,
+        "imperative_target": 0.995,
+        "locative_inversion": 0.9825,
+        "noun_target": 0.8525,
+        "participial": 0.265,
+        "passive": 0.2075,
+        "relative_source": 0.01,
+        "relative_target": 0.06,
+        "svo": 0.0125
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 38,
+          "none": 1,
+          "other": 342,
+          "reversed": 2
+        },
+        "cleft_target": {
+          "malformed": 126,
+          "none": 0,
+          "other": 272,
+          "reversed": 0
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 122,
+          "reversed": 3
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 49,
+          "none": 1,
+          "other": 322,
+          "reversed": 3
+        },
+        "existential_target": {
+          "malformed": 55,
+          "none": 0,
+          "other": 250,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 2,
+          "none": 0,
+          "other": 295,
+          "reversed": 2
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 7,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 58,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 6,
+          "none": 0,
+          "other": 285,
+          "reversed": 3
+        },
+        "passive": {
+          "malformed": 31,
+          "none": 0,
+          "other": 286,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 19,
+          "none": 0,
+          "other": 357,
+          "reversed": 20
+        },
+        "relative_target": {
+          "malformed": 182,
+          "none": 0,
+          "other": 193,
+          "reversed": 1
+        },
+        "svo": {
+          "malformed": 94,
+          "none": 21,
+          "other": 273,
+          "reversed": 7
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "conditional_source"
+      ],
+      "heldout_S": 0.265,
+      "heldout_T": 0.3491666666666667,
+      "heldout_word_coverage": {
+        "cleft_target": 0.7,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 0.6363636363636364
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 3,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.643965244293213,
+          1.2434309720993042,
+          0.03507949411869049,
+          0.09589831531047821,
+          0.022907258942723274,
+          0.08238852769136429,
+          0.003072737017646432,
+          0.003982835914939642,
+          0.001035176683217287,
+          0.0013949837302789092,
+          0.0007556663476862013,
+          0.000908101734239608,
+          0.0021508121863007545,
+          0.035626307129859924,
+          0.00448094354942441,
+          0.004226725548505783,
+          0.005081584677100182,
+          0.012157926335930824,
+          0.00010269991616951302,
+          0.0033673273865133524,
+          6.905962072778493e-05,
+          3.6707806430058554e-05,
+          2.0599614799721166e-05,
+          9.367740858579054e-06,
+          4.02202749683056e-06,
+          1.6083810123745934e-06,
+          5.559057854043203e-07,
+          1.9862564215600287e-07,
+          1.9056679434470425e-07,
+          1.6429699201125914e-07,
+          1.4097642520027875e-07,
+          1.421014985680813e-07,
+          9.655104804551229e-08,
+          8.379201688057947e-08,
+          6.133230812110924e-08,
+          5.33393738066934e-08,
+          4.0945792534330394e-08,
+          3.71672577159643e-08,
+          3.07362917340015e-08,
+          2.8576405242120018e-08,
+          3.0893669844545e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.72719340000185
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0,
+        "conditional_source": 1.0,
+        "conditional_target": 0.6475,
+        "distractor": 1.0,
+        "existential_participle": 0.355,
+        "existential_target": 0.075,
+        "fronted_source": 0.3225,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 0.12,
+        "noun_target": 0.55,
+        "participial": 0.0825,
+        "passive": 1.0,
+        "relative_source": 0.0,
+        "relative_target": 0.21,
+        "svo": 0.0175
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 381,
+          "reversed": 18
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 2,
+          "none": 0,
+          "other": 139,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 3,
+          "none": 0,
+          "other": 250,
+          "reversed": 5
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 369,
+          "reversed": 1
+        },
+        "fronted_source": {
+          "malformed": 6,
+          "none": 0,
+          "other": 261,
+          "reversed": 4
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 6,
+          "none": 0,
+          "other": 343,
+          "reversed": 3
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 178,
+          "reversed": 2
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 347,
+          "reversed": 20
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 21,
+          "none": 0,
+          "other": 213,
+          "reversed": 166
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 312,
+          "reversed": 4
+        },
+        "svo": {
+          "malformed": 8,
+          "none": 0,
+          "other": 277,
+          "reversed": 108
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "cleft_source"
+      ],
+      "heldout_S": 0.0825,
+      "heldout_T": 0.10999999999999999,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 3,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.671546936035156,
+          1.240386724472046,
+          0.09849604964256287,
+          0.03540157154202461,
+          0.019883884117007256,
+          0.08559916168451309,
+          0.0022582397796213627,
+          0.002097320044413209,
+          0.0019340994767844677,
+          0.00042373142787255347,
+          0.000988950952887535,
+          0.00019433131092227995,
+          0.007224719040095806,
+          0.00018783131963573396,
+          0.00028164483956061304,
+          0.0001820198813220486,
+          0.00010242866119369864,
+          0.017965324223041534,
+          0.0001347513752989471,
+          7.603784615639597e-05,
+          3.583972284104675e-05,
+          1.62858978001168e-05,
+          6.421462330763461e-06,
+          2.196559080402949e-06,
+          7.218779956019716e-07,
+          2.38753870007713e-07,
+          6.620855685923743e-08,
+          1.1700484137122658e-08,
+          6.82170431254292e-10,
+          1.2076193378618427e-09,
+          6.85110690401558e-10,
+          5.145724402133567e-10,
+          0.0,
+          0.0,
+          3.4157388029143476e-10,
+          1.6813721248620794e-10,
+          5.183012352638627e-10,
+          6.930772067370583e-10,
+          5.094413779715978e-10,
+          3.377033375162597e-10,
+          3.4553415684257516e-10
+        ],
+        "losses_every": 50,
+        "seconds": 72.93410019998555
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.01,
+        "conditional_source": 1.0,
+        "conditional_target": 0.75,
+        "distractor": 1.0,
+        "existential_participle": 0.67,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.6025,
+        "svo": 0.11
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 289,
+          "reversed": 107
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 99,
+          "reversed": 1
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 40,
+          "other": 92,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 157,
+          "reversed": 2
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 353,
+          "reversed": 3
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "cleft_source",
+        "imperative_target",
+        "relative_source",
+        "existential_target",
+        "fronted_source"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.5375,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 3,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.6534647941589355,
+          1.2923849821090698,
+          0.07172684371471405,
+          0.07743062824010849,
+          0.0202986691147089,
+          0.008769138716161251,
+          0.014965727925300598,
+          0.009210897609591484,
+          0.0008989967172965407,
+          0.0010668846080079675,
+          0.0006181272910907865,
+          0.00083170022116974,
+          0.004285214934498072,
+          0.0002972854417748749,
+          0.00021558471780736,
+          0.00022000886383466423,
+          0.00019038213940802962,
+          0.00012642858200706542,
+          0.00011458611697889864,
+          0.0007622982375323772,
+          0.0026158348191529512,
+          7.26951111573726e-05,
+          3.877330163959414e-05,
+          1.9689165128511377e-05,
+          7.892993380664848e-06,
+          2.9646230359503534e-06,
+          1.0455285064381314e-06,
+          1.3842641237715725e-06,
+          1.8628081761562498e-06,
+          1.2911489193356829e-06,
+          1.1061380291721434e-06,
+          7.97158463683445e-07,
+          6.642877110607515e-07,
+          4.976728860128787e-07,
+          3.5762769812208717e-07,
+          2.945169512713619e-07,
+          2.328933419448731e-07,
+          2.3430783357980545e-07,
+          2.3469848997592635e-07,
+          2.2103031938058848e-07,
+          2.3223472567224235e-07
+        ],
+        "losses_every": 50,
+        "seconds": 72.98460170000908
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0125,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.1975,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 387,
+          "reversed": 8
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 317,
+          "reversed": 4
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "cleft_source",
+        "imperative_target",
+        "relative_source",
+        "existential_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "conditional_target",
+        "existential_participle"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.4033333333333333,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 3,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.661446571350098,
+          1.242069959640503,
+          0.22157597541809082,
+          0.084307961165905,
+          0.045577697455883026,
+          0.004719174467027187,
+          0.00899348221719265,
+          0.0032931494060903788,
+          0.005551458802074194,
+          0.007218630984425545,
+          0.0006170942797325552,
+          0.02172696962952614,
+          0.00046186617692001164,
+          0.0035326117649674416,
+          0.0002912428171839565,
+          0.0009506355854682624,
+          0.00674238009378314,
+          0.00011384586832718924,
+          0.00024265838146675378,
+          0.00014298074529506266,
+          8.366684050997719e-05,
+          0.0006782165146432817,
+          6.545931682921946e-05,
+          0.00039238802855834365,
+          4.805115895578638e-05,
+          2.9480925149982795e-05,
+          1.6438736565760337e-05,
+          7.288439064723207e-06,
+          4.6349427975656e-06,
+          2.4907669740059646e-06,
+          1.3933412219557795e-06,
+          7.208667511804379e-07,
+          5.14936289164325e-07,
+          5.020218623030814e-07,
+          5.06892376961332e-07,
+          6.98134556387231e-07,
+          1.9077658635069383e-06,
+          4.41954654206711e-07,
+          4.564592188671668e-07,
+          3.9200193668875727e-07,
+          4.165451628068695e-07
+        ],
+        "losses_every": 50,
+        "seconds": 73.23499210001319
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0,
+        "conditional_source": 0.18,
+        "conditional_target": 0.0,
+        "distractor": 1.0,
+        "existential_participle": 0.725,
+        "existential_target": 0.1575,
+        "fronted_source": 0.2725,
+        "fronted_target": 0.4575,
+        "imperative_target": 0.445,
+        "locative_inversion": 0.21,
+        "noun_target": 0.175,
+        "participial": 0.255,
+        "passive": 1.0,
+        "relative_source": 0.0925,
+        "relative_target": 0.0,
+        "svo": 0.155
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 389,
+          "reversed": 11
+        },
+        "conditional_source": {
+          "malformed": 3,
+          "none": 0,
+          "other": 325,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 2,
+          "none": 0,
+          "other": 274,
+          "reversed": 124
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 1,
+          "none": 0,
+          "other": 109,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 337,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 291,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 217,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 222,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 316,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 330,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 298,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 6,
+          "none": 0,
+          "other": 356,
+          "reversed": 1
+        },
+        "relative_target": {
+          "malformed": 34,
+          "none": 15,
+          "other": 350,
+          "reversed": 1
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 334,
+          "reversed": 4
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive"
+      ],
+      "heldout_S": 0.255,
+      "heldout_T": 0.06999999999999999,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.4375,
+        "participial": 0.4117647058823529,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 4,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.584647178649902,
+          1.2397902011871338,
+          0.042429301887750626,
+          0.09536005556583405,
+          0.003166905138641596,
+          0.013393782079219818,
+          0.002315749181434512,
+          0.00909494049847126,
+          0.05693698301911354,
+          0.002720773685723543,
+          0.0006293363403528929,
+          0.0008313414291478693,
+          0.00057029421441257,
+          0.007275467272847891,
+          0.00020222333841957152,
+          0.0003065100754611194,
+          0.003786669345572591,
+          0.00041246486944146454,
+          0.00010064545494969934,
+          5.5730528401909396e-05,
+          2.8794713216484524e-05,
+          1.2583235729834996e-05,
+          4.479451945371693e-06,
+          1.6026806406443939e-06,
+          4.86543967781472e-07,
+          1.4714893836753618e-07,
+          6.913126071594888e-08,
+          1.678073147104442e-07,
+          2.787238315704599e-07,
+          2.4082319782792183e-07,
+          1.9925221295125084e-07,
+          1.557329625256898e-07,
+          1.1869395422081652e-07,
+          9.266122447115777e-08,
+          6.967865573415111e-08,
+          4.070560422064773e-08,
+          2.2714662151201992e-08,
+          1.5905971650909123e-08,
+          1.3189112024747374e-08,
+          1.6224756649307892e-08,
+          1.356577872257958e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.95926860001055
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0,
+        "conditional_source": 0.8075,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 0.4925,
+        "fronted_target": 0.9975,
+        "imperative_target": 0.9975,
+        "locative_inversion": 0.9825,
+        "noun_target": 0.9975,
+        "participial": 0.88,
+        "passive": 1.0,
+        "relative_source": 0.06,
+        "relative_target": 0.01,
+        "svo": 0.1
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 387,
+          "reversed": 13
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 77,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 1,
+          "other": 202,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 1,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 1,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 7,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 1,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 48,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 370,
+          "reversed": 6
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 4,
+          "other": 391,
+          "reversed": 1
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 358,
+          "reversed": 2
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "existential_participle",
+        "conditional_target"
+      ],
+      "heldout_S": 0.88,
+      "heldout_T": 0.33083333333333337,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 1.0,
+        "relative_target": 0.8181818181818182
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 4,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.5695414543151855,
+          1.3049304485321045,
+          0.1427253633737564,
+          0.03074093721807003,
+          0.007944060489535332,
+          0.003492091316729784,
+          0.018635300919413567,
+          0.0018003602745011449,
+          0.018290849402546883,
+          0.0006574379513040185,
+          0.0005785900866612792,
+          0.0018202377250418067,
+          0.0011974669760093093,
+          0.00026076153153553605,
+          0.04997184872627258,
+          0.004597960039973259,
+          0.0002715673763304949,
+          0.000332079449435696,
+          0.00010098717757500708,
+          4.9387825129088014e-05,
+          2.4587166990386322e-05,
+          3.138758256682195e-05,
+          6.067177309887484e-05,
+          2.1305089831002988e-05,
+          1.4138309779809788e-05,
+          8.859227818902582e-06,
+          4.819531113753328e-06,
+          2.161667680411483e-06,
+          9.00634574918513e-07,
+          3.363707321568654e-07,
+          1.5113425888557686e-07,
+          9.747310514285346e-08,
+          8.677483265273622e-08,
+          7.298181259329795e-08,
+          6.85325787230795e-08,
+          6.990458700784075e-08,
+          7.180040029197698e-08,
+          6.254703777130999e-08,
+          6.645282724093704e-08,
+          6.491249138207422e-08,
+          6.164822252685553e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.84727209998528
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0225,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 0.9875,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.975,
+        "svo": 0.1325
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 8,
+          "none": 61,
+          "other": 307,
+          "reversed": 15
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 5,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 3,
+          "none": 2,
+          "other": 5,
+          "reversed": 0
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 5,
+          "other": 330,
+          "reversed": 12
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "relative_source",
+        "imperative_target",
+        "conditional_source",
+        "fronted_target"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.6658333333333334,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 0.9375,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 4,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.547704696655273,
+          1.3996063470840454,
+          0.10160946100950241,
+          0.014097616076469421,
+          0.0321202389895916,
+          0.004273414146155119,
+          0.0011961618438363075,
+          0.009465420618653297,
+          0.00374077120795846,
+          0.00046803534496575594,
+          0.01492210291326046,
+          0.020268013700842857,
+          0.0004575517086777836,
+          0.00042727284017018974,
+          0.0002553381200414151,
+          0.0029384291265159845,
+          0.00013978687638882548,
+          0.0004888917319476604,
+          0.00011633018584689125,
+          0.00012049505312461406,
+          5.4877451475476846e-05,
+          2.860262247850187e-05,
+          4.809851088793948e-05,
+          2.8646865757764317e-05,
+          1.800694917619694e-05,
+          1.27251305457321e-05,
+          8.432083632214926e-06,
+          4.681293376052054e-06,
+          2.208261548730661e-06,
+          9.661764579504961e-07,
+          4.165491986896086e-07,
+          1.6642084688101022e-07,
+          8.632976289391081e-08,
+          3.8768632748542586e-08,
+          1.3453618663561429e-08,
+          1.0634496838690666e-08,
+          7.56617346553412e-09,
+          6.851108125260907e-09,
+          3.6124023772288183e-09,
+          3.0436411169176836e-09,
+          1.8759687137048786e-09
+        ],
+        "losses_every": 50,
+        "seconds": 72.88191920000827
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0125,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 0.98,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.0125,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 347,
+          "reversed": 48
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 8,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 379,
+          "reversed": 16
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "cleft_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "relative_source",
+        "imperative_target",
+        "conditional_source",
+        "fronted_target",
+        "fronted_source",
+        "noun_target",
+        "svo",
+        "existential_target"
+      ],
+      "heldout_S": 0.98,
+      "heldout_T": 0.3416666666666666,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 4,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.587062835693359,
+          1.3384130001068115,
+          0.07267637550830841,
+          0.0199070256203413,
+          0.020466841757297516,
+          0.009777005761861801,
+          0.0014094783691689372,
+          0.0012636883184313774,
+          0.014842821285128593,
+          0.000764259195420891,
+          0.0005832192837260664,
+          0.0007914945599623024,
+          0.0005407086573541164,
+          0.0005245544016361237,
+          0.0009828852489590645,
+          8.49112548166886e-05,
+          0.0042105368338525295,
+          0.00030830115429125726,
+          8.751900168135762e-05,
+          0.00012055469414917752,
+          0.0007751428638584912,
+          0.0005157984560355544,
+          5.6689008488319814e-05,
+          3.0494824386551045e-05,
+          1.9595676349126734e-05,
+          1.6558047718717717e-05,
+          0.0016271460335701704,
+          1.693761078058742e-05,
+          1.2553492524602916e-05,
+          9.04457010619808e-06,
+          6.138398020993918e-06,
+          4.726989573100582e-06,
+          4.373136107460596e-06,
+          3.9050273699103855e-06,
+          3.2799562177387998e-06,
+          2.7809580842586e-06,
+          2.3028221676213434e-06,
+          1.9538067590474384e-06,
+          1.819685508053226e-06,
+          1.6730256220398587e-06,
+          1.5381707498818287e-06
+        ],
+        "losses_every": 50,
+        "seconds": 72.9380697000015
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.7075,
+        "cleft_target": 0.0,
+        "conditional_source": 0.025,
+        "conditional_target": 0.0025,
+        "distractor": 1.0,
+        "existential_participle": 0.5525,
+        "existential_target": 1.0,
+        "fronted_source": 0.0075,
+        "fronted_target": 0.1775,
+        "imperative_target": 0.995,
+        "locative_inversion": 0.2325,
+        "noun_target": 0.9875,
+        "participial": 0.055,
+        "passive": 0.07,
+        "relative_source": 1.0,
+        "relative_target": 0.0,
+        "svo": 0.1425
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 117,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 129,
+          "reversed": 271
+        },
+        "conditional_source": {
+          "malformed": 2,
+          "none": 0,
+          "other": 382,
+          "reversed": 6
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 265,
+          "reversed": 134
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 179,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 8,
+          "none": 0,
+          "other": 378,
+          "reversed": 11
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 2,
+          "other": 327,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 1,
+          "none": 6,
+          "other": 300,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 2,
+          "none": 1,
+          "other": 2,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 372,
+          "reversed": 6
+        },
+        "passive": {
+          "malformed": 99,
+          "none": 15,
+          "other": 258,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 140,
+          "other": 258,
+          "reversed": 2
+        },
+        "svo": {
+          "malformed": 55,
+          "none": 82,
+          "other": 205,
+          "reversed": 1
+        }
+      },
+      "frames": [
+        "existential_target",
+        "relative_source"
+      ],
+      "heldout_S": 0.055,
+      "heldout_T": 0.0775,
+      "heldout_word_coverage": {
+        "cleft_target": 0.9,
+        "locative_inversion": 0.9375,
+        "participial": 0.8823529411764706,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 2,
+      "ordering": 5,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.575860023498535,
+          1.2104206085205078,
+          0.1788705587387085,
+          0.053020983934402466,
+          0.009760220535099506,
+          0.006100106984376907,
+          0.0014275185531005263,
+          0.030310168862342834,
+          0.0007694311789236963,
+          0.0015995203284546733,
+          0.003516166005283594,
+          0.002728715306147933,
+          0.005501060280948877,
+          0.013913416303694248,
+          0.018582303076982498,
+          0.0002616478595882654,
+          0.00037666913704015315,
+          0.00017004282562993467,
+          9.730010060593486e-05,
+          0.004032868426293135,
+          5.027250517741777e-05,
+          0.0005146337207406759,
+          3.123169153695926e-05,
+          3.96117648051586e-05,
+          2.8370915970299393e-05,
+          2.893553210014943e-05,
+          3.32871604769025e-05,
+          2.4529435904696584e-05,
+          2.4534698241041042e-05,
+          1.9318129488965496e-05,
+          1.3712083273276221e-05,
+          8.394158612645697e-06,
+          5.525296273845015e-06,
+          3.2473299143020995e-06,
+          2.0990096345485654e-06,
+          1.2544520586743602e-06,
+          8.103850177576533e-07,
+          6.427079028981098e-07,
+          5.49130447780044e-07,
+          5.386242492022575e-07,
+          5.674767180607887e-07
+        ],
+        "losses_every": 50,
+        "seconds": 72.91116650000913
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.315,
+        "cleft_target": 0.06,
+        "conditional_source": 1.0,
+        "conditional_target": 0.17,
+        "distractor": 1.0,
+        "existential_participle": 0.73,
+        "existential_target": 1.0,
+        "fronted_source": 0.725,
+        "fronted_target": 1.0,
+        "imperative_target": 0.0025,
+        "locative_inversion": 0.995,
+        "noun_target": 0.995,
+        "participial": 0.085,
+        "passive": 0.1025,
+        "relative_source": 1.0,
+        "relative_target": 0.005,
+        "svo": 0.0025
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 3,
+          "none": 74,
+          "other": 197,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 99,
+          "other": 179,
+          "reversed": 98
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 326,
+          "reversed": 6
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 108,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 109,
+          "reversed": 1
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 91,
+          "none": 297,
+          "other": 11,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 2,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 361,
+          "reversed": 5
+        },
+        "passive": {
+          "malformed": 8,
+          "none": 222,
+          "other": 129,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 0,
+          "none": 58,
+          "other": 324,
+          "reversed": 16
+        },
+        "svo": {
+          "malformed": 71,
+          "none": 294,
+          "other": 34,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "existential_target",
+        "relative_source",
+        "fronted_target",
+        "conditional_source"
+      ],
+      "heldout_S": 0.085,
+      "heldout_T": 0.35333333333333333,
+      "heldout_word_coverage": {
+        "cleft_target": 0.9,
+        "locative_inversion": 0.9375,
+        "participial": 0.9411764705882353,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 4,
+      "ordering": 5,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.603445053100586,
+          1.2115472555160522,
+          0.13071882724761963,
+          0.02268914505839348,
+          0.02203422784805298,
+          0.013203010894358158,
+          0.015897925943136215,
+          0.0015184491639956832,
+          0.0009030779474414885,
+          0.011669901199638844,
+          0.001131286844611168,
+          0.00023461115779355168,
+          0.023183953016996384,
+          0.005855392199009657,
+          0.006710048299282789,
+          0.0002005502174142748,
+          0.00011231131793465465,
+          0.00019694741058629006,
+          7.247339090099558e-05,
+          4.673913281294517e-05,
+          2.1914505850872956e-05,
+          9.981735274777748e-06,
+          1.876320857263636e-05,
+          0.00016006272926460952,
+          1.7923304767464288e-05,
+          1.853621688496787e-05,
+          1.0666984053386841e-05,
+          7.221073701657588e-06,
+          4.378416633699089e-06,
+          2.5239958176825894e-06,
+          1.2529900459412602e-06,
+          5.413020289779524e-07,
+          2.9266740853017836e-07,
+          1.31180783569107e-07,
+          7.765632403788914e-08,
+          5.833284433265362e-08,
+          3.344097265767232e-08,
+          2.528174292137919e-08,
+          2.767964524252875e-08,
+          2.3978877550234756e-08,
+          2.3910169844043594e-08
+        ],
+        "losses_every": 50,
+        "seconds": 72.7579856000084
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 0.0025,
+        "cleft_target": 0.855,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 1.0,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.9225,
+        "svo": 0.01
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 366,
+          "other": 33,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 57,
+          "reversed": 0
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 6,
+          "none": 0,
+          "other": 25,
+          "reversed": 0
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 357,
+          "other": 38,
+          "reversed": 1
+        }
+      },
+      "frames": [
+        "existential_target",
+        "relative_source",
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "fronted_source"
+      ],
+      "heldout_S": 1.0,
+      "heldout_T": 0.9258333333333333,
+      "heldout_word_coverage": {
+        "cleft_target": 0.9,
+        "locative_inversion": 0.9375,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 8,
+      "ordering": 5,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.62344217300415,
+          1.2901647090911865,
+          0.13011616468429565,
+          0.056076861917972565,
+          0.018471213057637215,
+          0.05677957460284233,
+          0.0035664960741996765,
+          0.007365263532847166,
+          0.0010368244256824255,
+          0.0007286026957444847,
+          0.0016056662425398827,
+          0.0010998216457664967,
+          0.0012573422864079475,
+          0.0003140394401270896,
+          0.00043416640255600214,
+          0.00017985345039051026,
+          0.0001571852044435218,
+          0.00010227358143310994,
+          0.00011822574742836878,
+          8.109103509923443e-05,
+          5.3384326747618616e-05,
+          4.311163502279669e-05,
+          2.6902866011369042e-05,
+          1.4559727787855081e-05,
+          6.139151082606986e-06,
+          4.075013748661149e-06,
+          2.5054041543626226e-06,
+          1.6066763919297955e-06,
+          1.0666886964827427e-06,
+          5.586434213000757e-07,
+          2.5096676381508587e-07,
+          1.2914335911773378e-07,
+          7.301351701016756e-08,
+          3.1697261704266566e-08,
+          1.3754916317054722e-08,
+          9.366442732527958e-09,
+          8.245021554387222e-09,
+          9.433827052873767e-09,
+          7.598325524327265e-09,
+          9.023118252571294e-09,
+          7.800322165962825e-09
+        ],
+        "losses_every": 50,
+        "seconds": 73.16834420000669
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    },
+    {
+      "accuracy": {
+        "cleft_source": 1.0,
+        "cleft_target": 0.0725,
+        "conditional_source": 1.0,
+        "conditional_target": 1.0,
+        "distractor": 1.0,
+        "existential_participle": 1.0,
+        "existential_target": 1.0,
+        "fronted_source": 1.0,
+        "fronted_target": 1.0,
+        "imperative_target": 1.0,
+        "locative_inversion": 1.0,
+        "noun_target": 1.0,
+        "participial": 0.985,
+        "passive": 1.0,
+        "relative_source": 1.0,
+        "relative_target": 0.0225,
+        "svo": 1.0
+      },
+      "distractor": 1.0,
+      "errors": {
+        "cleft_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "cleft_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 341,
+          "reversed": 30
+        },
+        "conditional_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "conditional_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "distractor": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_participle": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "existential_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "fronted_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "imperative_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "locative_inversion": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "noun_target": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "participial": {
+          "malformed": 0,
+          "none": 0,
+          "other": 6,
+          "reversed": 0
+        },
+        "passive": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_source": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        },
+        "relative_target": {
+          "malformed": 1,
+          "none": 0,
+          "other": 371,
+          "reversed": 19
+        },
+        "svo": {
+          "malformed": 0,
+          "none": 0,
+          "other": 0,
+          "reversed": 0
+        }
+      },
+      "frames": [
+        "existential_target",
+        "relative_source",
+        "fronted_target",
+        "conditional_source",
+        "passive",
+        "existential_participle",
+        "conditional_target",
+        "fronted_source",
+        "noun_target",
+        "cleft_source",
+        "imperative_target",
+        "svo"
+      ],
+      "heldout_S": 0.985,
+      "heldout_T": 0.365,
+      "heldout_word_coverage": {
+        "cleft_target": 1.0,
+        "locative_inversion": 1.0,
+        "participial": 1.0,
+        "relative_target": 1.0
+      },
+      "in_distribution": 1.0,
+      "k": 12,
+      "ordering": 5,
+      "science_open": false,
+      "training": {
+        "losses": [
+          5.6209306716918945,
+          1.274960994720459,
+          0.07790180295705795,
+          0.013477575965225697,
+          0.03177570924162865,
+          0.015196012333035469,
+          0.019276602193713188,
+          0.001369394245557487,
+          0.0010827210498973727,
+          0.0015911207301542163,
+          0.0013684846926480532,
+          0.004950136877596378,
+          0.0014158993726596236,
+          0.0003699021181091666,
+          0.018011098727583885,
+          0.0002874495694413781,
+          0.016971442848443985,
+          0.01474260538816452,
+          0.0004758356371894479,
+          0.00010560145892668515,
+          0.005311259068548679,
+          9.69724205788225e-05,
+          4.3359395931474864e-05,
+          2.3134207367547788e-05,
+          1.0482460311322939e-05,
+          4.1515022530802526e-06,
+          1.454696644032083e-06,
+          5.282671509121428e-07,
+          1.684067285623314e-07,
+          7.051101391652992e-08,
+          1.3377175811513098e-08,
+          3.1811185863261926e-07,
+          1.8471446594503504e-08,
+          2.0494431041129246e-08,
+          1.9925469274539864e-08,
+          2.0068323891564432e-08,
+          1.936308891004046e-08,
+          2.044078328822252e-08,
+          1.7005602259700936e-08,
+          1.872307109351823e-08,
+          1.8353082609223748e-08
+        ],
+        "losses_every": 50,
+        "seconds": 73.12326849999954
+      },
+      "untrained_heldout": {
+        "cleft_target": 0.0,
+        "locative_inversion": 0.0,
+        "participial": 0.0,
+        "relative_target": 0.0
+      }
+    }
+  ],
+  "science_open": false
+}

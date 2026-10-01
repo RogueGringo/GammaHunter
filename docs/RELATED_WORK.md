@@ -26,6 +26,7 @@ result files cited, and every GammaHunter result keeps the scope stated in
 | Reading the graph from sentences worded unlike any in training: a word reader trained from scratch read only the held-out wordings that keep the training word order; frozen features of a small language model read more of them (edge F1 up to 0.91) but at most 2.3% of the graphs exactly; language models listing successors read the sentences worse than the edge list, and most often read backwards the sentence that names the target first | Sensitivity of graph reasoning to how the graph is written as text; probing frozen representations, with controls for what the probe itself learns | How a graph is encoded as text changes LLM graph-reasoning accuracy (2310.04560); linear probes (1610.01644); control tasks for probes (1909.03368) | Limitations item 19 |
 | Trained on 51 wordings instead of five, the reader on frozen language-model features read held-out sentences whose constructions occur in training almost completely and a construction absent from training only partly; no reader read more than 3.1% of the graphs exactly | Lexical versus structural generalisation (novel combinations of a familiar primitive and a familiar structure, against novel combinations of familiar syntactic structures); broadening the training data | COGS separates the two and finds structural generalisation harder (2010.05465); systematic generalisation beyond small differences between training and test (SCAN, 1711.00350); training data broadened by recombining fragments (1904.09545) | Limitations item 20 |
 | With its attention normalized by sparsemax, entmax-1.5 or scalable softmax instead of softmax, a gain of 0.05 in the word reader's held-out edge F1 could be neither shown nor excluded (every verdict inconclusive; losses were not tested); the dilution comparison was moot, because softmax lost less than 0.01 of edge F1 from 0.25 to 4 distractor sentences per edge | Sparse attention (exact zeros below a threshold); attention scaled with the context length | sparsemax (1602.02068); α-entmax (1905.05702); scalable softmax, against attention fading as the context grows (2501.19399) | Limitations item 21 |
+| A byte-level language model trained from scratch on 2, 4, 8 or all 12 of a pool of sentence constructions read the three held-out target-first ones (of four held out) at 0.12 on average after 2 and 0.38 after 12 (a gain of 0.30, fixed in advance, neither shown nor excluded), more after 8 than after 12 in five of six orderings (in one by 0.004; reported, not decided), and, after 12, one of the three perfectly and the other two at 0.32 or less in every run; a rule reading only familiar local markers reads all three | Structural generalisation; structurally diverse training data | COGS separates lexical from structural generalisation (2010.05465); sampling structurally diverse training examples improves compositional generalisation in semantic parsing (2109.02575) | Limitations item 23 |
 
 ## Direction
 
@@ -129,3 +130,20 @@ which fell with dilution in softmax alone, was not a measure fixed in
 advance. Rerun, the softmax reader did not reproduce item 19's held-out
 scores, seed by seed or in their mean: the same seed's held-out edge F1
 differed between the two runs by up to 0.66.
+
+A small byte-level language model trained from scratch (limitations item 23)
+let the question of item 20 be asked of constructions that are exactly
+unseen: once all twelve training constructions were used, no word or byte of
+a held-out construction was new. From two training constructions to twelve,
+reading of the held-out target-first ones rose from 0.12 to 0.38 (higher in
+every ordering; reported, not decided), but a gain of 0.30 was neither shown nor excluded by the
+rules fixed in advance; the runs on eight constructions read more than those
+on twelve in five of six orderings (in one by 0.004; reported, not decided),
+a comparison that also changes the data seed and how often each construction
+is seen; and with all twelve the model read two held-out constructions almost
+perfectly and the other two at 0.32 or less in every run, although a rule
+reading only familiar local markers reads all four. Post hoc, some k = 8
+splits point to which constructions are trained as a possible factor, but
+with six runs per level such splits can arise by chance and the design
+confounds them; only an ablation fixed in advance can test it (limitations
+item 23).

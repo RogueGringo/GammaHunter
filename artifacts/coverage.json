@@ -1,0 +1,307 @@
+{
+  "heuristics": {
+    "marker": {
+      "cleft_source": 1.0,
+      "cleft_target": 1.0,
+      "conditional_source": 1.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 1.0,
+      "fronted_source": 1.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 1.0,
+      "noun_target": 1.0,
+      "participial": 1.0,
+      "passive": 1.0,
+      "relative_source": 1.0,
+      "relative_target": 1.0,
+      "svo": 1.0
+    },
+    "mirror": {
+      "cleft_source": 0.0,
+      "cleft_target": 1.0,
+      "conditional_source": 0.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 0.0,
+      "existential_target": 1.0,
+      "fronted_source": 0.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 1.0,
+      "noun_target": 1.0,
+      "participial": 0.0,
+      "passive": 1.0,
+      "relative_source": 0.0,
+      "relative_target": 1.0,
+      "svo": 0.0
+    },
+    "order": {
+      "cleft_source": 1.0,
+      "cleft_target": 0.0,
+      "conditional_source": 1.0,
+      "conditional_target": 0.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 0.0,
+      "fronted_source": 1.0,
+      "fronted_target": 0.0,
+      "imperative_target": 0.0,
+      "locative_inversion": 0.0,
+      "noun_target": 0.0,
+      "participial": 1.0,
+      "passive": 0.0,
+      "relative_source": 1.0,
+      "relative_target": 0.0,
+      "svo": 1.0
+    },
+    "subject_marker": {
+      "cleft_source": 1.0,
+      "cleft_target": 1.0,
+      "conditional_source": 1.0,
+      "conditional_target": 1.0,
+      "distractor": 1.0,
+      "existential_participle": 1.0,
+      "existential_target": 1.0,
+      "fronted_source": 1.0,
+      "fronted_target": 1.0,
+      "imperative_target": 1.0,
+      "locative_inversion": 0.0,
+      "noun_target": 1.0,
+      "participial": 1.0,
+      "passive": 1.0,
+      "relative_source": 1.0,
+      "relative_target": 1.0,
+      "svo": 1.0
+    }
+  },
+  "science_open": false,
+  "verdicts": {
+    "H1": {
+      "gain": 0.26513888888888887,
+      "heldout_T_by_k": {
+        "12": [
+          0.3475,
+          0.3933333333333333,
+          0.4466666666666667,
+          0.4033333333333333,
+          0.3416666666666666,
+          0.365
+        ],
+        "2": [
+          0.004166666666666667,
+          0.13,
+          0.07583333333333334,
+          0.3491666666666667,
+          0.06999999999999999,
+          0.0775
+        ],
+        "4": [
+          0.030833333333333334,
+          0.3233333333333333,
+          0.285,
+          0.10999999999999999,
+          0.33083333333333337,
+          0.35333333333333333
+        ],
+        "8": [
+          0.3516666666666666,
+          0.34,
+          0.6341666666666667,
+          0.5375,
+          0.6658333333333334,
+          0.9258333333333333
+        ]
+      },
+      "p": 0.003246753246753247,
+      "p_gain_below_margin": 0.3344155844155844,
+      "undertrained_by_k": {
+        "12": 0,
+        "2": 0,
+        "4": 0,
+        "8": 0
+      },
+      "verdict": "inconclusive"
+    },
+    "k12_level": {
+      "classification": "fails",
+      "mean_heldout_T": 0.3829166666666666
+    },
+    "reported": {
+      "mean_by_k": {
+        "12": {
+          "cleft_target": 0.023749999999999997,
+          "distractor": 1.0,
+          "errors": {
+            "cleft_target": {
+              "malformed": 0.6666666666666666,
+              "none": 0.0,
+              "other": 350.0,
+              "reversed": 39.833333333333336
+            },
+            "locative_inversion": {
+              "malformed": 0.0,
+              "none": 0.0,
+              "other": 0.0,
+              "reversed": 0.0
+            },
+            "participial": {
+              "malformed": 0.0,
+              "none": 0.0,
+              "other": 5.833333333333333,
+              "reversed": 0.0
+            },
+            "relative_target": {
+              "malformed": 1.0,
+              "none": 0.0,
+              "other": 335.1666666666667,
+              "reversed": 13.833333333333334
+            }
+          },
+          "heldout_S": 0.9854166666666666,
+          "heldout_T": 0.3829166666666666,
+          "heldout_word_coverage": {
+            "cleft_target": 1.0,
+            "locative_inversion": 1.0,
+            "participial": 1.0,
+            "relative_target": 1.0
+          },
+          "in_distribution": 1.0,
+          "locative_inversion": 1.0,
+          "participial": 0.9854166666666666,
+          "relative_target": 0.125
+        },
+        "2": {
+          "cleft_target": 0.012499999999999999,
+          "distractor": 1.0,
+          "errors": {
+            "cleft_target": {
+              "malformed": 21.5,
+              "none": 0.0,
+              "other": 296.3333333333333,
+              "reversed": 77.16666666666667
+            },
+            "locative_inversion": {
+              "malformed": 95.33333333333333,
+              "none": 7.166666666666667,
+              "other": 170.66666666666666,
+              "reversed": 1.3333333333333333
+            },
+            "participial": {
+              "malformed": 13.666666666666666,
+              "none": 5.833333333333333,
+              "other": 243.16666666666666,
+              "reversed": 69.5
+            },
+            "relative_target": {
+              "malformed": 46.166666666666664,
+              "none": 25.833333333333332,
+              "other": 309.5,
+              "reversed": 7.666666666666667
+            }
+          },
+          "heldout_S": 0.16958333333333334,
+          "heldout_T": 0.11777777777777777,
+          "heldout_word_coverage": {
+            "cleft_target": 0.9166666666666666,
+            "locative_inversion": 0.6770833333333334,
+            "participial": 0.6666666666666666,
+            "relative_target": 0.8484848484848485
+          },
+          "in_distribution": 1.0,
+          "locative_inversion": 0.31375000000000003,
+          "participial": 0.16958333333333334,
+          "relative_target": 0.027083333333333334
+        },
+        "4": {
+          "cleft_target": 0.01375,
+          "distractor": 1.0,
+          "errors": {
+            "cleft_target": {
+              "malformed": 0.16666666666666666,
+              "none": 16.5,
+              "other": 251.83333333333334,
+              "reversed": 126.0
+            },
+            "locative_inversion": {
+              "malformed": 1.0,
+              "none": 0.0,
+              "other": 146.0,
+              "reversed": 1.0
+            },
+            "participial": {
+              "malformed": 0.0,
+              "none": 0.0,
+              "other": 180.66666666666666,
+              "reversed": 4.666666666666667
+            },
+            "relative_target": {
+              "malformed": 14.5,
+              "none": 18.0,
+              "other": 331.5,
+              "reversed": 6.833333333333333
+            }
+          },
+          "heldout_S": 0.5366666666666667,
+          "heldout_T": 0.2388888888888889,
+          "heldout_word_coverage": {
+            "cleft_target": 0.9666666666666667,
+            "locative_inversion": 0.8541666666666666,
+            "participial": 0.8823529411764706,
+            "relative_target": 0.8787878787878789
+          },
+          "in_distribution": 1.0,
+          "locative_inversion": 0.63,
+          "participial": 0.5366666666666667,
+          "relative_target": 0.07291666666666667
+        },
+        "8": {
+          "cleft_target": 0.15416666666666665,
+          "distractor": 1.0,
+          "errors": {
+            "cleft_target": {
+              "malformed": 1.5,
+              "none": 10.166666666666666,
+              "other": 258.6666666666667,
+              "reversed": 68.0
+            },
+            "locative_inversion": {
+              "malformed": 0.0,
+              "none": 0.0,
+              "other": 8.0,
+              "reversed": 0.0
+            },
+            "participial": {
+              "malformed": 0.0,
+              "none": 0.0,
+              "other": 2.3333333333333335,
+              "reversed": 0.0
+            },
+            "relative_target": {
+              "malformed": 1.5,
+              "none": 0.3333333333333333,
+              "other": 147.83333333333334,
+              "reversed": 13.0
+            }
+          },
+          "heldout_S": 0.9941666666666666,
+          "heldout_T": 0.5758333333333333,
+          "heldout_word_coverage": {
+            "cleft_target": 0.9833333333333334,
+            "locative_inversion": 0.9583333333333334,
+            "participial": 0.9705882352941176,
+            "relative_target": 1.0
+          },
+          "in_distribution": 1.0,
+          "locative_inversion": 0.98,
+          "participial": 0.9941666666666666,
+          "relative_target": 0.5933333333333334
+        }
+      },
+      "runs": 24,
+      "spearman_k_heldout_T_descriptive": 0.6998964726756152
+    }
+  }
+}

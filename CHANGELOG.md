@@ -158,14 +158,19 @@
   once wrote a stray run file into the repository, deleted unread): the
   from-scratch byte LM reads one sentence into its edge after training on k of
   12 constructions, half of each role order (`tinylm.grammar`: 16 lower-case
-  constructions from shared word lists, 4 held out, new in structure only at
-  k = 12); primary measure the held-out target-first constructions; H1 (k = 12
+  constructions from shared word lists, 4 held out, new in structure only, for
+  certain, at k = 12); primary measure the held-out target-first constructions; H1 (k = 12
   beats k = 2 by 0.30, exact one-sided permutation p < 0.05) with an
   undertraining guard, a fixed classification of the k = 12 level, four
   controls that read no structure (two of them local role markers, one reading
   every construction, so the study cannot show reading beyond such markers),
   word coverage and error kinds per run. `tinylm.extract` holds the task (loss on the
   answer and EOS, greedy decoding batched by prompt length, exact scoring).
+  Results recorded (limitations item 23; measurement-only status becomes item
+  24): H1 inconclusive, the k = 12 level "fails"; a contract test re-derives
+  the verdicts from the run file and pins every value item 23 reports to the
+  run file, the grammar or the runner; a related-work row and a Direction
+  paragraph added.
 
 ## 0.1.0 (2026-09-27)
 

@@ -952,5 +952,108 @@ from `artifacts/id_2k_checkpoint_audit.json` unless noted otherwise.
     exact. The stopped arms' checkpoints are kept out of the repository, with
     their SHA-256 and write times in the stop record.
 
-23. **Measurement-only status.** No result in this repository is presented as
+23. **Construction coverage in a language model trained from scratch.** Fixed
+    in code before it ran (commit bdae5a1), with predictions, decision rules
+    and controls stated in the runner, and run at that commit with no tracked
+    file changed (`artifacts/coverage_runs.json`, 24 runs; verdicts in
+    `artifacts/coverage.json`). The author chose this study under the PI's
+    standing delegation ("infer the best path all context eval for value based
+    on prime intent"), after the PI had written "lets make a small llm from the
+    ground up ... you and i can parse out some ideas that will convey some
+    optimizations" and then asked "what comes next?". The model (`tinylm`) is
+    a byte-level decoder of 4.9 million parameters with no pretrained weights.
+    It learned to read one sentence into its edge ("u>v", or "none" for a
+    distractor sentence), trained on k of 12 sentence constructions (k = 2, 4,
+    8 or 12, always half naming the source first and half the target first,
+    nested within each of six orderings, every run of an ordering starting from
+    the same weights), and was scored with exact match on 400 fixed sentences
+    of each of 16 constructions and 400 distractors. Four constructions are
+    held out, one naming the source first and three the target first; the mean
+    over those three is the primary measure. Only at k = 12 is every word and
+    byte of the held-out constructions trained in every run, so only that
+    level is new in structure alone for certain (one k = 8 run, ordering 1,
+    also covered every held-out word). Each run trained for 2,000 steps
+    (73–81 s on the RTX 5070); the 24 runs took 32 minutes.
+    - *Controls.* Every run read each construction it was trained on, and the
+      distractor sentences, at 1.000 (the last recorded training loss of every
+      run was below 1.6 × 10⁻⁶), so no run was undertrained; the untrained
+      model read 0.000 of every held-out construction in every run. The four
+      rules that read no structure scored as designed: first number as source
+      1.000 on the source-first constructions and 0.000 on the target-first
+      ones, first number as target the reverse, and the marker rule (role
+      markers "from N", "to N" and "into N", then "N" before a source verb)
+      1.000 on every construction, held-out ones included; with the subject
+      position first, it read every construction but `locative_inversion`
+      (0.000). Since the marker rule reads every held-out construction at
+      1.000, no reading of a held-out construction here can exceed what
+      familiar local markers allow, and this study cannot show reading beyond
+      them.
+    - *Verdicts by the fixed rules.* H1 (frame coverage helps):
+      inconclusive. Mean reading of the held-out target-first constructions
+      rose from 0.118 at k = 2 to 0.383 at k = 12 (one-sided permutation
+      p = 0.0032), but by 0.265, short of the 0.30 fixed in advance, and a
+      gain of 0.30 could not be excluded either (p = 0.33). As fixed,
+      "inconclusive" supports neither side. The k = 12 level: "fails" (0.383,
+      below 0.5; a description fixed in advance, not a test). (Reported, not
+      decided: the reading was higher at k = 12
+      than at k = 2 in every ordering; the fixed test is unpaired.)
+    - *Per held-out construction at k = 12* (six runs each).
+      `locative_inversion` ("into {v} {sv} {a_n} from {u}.") was read at 1.000
+      in every run and the held-out source-first `participial` ("starting at
+      {u}, {a_n} {sv} to {v}.") at 0.9475–1.000, but `cleft_target` ("it is
+      {v} that {u} {sv} to.") only at 0.0075–0.0725 and `relative_target`
+      ("{v} is the node that {u} {sv} to.") at 0.0125–0.320. Of their wrong
+      answers, pooled over the six runs, 2,100 of 2,343 (`cleft_target`) and
+      2,011 of 2,100 (`relative_target`) were well-formed edges other than the
+      reversed one, 239 and 83 were the reversed edge, and the other 4 and 6
+      were malformed (none was "none"); the run file records each wrong
+      answer's kind, not the answer, so what those edges were is not known.
+      The two held-out constructions read are the two in which a preposition
+      stands directly before each number; in the two not read, none does, and
+      the marker rule reads them through its fallback on the subject position.
+      This is consistent with the k = 12 models having learned prepositions,
+      but not the subject position, as role markers. Nothing here tests it,
+      and two observations limit it: the one pool construction with no preposition before either number
+      (`relative_source`, "the node that {u} {sv} to is {v}.") was read at
+      1.000 in every run trained on it, and four k = 8 runs read
+      `relative_target` at 0.6025–1.000, one of them also `cleft_target` at
+      0.855 (see *Post hoc*).
+    - *Not monotone in k* (reported, not decided). Mean reading of the
+      held-out target-first constructions was 0.118, 0.239, 0.576 and 0.383 at
+      k = 2, 4, 8 and 12 (rank correlation with k over the 24 runs 0.70, a
+      description that pools runs sharing their starting weights). It was
+      higher at k = 8 than at k = 12 in five of the six orderings (in one by
+      0.004), although the k = 8 runs covered no more of the held-out
+      constructions' words (per run, the mean share over the four held-out
+      constructions was 0.959–1.000, below 1.000 in five of the six, against
+      1.000 in every k = 12 run), so the drop does not come from missing
+      words. Within an ordering, the k = 8 and k = 12 runs share their
+      starting weights but not their data seed, and at a fixed 2,000 steps
+      each construction is seen two-thirds as often among twelve as among
+      eight; the design separates neither from coverage.
+    - *Post hoc* (from the per-run records; nothing tested).
+      `relative_target` was read at 0.6025–1.000 by the four k = 8 runs whose
+      eight constructions exclude `svo` ("{u} {sv} {to} {v}.", where {to} is
+      "to" or "into") and at 0.0125–0.0475 by the two that include it, which
+      are also the only two without `conditional_source` ("if you are at {u},
+      you can {iv} to {v}."), so these runs cannot tell the two apart. In those
+      four orderings the k = 12 runs, whose four added constructions include
+      both `svo` and `noun_target` ("{a_n} {sv} to {v} from {u}."), the only
+      two added in all four, read it at 0.0125–0.320, below their k = 8 runs
+      in each; the two runs of an ordering also differ in data seed and in how
+      often each construction is seen. `cleft_target` was read in one run of the 24
+      (0.855): the k = 8 run trained without `cleft_source` ("it is {u} that
+      {sv} to {v}.", which opens like the held-out cleft with the roles the
+      other way round). Every other run read it at 0.0725 or less, the runs at
+      k = 2 and 4 trained without `cleft_source` included. With six runs per
+      level and twelve constructions, splits like these can arise by chance.
+      Whether a given trained construction lowers the reading of a held-out
+      one is a question for an ablation fixed in advance.
+
+    These results cover one model of 4.9 million parameters, one training
+    budget and rate, one grammar of 16 short constructions over 48 nodes, and
+    exact reading of one edge per sentence; larger models, other budgets, and
+    larger or more varied grammars remain untested.
+
+24. **Measurement-only status.** No result in this repository is presented as
     an established finding.

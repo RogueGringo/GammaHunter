@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import random
 import re
+from pathlib import Path
 
 import pytest
 
@@ -27,6 +28,9 @@ from reachability_gen.tinylm.model import TinyConfig, TinyLM  # noqa: E402
 from reachability_gen.tinylm.tokenizer import EOS  # noqa: E402
 
 TINY = TinyConfig(d=64, layers=2, heads=4, mlp_hidden=192, max_len=128)
+ROOT = Path(__file__).resolve().parents[1]
+RUNS = ROOT / "artifacts" / "coverage_runs.json"
+DECISION = ROOT / "artifacts" / "coverage.json"
 
 
 def test_every_frame_states_its_edge_in_its_recorded_order_in_lower_case():
@@ -189,3 +193,125 @@ def test_decision_rules_cover_every_branch():
     guarded = decide(_runs(low, high, under=2, under_k=12))
     assert guarded["H1"]["verdict"] == guarded["k12_level"]["classification"] == "uninterpretable (undertrained)"
     assert spearman([1, 2, 3], [1, 2, 3]) == pytest.approx(1.0) and spearman([1, 2, 3], [3, 2, 1]) == pytest.approx(-1.0)
+
+
+@pytest.mark.skipif(not (RUNS.exists() and DECISION.exists()), reason="frame-coverage artifacts not present")
+def test_coverage_artifacts_contract():
+    """The recorded study: the verdicts re-derive from the run file, and every value limitations item 23
+    reports is pinned to the run file, the grammar or the runner."""
+    from reachability_gen import run_coverage as rc
+
+    art = json.loads(RUNS.read_text(encoding="utf-8"))
+    assert rc.check(art) == [] and art["science_open"] is False and len(art["runs"]) == 24
+    pr = art["protocol"]
+    assert pr["code_revision"].startswith("bdae5a1") and pr["code_dirty"] is False  # the design commit, clean
+    assert "RTX 5070" in pr["gpu"] and pr["steps"] == 2000 and pr["eval_per_frame"] == 400
+    assert round(TinyLM(rc.CONFIG).num_params() / 1e6, 1) == 4.9
+    assert g.N_NODES == 48 and len(g.FRAMES) == 16 and (rc.H1_MARGIN, rc.PARTIAL) == (0.30, 0.5)
+    assert len(g.eval_sets(rc.EVAL_PER_FRAME, rc.EVAL_SEED)["distractor"]) == 400
+    for words in ("infer the best path all context eval for value based on prime intent", "what comes next?",
+                  "lets make a small llm from the ground up ... you and i can parse out some ideas that will "
+                  "convey some optimizations"):
+        assert words in " ".join(rc.__doc__.split())  # the PI's words as the runner records them
+    decided = json.loads(DECISION.read_text(encoding="utf-8"))
+    assert decided["science_open"] is False and decided["heuristics"] == art["heuristics"]
+    assert decided["verdicts"] == json.loads(json.dumps(rc.decide(art)))  # the verdicts re-derive
+
+    runs = {(r["ordering"], r["k"]): r for r in art["runs"]}
+    orderings = range(rc.ORDERINGS)
+    seconds = [r["training"]["seconds"] for r in art["runs"]]
+    assert (round(min(seconds)), round(max(seconds)), round(art["elapsed_seconds"] / 60)) == (73, 81, 32)
+
+    # controls
+    assert all(r["accuracy"][n] == 1.0 for r in art["runs"] for n in r["frames"])
+    assert all(r["distractor"] == 1.0 and r["training"]["losses"][-1] < 1.6e-6 for r in art["runs"])
+    assert all(v == 0.0 for r in art["runs"] for v in r["untrained_heldout"].values())
+    heur = art["heuristics"]
+    for name in g.FRAMES:
+        source_first = g.FRAMES[name].order == "S"
+        assert (heur["order"][name], heur["mirror"][name]) == ((1.0, 0.0) if source_first else (0.0, 1.0))
+        assert heur["marker"][name] == 1.0
+        assert heur["subject_marker"][name] == (0.0 if name == "locative_inversion" else 1.0)
+
+    # verdicts
+    v = decided["verdicts"]
+    h1 = v["H1"]
+    assert h1["verdict"] == "inconclusive" and round(h1["gain"], 3) == 0.265
+    assert round(h1["p"], 4) == 0.0032 and round(h1["p_gain_below_margin"], 2) == 0.33
+    assert all(n == 0 for n in h1["undertrained_by_k"].values())
+    t = h1["heldout_T_by_k"]
+    assert all(a > b for a, b in zip(t["12"], t["2"]))  # higher at k = 12 in every ordering
+    assert v["k12_level"]["classification"] == "fails" and round(v["k12_level"]["mean_heldout_T"], 3) == 0.383
+
+    # per held-out construction at k = 12
+    def at(k, name):
+        return [runs[o, k]["accuracy"][name] for o in orderings]
+
+    assert at(12, "locative_inversion") == [1.0] * 6
+    assert (round(min(at(12, "participial")), 4), max(at(12, "participial"))) == (0.9475, 1.0)
+    assert (round(min(at(12, "cleft_target")), 4), round(max(at(12, "cleft_target")), 4)) == (0.0075, 0.0725)
+    assert (round(min(at(12, "relative_target")), 4), round(max(at(12, "relative_target")), 4)) == (0.0125, 0.32)
+
+    def pooled(k, name):
+        return {kind: sum(runs[o, k]["errors"][name][kind] for o in orderings) for kind in
+                ("reversed", "none", "malformed", "other")}
+
+    cleft, relative = pooled(12, "cleft_target"), pooled(12, "relative_target")
+    assert (cleft["other"], sum(cleft.values()), cleft["reversed"]) == (2100, 2343, 239)
+    assert (relative["other"], sum(relative.values()), relative["reversed"]) == (2011, 2100, 83)
+    assert (cleft["malformed"], cleft["none"], relative["malformed"], relative["none"]) == (4, 0, 6, 0)
+    assert all(r["accuracy"]["relative_source"] == 1.0 for r in art["runs"] if "relative_source" in r["frames"])
+
+    # which numbers a preposition stands directly before, and the marker rule's fallback on the subject position
+    prepositions = {"at", "from", "to", "into", "{to}"}
+
+    def tokens(name):
+        return re.findall(r"\{[a-z_]+\}|[a-z]+", g.FRAMES[name].pattern)
+
+    def marked(name):
+        toks = tokens(name)
+        return [i > 0 and toks[i - 1] in prepositions for i, tok in enumerate(toks) if tok in ("{u}", "{v}")]
+
+    assert [n for n in g.HELD_OUT if all(marked(n))] == ["participial", "locative_inversion"]
+    assert [n for n in g.HELD_OUT if not any(marked(n))] == ["cleft_target", "relative_target"]
+    assert [n for n in g.POOL if not any(marked(n))] == ["relative_source"]
+    for name in ("cleft_target", "relative_target"):  # no preposition marks a number; the source stands before a verb
+        assert tokens(name)[tokens(name).index("{u}") + 1] == "{sv}"
+
+    # not monotone in k (reported, not decided)
+    means = v["reported"]["mean_by_k"]
+    assert [round(means[str(k)]["heldout_T"], 3) for k in rc.KS] == [0.118, 0.239, 0.576, 0.383]
+    assert [round(means[str(k)]["heldout_T"], 2) for k in (2, 12)] == [0.12, 0.38]  # related work
+    assert round(v["reported"]["spearman_k_heldout_T_descriptive"], 2) == 0.70
+    above = [a - b for a, b in zip(t["8"], t["12"])]
+    assert sum(d > 0 for d in above) == 5 and round(min(d for d in above if d > 0), 3) == 0.004
+    coverage8 = [sum(runs[o, 8]["heldout_word_coverage"].values()) / 4 for o in orderings]
+    assert (round(min(coverage8), 3), max(coverage8), sum(c < 1.0 for c in coverage8)) == (0.959, 1.0, 5)
+    assert all(c == 1.0 for o in orderings for c in runs[o, 12]["heldout_word_coverage"].values())
+    full = [(r["ordering"], r["k"]) for r in art["runs"]
+            if r["k"] < 12 and all(c == 1.0 for c in r["heldout_word_coverage"].values())]
+    assert full == [(1, 8)]  # the one run below k = 12 that covered every held-out word
+    rng = random.Random(0)  # at fixed steps, each construction is drawn two-thirds as often among 12 as among 8
+    drawn = {k: sum(g.sample(tuple(g.POOL[:k]), rng, rc.DISTRACTOR_RATE)[2] == g.POOL[0] for _ in range(60000))
+             for k in (8, 12)}
+    assert drawn[12] / drawn[8] == pytest.approx(2 / 3, rel=0.05)
+
+    # post hoc
+    with_svo = [o for o in orderings if "svo" in runs[o, 8]["frames"]]
+    without_conditional = [o for o in orderings if "conditional_source" not in runs[o, 8]["frames"]]
+    assert with_svo == without_conditional == [0, 1]
+    rel8 = {o: runs[o, 8]["accuracy"]["relative_target"] for o in orderings}
+    assert (round(min(rel8[o] for o in (2, 3, 4, 5)), 4), max(rel8[o] for o in (2, 3, 4, 5))) == (0.6025, 1.0)
+    assert (round(min(rel8[o] for o in (0, 1)), 4), round(max(rel8[o] for o in (0, 1)), 4)) == (0.0125, 0.0475)
+    rel12 = [runs[o, 12]["accuracy"]["relative_target"] for o in (2, 3, 4, 5)]
+    assert all(b < rel8[o] for o, b in zip((2, 3, 4, 5), rel12))
+    added = set.intersection(*(set(runs[o, 12]["frames"][8:]) for o in (2, 3, 4, 5)))
+    assert added == {"svo", "noun_target"}  # the only constructions added in all four of those orderings
+    assert (round(min(rel12), 4), round(max(rel12), 4)) == (0.0125, 0.32)
+    read = [(r["ordering"], r["k"]) for r in art["runs"] if r["accuracy"]["cleft_target"] > 0.5]
+    assert read == [(5, 8)] and round(runs[5, 8]["accuracy"]["cleft_target"], 3) == 0.855
+    assert [o for o in orderings if "cleft_source" not in runs[o, 8]["frames"]] == [5]
+    assert round(max(r["accuracy"]["cleft_target"] for r in art["runs"]
+                     if (r["ordering"], r["k"]) != (5, 8)), 4) == 0.0725
+    assert round(max(r["accuracy"]["cleft_target"] for r in art["runs"]
+                     if r["k"] in (2, 4) and "cleft_source" not in r["frames"]), 4) == 0.0625
